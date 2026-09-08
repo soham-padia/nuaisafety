@@ -1,7 +1,8 @@
 ---
 import Base from '../layouts/Base.astro';
 import Signup from '../components/Signup.astro';
-import HeroArt from '../components/HeroArt.astro';
+import { Image } from 'astro:assets';
+import heroCollage from '../assets/hero-collage.png';
 ---
 <Base>
   <section class="hero">
@@ -20,7 +21,15 @@ import HeroArt from '../components/HeroArt.astro';
         </div>
       </div>
       <figure class="hero__art">
-        <HeroArt />
+        <Image
+          src={heroCollage}
+          alt="A husky in profile against a red circle, layered with campus buildings, a river skyline, and a node-and-edge network diagram."
+          width={420}
+          densities={[1, 2]}
+          format="webp"
+          quality={72}
+          loading="eager"
+        />
       </figure>
     </div>
   </section>

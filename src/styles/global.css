@@ -200,14 +200,21 @@ strong { font-weight: 660; }
 }
 
 .hero__art { margin: 0; }
-.hero__art .art {
+
+/* :is(img, svg) so the frame survives swapping the raster art back out for
+   vector art later. Border-radius plus a hairline makes the artwork's own
+   off-white background read as a deliberate panel rather than a mismatch
+   against --paper. */
+.hero__art :is(img, svg) {
   display: block;
   width: 100%;
   max-width: 340px;
   height: auto;
   margin-inline: auto;
+  border-radius: 14px;
+  border: 1px solid var(--rule);
 }
-@media (min-width: 56rem) { .hero__art .art { max-width: 420px; } }
+@media (min-width: 56rem) { .hero__art :is(img, svg) { max-width: 420px; } }
 
 /* --- three-up grid --------------------------------------------------------- */
 
