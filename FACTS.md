@@ -47,6 +47,9 @@ does not change that.
   and open conversations are none of those things and must never be written as partnership.
 - **Mentorship from any individual or organisation.** Introductions and single calls are not
   mentorship.
+- **A named speaker, before that person has agreed to be named.** Agreeing to present to a
+  student reading group is not agreeing to appear on a public website as a scheduled speaker.
+  Get explicit consent for the second thing, separately from the first.
 
 ## Never invent
 
