@@ -304,22 +304,6 @@ strong { font-weight: 660; }
 .foot a:hover { color: var(--ink); text-decoration: underline; }
 .foot .fine { margin-block-start: 2rem; max-width: var(--measure); font-size: 0.875rem; }
 
-/* Scroll-driven reveal, CSS only. Elements already on screen at load sit past
-   the entry range, so they render final-state without a flash. */
-@media (prefers-reduced-motion: no-preference) {
-  @supports (animation-timeline: view()) {
-    .block, .person, .callout {
-      animation: rise linear both;
-      animation-timeline: view();
-      animation-range: entry 0% entry 55%;
-    }
-    @keyframes rise {
-      from { opacity: 0; transform: translateY(12px); }
-      to   { opacity: 1; transform: none; }
-    }
-  }
-}
-
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation: none !important; transition: none !important; }
   html { scroll-behavior: auto; }

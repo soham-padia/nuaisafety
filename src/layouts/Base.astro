@@ -79,5 +79,60 @@ const canonical = new URL(Astro.url.pathname, Astro.site);
         </p>
       </div>
     </footer>
+
+    <script>
+      import { animate, inView, stagger } from 'motion';
+
+      /**
+       * Rules this follows, in order of importance:
+       *
+       * 1. Never strand content invisible. Only elements below the fold at script
+       *    time are hidden, so anything the visitor can already see can never be
+       *    hidden by us. A timeout un-hides anything the observer never reached.
+       * 2. No flash. Hero text animates position only, never opacity, so there is
+       *    no visible-then-hidden snap when the deferred module runs.
+       * 3. The hero image is never animated. It is the LCP element and fading it
+       *    would push the measurement out.
+       */
+      const reduce = matchMedia('(prefers-reduced-motion: reduce)');
+      const spring = { type: 'spring', stiffness: 200, damping: 26 };
+
+      function clear(el) {
+        el.style.opacity = '';
+        el.style.transform = '';
+      }
+
+      if (!reduce.matches) {
+        const heroText = document.querySelectorAll('.hero__text > *');
+        if (heroText.length) {
+          animate(heroText, { y: [14, 0] }, { ...spring, delay: stagger(0.07) });
+        }
+
+        const reveals = Array.from(
+          document.querySelectorAll('.block, .person, .callout, .prose > h2')
+        );
+        const hidden = new Set();
+
+        for (const el of reveals) {
+          if (el.getBoundingClientRect().top > innerHeight * 0.9) {
+            el.style.opacity = '0';
+            hidden.add(el);
+          }
+        }
+
+        inView(
+          reveals,
+          (el) => {
+            const wasHidden = hidden.delete(el);
+            animate(el, wasHidden ? { opacity: [0, 1], y: [18, 0] } : { y: [18, 0] }, spring)
+              .finished.then(() => clear(el), () => clear(el));
+          },
+          { amount: 0.15 }
+        );
+
+        // Failsafe: if the observer never fires for something, show it anyway.
+        setTimeout(() => { hidden.forEach(clear); hidden.clear(); }, 4000);
+      }
+    </script>
   </body>
 </html>

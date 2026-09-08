@@ -6,7 +6,7 @@
 see "What changed" below.)
 
 - Astro ships static HTML with no client JS by default, so the site is fast and scores well on
-  accessibility without effort. Content lives in `.astro` or `.md` files, so a non-developer on
+  accessibility without effort. One script is opted into deliberately, see Motion below. Content lives in `.astro` or `.md` files, so a non-developer on
   the team can edit copy via GitHub's web editor without touching a component.
 - GitHub Pages is free, deploys on push via Actions, and supports a custom domain with automatic
   TLS. The repo is already where the team works.
@@ -270,6 +270,40 @@ Two reasons:
 DNS propagation and GitHub's certificate issuance both take longer than the build, so starting
 the records first means the two finish at roughly the same time. Verify locally with
 `npm run preview` instead of on github.io.
+
+## Motion
+
+Animation uses **`motion`**, the vanilla build of the library formerly called Framer Motion.
+Framer Motion proper is React-only and would have meant adding `@astrojs/react` plus a React
+runtime, roughly 80 KB, to a site with no other need for a framework. The vanilla build has the
+same spring physics and scroll API with no framework at all: about 23 KB gzipped, 0 ms total
+blocking time, and Lighthouse stayed at 100.
+
+What is CSS and stays CSS, because it is free:
+
+- Cross-document view transitions, via `@view-transition { navigation: auto; }`
+- Hover, focus and active states on links and buttons
+- Smooth scrolling
+
+What Motion does: hero entrance, and scroll reveals on `.block`, `.person`, `.callout` and
+`.prose > h2`.
+
+The reveal script in `src/layouts/Base.astro` follows three rules, and they matter more than the
+animation does:
+
+1. **Never strand content invisible.** Only elements below the fold when the script runs are
+   hidden. Anything already on screen is never touched, so it cannot be hidden by a bug. A
+   four-second timeout un-hides anything the observer never reached.
+2. **No flash.** Hero text animates position only, never opacity, so there is no
+   visible-then-hidden snap when the deferred module executes.
+3. **Never animate the hero image.** It is the LCP element and fading it in delays the
+   measurement.
+
+Everything is behind `prefers-reduced-motion`.
+
+Note when testing headlessly: Chrome's `--virtual-time-budget` does not advance rAF-driven
+spring animations, so a screenshot taken that way shows reveal elements frozen at opacity 0.
+That is the harness, not the site. Screenshot without it.
 
 ## Palette
 

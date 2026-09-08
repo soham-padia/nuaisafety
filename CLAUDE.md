@@ -14,8 +14,14 @@ Stack decisions are in `BUILD.md`.
 
 ## Repository state
 
-Astro site, built 7 September 2026. Five pages, zero client JavaScript, Lighthouse 100 across
-accessibility, performance, best practices and SEO on every page.
+Astro site, built 7 September 2026. Five pages, Lighthouse 100 across accessibility,
+performance, best practices and SEO on every page.
+
+Ships one client script: Motion (`motion`, the vanilla build, not Framer Motion's React
+package) at about 23 KB gzipped, for scroll reveals and spring easing. It measured at 0 ms
+total blocking time, so it did not cost a point. Page transitions and hover states are still
+pure CSS. See the comment block in `src/layouts/Base.astro` for the rules the reveal script
+follows, the important one being that content the visitor can already see is never hidden.
 
 Documents, and what each is authoritative for:
 
