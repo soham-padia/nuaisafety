@@ -11,6 +11,8 @@ const { title, description = SITE.description } = Astro.props;
 const pageTitle = title ? `${title} | ${SITE.name}` : `${SITE.name} | ${SITE.tagline}`;
 const path = Astro.url.pathname.replace(/\.html$/, '').replace(/\/$/, '') || '/';
 const canonical = new URL(Astro.url.pathname, Astro.site);
+// Social scrapers need an absolute URL; a root-relative path is silently ignored.
+const ogImage = new URL('/og.png', Astro.site);
 ---
 <!doctype html>
 <html lang="en">
@@ -27,7 +29,12 @@ const canonical = new URL(Astro.url.pathname, Astro.site);
     <meta property="og:title" content={pageTitle} />
     <meta property="og:description" content={description} />
     <meta property="og:url" content={canonical} />
-    <meta name="twitter:card" content="summary" />
+    <meta property="og:image" content={ogImage} />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content="NU AI Safety. AI safety and interpretability at Northeastern." />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:image" content={ogImage} />
   </head>
 
   <body>
