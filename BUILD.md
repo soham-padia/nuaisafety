@@ -99,8 +99,28 @@ jobs:
         uses: actions/deploy-pages@v4
 ```
 
-`public/CNAME` must contain exactly `nuaisafety.com`. Without it GitHub resets the custom domain
-on every deploy.
+### The `CNAME` file does not set the custom domain here
+
+With a **branch-based** Pages build, `public/CNAME` is authoritative and GitHub resets the custom
+domain on every deploy without it. With an **Actions-based** deploy, which is what this repo uses,
+that is not true. Verified on the first deploy: `dist/CNAME` was present and served at
+`/CNAME` with the right contents, and the Pages API still reported `"cname": null`.
+
+Set the domain on the repo instead, either in Settings, Pages, Custom domain, or:
+
+```bash
+gh api repos/soham-padia/nuaisafety/pages -X PUT -f cname=nuaisafety.com
+```
+
+Keep `public/CNAME` anyway. It costs nothing and it is what makes the repo portable if Pages is
+ever switched back to a branch build.
+
+Setting the domain flips `https_enforced` to false, because GitHub cannot issue a certificate
+until DNS resolves. Once the A records are live and the certificate provisions, turn it back on:
+
+```bash
+gh api repos/soham-padia/nuaisafety/pages -X PUT -f https_enforced=true
+```
 
 ## Signup form
 
@@ -282,4 +302,6 @@ See `DESIGN.md` for the layout and register decisions these support.
 - [ ] `npx lighthouse https://nuaisafety.com --view`, accessibility 95+
 - [ ] Open graph title, description and image, since this link will get shared in Slack and Discord
 - [ ] No Northeastern logo, seal, or wordmark anywhere
-- [ ] `public/CNAME` survived the build; check `dist/CNAME` exists
+- [ ] Custom domain is set on the repo, not just in `public/CNAME`:
+      `gh api repos/soham-padia/nuaisafety/pages --jq .cname` returns `nuaisafety.com`
+- [ ] `https_enforced` is back to `true` once the certificate has provisioned
