@@ -31,7 +31,18 @@
 
 *, *::before, *::after { box-sizing: border-box; }
 
-html { -webkit-text-size-adjust: 100%; }
+html {
+  -webkit-text-size-adjust: 100%;
+  scroll-behavior: smooth;
+}
+
+/* Native cross-document view transitions. Page navigation cross-fades with no
+   client JavaScript at all; browsers without support just navigate normally. */
+@media (prefers-reduced-motion: no-preference) {
+  @view-transition { navigation: auto; }
+}
+::view-transition-old(root),
+::view-transition-new(root) { animation-duration: 240ms; }
 
 body {
   margin: 0;
@@ -61,6 +72,11 @@ p, li { text-wrap: pretty; }
 p { margin: 0 0 1.15em; max-width: var(--measure); }
 
 a { color: var(--accent); text-decoration-thickness: 1px; text-underline-offset: 0.18em; }
+
+a, .btn, .nav a, .wordmark {
+  transition: color 160ms ease, background-color 160ms ease, border-color 160ms ease,
+              transform 160ms ease, box-shadow 160ms ease, text-decoration-color 160ms ease;
+}
 a:hover { color: var(--accent-deep); }
 
 /* Never remove the outline. See BUILD.md accessibility notes. */
@@ -165,10 +181,22 @@ strong { font-weight: 660; }
   text-decoration: none;
   border: 1px solid var(--accent);
 }
-.btn:hover { background: var(--accent-deep); border-color: var(--accent-deep); color: var(--paper); }
+.btn:hover {
+  background: var(--accent-deep);
+  border-color: var(--accent-deep);
+  color: var(--paper);
+  transform: translateY(-1px);
+  box-shadow: 0 3px 10px rgb(20 22 26 / 0.13);
+}
+.btn:active { transform: translateY(0); box-shadow: none; }
 
 .btn--ghost { background: transparent; color: var(--ink); border-color: var(--rule); }
-.btn--ghost:hover { background: transparent; color: var(--ink); border-color: var(--muted); }
+.btn--ghost:hover {
+  background: transparent;
+  color: var(--ink);
+  border-color: var(--muted);
+  box-shadow: 0 3px 10px rgb(20 22 26 / 0.08);
+}
 
 /* Trailing arrow on text CTAs, borrowed from UChicago. See DESIGN.md */
 .arrow { text-decoration: none; font-weight: 620; }
@@ -276,6 +304,23 @@ strong { font-weight: 660; }
 .foot a:hover { color: var(--ink); text-decoration: underline; }
 .foot .fine { margin-block-start: 2rem; max-width: var(--measure); font-size: 0.875rem; }
 
+/* Scroll-driven reveal, CSS only. Elements already on screen at load sit past
+   the entry range, so they render final-state without a flash. */
+@media (prefers-reduced-motion: no-preference) {
+  @supports (animation-timeline: view()) {
+    .block, .person, .callout {
+      animation: rise linear both;
+      animation-timeline: view();
+      animation-range: entry 0% entry 55%;
+    }
+    @keyframes rise {
+      from { opacity: 0; transform: translateY(12px); }
+      to   { opacity: 1; transform: none; }
+    }
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation: none !important; transition: none !important; }
+  html { scroll-behavior: auto; }
 }
