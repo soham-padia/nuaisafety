@@ -13,7 +13,8 @@ Use close to verbatim. `[BRACKETS]` mark decisions that need a human answer firs
 
 Northeastern hosts David Bau's interpretability lab and NDIF, the infrastructure a lot of
 external researchers use to look inside large models. We are the first student group built to
-put Northeastern students next to that work.
+put Northeastern students next to that work. AI safety needs people from policy, security,
+biology and design as much as it needs engineers.
 
 `[ Join the mailing list ]`  `[ What we do ]`
 
@@ -30,6 +31,16 @@ research, from the people doing it, on campus.
 **Research**
 The goal is members producing work, not just reading about it. If you want to run something,
 we would rather help you run it than talk you out of it.
+
+**Who this is for**
+
+AI safety is not only a machine learning problem. It runs through policy, security, biology, law
+and psychology, and it needs people who are good at those things. A room that is only engineers
+will miss things.
+
+You do not need machine learning experience, a CS degree, or any prior knowledge of AI safety.
+If the groups that already exist feel like they are for people who know all this already, that is
+exactly the gap we are built for.
 
 **Closing band**
 
@@ -93,6 +104,10 @@ Anyone at Northeastern. Undergraduate, master's, PhD, any programme.
 
 **No prerequisites.** You do not need machine learning experience, a CS degree, or prior
 knowledge of AI safety. The reading group starts from the beginning.
+
+We particularly want people from policy, law, security, biology, psychology, design and business.
+AI safety is not only a machine learning problem, and a room that is only engineers will miss
+things.
 
 If you are technical and already know this field, there is a version of this group that is about
 producing research rather than reading it, and we want you for that.

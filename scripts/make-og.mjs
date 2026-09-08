@@ -19,8 +19,8 @@ const card = `<svg xmlns="http://www.w3.org/2000/svg" width="${W}" height="${H}"
     <text x="${PAD}" y="250" font-size="84" font-weight="700" letter-spacing="-3">NU AI Safety</text>
     <text x="${PAD}" y="316" font-size="34" font-weight="500" fill="#14161a">AI safety and interpretability</text>
     <text x="${PAD}" y="360" font-size="34" font-weight="500" fill="#14161a">at Northeastern.</text>
-    <text x="${PAD}" y="440" font-size="25" fill="#5b6169">A student-led group. Reading group,</text>
-    <text x="${PAD}" y="476" font-size="25" fill="#5b6169">guest talks, and members' own research.</text>
+    <text x="${PAD}" y="440" font-size="25" fill="#5b6169">A student-led group, open to every discipline.</text>
+    <text x="${PAD}" y="476" font-size="25" fill="#5b6169">Reading group, guest talks, and research.</text>
     <text x="${PAD}" y="556" font-size="23" font-weight="600" fill="#c8102e">nuaisafety.com</text>
   </g>
 </svg>`;

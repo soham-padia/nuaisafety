@@ -15,7 +15,8 @@ export const SITE = {
   tagline: 'AI safety and interpretability at Northeastern.',
   description:
     'A student-led AI safety and interpretability group at Northeastern University. ' +
-    'Weekly reading group, guest talks, and support for members’ own research.',
+    'Weekly reading group, guest talks, and support for members’ own research. ' +
+    'Open to every discipline, no prerequisites.',
 };
 
 /** Where a signup CTA should point right now. */
