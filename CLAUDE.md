@@ -27,13 +27,18 @@ Documents, and what each is authoritative for:
 
 | File | Authority over |
 |---|---|
-| `FACTS.md` | What is true, what is not yet true, what must never be claimed |
+| `FACTS.md` | Public subset: the copy rules, with no private evidence |
+| `_local/FACTS.md` | The real record: sourcing, quotes, where each relationship stands. Gitignored. |
 | `CONTENT.md` | Page copy, near-verbatim |
 | `DESIGN.md` | Layout and visual register, with the peer-site research behind it |
 | `BUILD.md` | Stack, palette, deploy, DNS, pre-launch checklist |
 | `CLAUDE.md` | Scope, priorities |
 
 When they conflict, `FACTS.md` wins. It is the only file with institutional consequences.
+
+**This repository is public**, because GitHub Pages requires it. Never commit private
+correspondence, anything quoting a person who has not agreed to be published, or an
+assessment of where a relationship stands. That belongs in `_local/`, which is gitignored.
 
 ```bash
 npm run dev        # local dev server

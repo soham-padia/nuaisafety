@@ -3,3 +3,17 @@ dist/
 .astro/
 .DS_Store
 npm-debug.log*
+
+# Agent working directories and worktrees
+.claude/
+
+# Anything that must not be public. This repository is public because GitHub
+# Pages requires it, so treat _local as the only safe place for private notes,
+# correspondence, screenshots and the full FACTS record.
+_local/*
+!_local/README.md
+
+# Secrets, in case anything ever needs them
+.env
+.env.*
+*.local
