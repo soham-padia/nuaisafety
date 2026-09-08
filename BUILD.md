@@ -186,8 +186,14 @@ site, and it costs accessibility and performance points the site currently has a
 
 ## Group email
 
-**Decided: `hello@nuaisafety.com` as a free Porkbun forward into `nuaisafety@gmail.com`,**
-a free shared Gmail account owned by the group.
+**The site publishes `nuaisafety@gmail.com`,** a free shared Gmail account owned by the group.
+A free `hello@nuaisafety.com` Porkbun forward into that account also exists.
+
+Publishing the Gmail rather than the domain address is a deliberate simplification, not an
+oversight. It costs some credibility with the priority-2 audience, a Khoury administrator or a
+funder, for whom `hello@nuaisafety.com` reads as an organisation and `nuaisafety@gmail.com` reads
+as four students. Worth revisiting once the forward is confirmed delivering. `EMAIL` in
+`src/config.ts` is the single source of truth, so it is a one-line change either way.
 Total cost $0. Porkbun gives 20 forwards free on the domain; Option 2 on the Email page, not the
 $3/month hosted inbox.
 

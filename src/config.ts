@@ -8,7 +8,7 @@
  */
 export const SIGNUP_URL: string | null = 'https://forms.gle/dVHJ8bix2VHz8PUk9';
 
-export const EMAIL = 'hello@nuaisafety.com';
+export const EMAIL = 'nuaisafety@gmail.com';
 
 export const SITE = {
   name: 'NU AI Safety',
