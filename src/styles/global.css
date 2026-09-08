@@ -192,6 +192,23 @@ strong { font-weight: 660; }
 .hero p { font-size: var(--step-1); line-height: 1.55; max-width: 44ch; }
 .hero .actions { margin-block-start: 2rem; }
 
+/* Text first in DOM so the CTAs sit above the art on a phone, which is where
+   most traffic lands. Grid reorders to text-left/art-right on wider screens. */
+.hero__grid { display: grid; gap: 2.75rem; align-items: center; }
+@media (min-width: 56rem) {
+  .hero__grid { grid-template-columns: 1fr 0.8fr; gap: 4rem; }
+}
+
+.hero__art { margin: 0; }
+.hero__art .art {
+  display: block;
+  width: 100%;
+  max-width: 340px;
+  height: auto;
+  margin-inline: auto;
+}
+@media (min-width: 56rem) { .hero__art .art { max-width: 420px; } }
+
 /* --- three-up grid --------------------------------------------------------- */
 
 .grid {

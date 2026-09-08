@@ -1,0 +1,85 @@
+---
+/**
+ * Hero illustration: a circuit traced inside a brain.
+ *
+ * CLAUDE.md rules out "glowing brains", and that ban is aimed at the stock-render
+ * cliche. This is flat geometric line art, and the content is the interpretability
+ * idea from FACTS.md: Bau's lab and NDIF are here, and circuit tracing is the work
+ * they do. The brain is the container, the traced path is the point.
+ *
+ * Earlier attempts failed in instructive ways. An even lattice with one polyline
+ * read as a line chart. A dense 344-edge mesh inside an ellipse-union silhouette
+ * read as a generic blob and never resolved into a brain. Folds plus a stroked
+ * outline do the recognition work; a single circuit with a few branches carries
+ * the network idea without the noise.
+ *
+ * Inlined so it costs no request, and it inherits the palette from global.css
+ * rather than hardcoding hex values.
+ */
+---
+<svg class="art" viewBox="0 0 480 420" role="img" aria-labelledby="art-t art-d"
+     xmlns="http://www.w3.org/2000/svg">
+  <title id="art-t">A circuit traced inside a brain</title>
+  <desc id="art-d">A line drawing of a brain with a path traced through it, branching at several
+    points, and a single node marked in red.</desc>
+
+  <defs>
+    <linearGradient id="panel" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="var(--paper)"/>
+      <stop offset="100%" stop-color="var(--wash)"/>
+    </linearGradient>
+    <radialGradient id="focus">
+      <stop offset="0%" stop-color="var(--accent)" stop-opacity="0.22"/>
+      <stop offset="100%" stop-color="var(--accent)" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+
+  <rect x="0.5" y="0.5" width="479" height="419" rx="18" fill="url(#panel)" stroke="var(--rule)"/>
+
+  <!-- silhouette -->
+  <path d="M92 214 C88 140, 150 78, 236 74 C310 70, 360 96, 388 130
+           C420 136, 442 166, 438 200 C434 236, 410 254, 380 258
+           C372 282, 350 296, 322 294 C316 312, 300 322, 282 318
+           C276 338, 262 348, 246 344 C238 366, 214 372, 198 360
+           C176 372, 150 362, 142 340 C112 332, 96 300, 104 274
+           C88 258, 84 234, 92 214 Z"
+        fill="var(--paper)" stroke="var(--ink)" stroke-width="1.75"/>
+
+  <!-- folds -->
+  <g fill="none" stroke="var(--rule)" stroke-width="1.6" stroke-linecap="round">
+    <path d="M150 130 C186 150, 178 186, 206 196 C234 206, 244 172, 274 182"/>
+    <path d="M132 216 C170 226, 176 260, 210 262 C244 264, 250 232, 284 240"/>
+    <path d="M168 300 C196 292, 218 310, 246 300"/>
+    <path d="M300 112 C318 142, 300 168, 320 190 C340 212, 366 196, 380 212"/>
+    <path d="M330 250 C350 240, 368 250, 384 240"/>
+  </g>
+
+  <circle cx="300" cy="225" r="76" fill="url(#focus)"/>
+
+  <!-- branches off the circuit -->
+  <g fill="none" stroke="var(--muted)" stroke-opacity="0.5" stroke-width="1.4" stroke-linecap="round">
+    <path d="M185 215 L176 166"/>
+    <path d="M262 195 L254 146"/>
+    <path d="M300 225 L314 280"/>
+    <path d="M342 190 L354 148"/>
+  </g>
+  <g fill="var(--muted)" fill-opacity="0.55">
+    <circle cx="176" cy="166" r="3.4"/><circle cx="254" cy="146" r="3.4"/>
+    <circle cx="314" cy="280" r="3.4"/><circle cx="354" cy="148" r="3.4"/>
+  </g>
+
+  <!-- the traced circuit -->
+  <polyline points="140,250 185,215 225,240 262,195 300,225 342,190 386,215"
+            fill="none" stroke="var(--paper)" stroke-width="5"
+            stroke-linejoin="round" stroke-linecap="round"/>
+  <polyline points="140,250 185,215 225,240 262,195 300,225 342,190 386,215"
+            fill="none" stroke="var(--ink)" stroke-width="2"
+            stroke-linejoin="round" stroke-linecap="round"/>
+  <g fill="var(--ink)" stroke="var(--paper)" stroke-width="2.4">
+    <circle cx="140" cy="250" r="5"/><circle cx="185" cy="215" r="5"/>
+    <circle cx="225" cy="240" r="5"/><circle cx="262" cy="195" r="5"/>
+    <circle cx="342" cy="190" r="5"/><circle cx="386" cy="215" r="5"/>
+  </g>
+  <circle cx="300" cy="225" r="16" fill="none" stroke="var(--accent)" stroke-opacity="0.4"/>
+  <circle cx="300" cy="225" r="7.5" fill="var(--accent)" stroke="var(--paper)" stroke-width="2.4"/>
+</svg>

@@ -47,8 +47,6 @@ real institutional damage, so they are repeated here where they are always in co
   a recognised student organisation and cannot be until CSI forms open at the end of fall term.
 - **Never** "our faculty advisor" for David Bau. He *has agreed to advise the group and give
   guest talks*. The formal advisor request is pending. Use that wording.
-- **Never** the Northeastern wordmark, seal, or logo. No licence. The site uses a text-only
-  wordmark of its own.
 - **Never** render Harvard AISST, MIT MAIA or BU AISA as a partner logo grid. They *offered
   help*; BU is a coordination conversation. Name them in a sentence or not at all.
 
@@ -85,8 +83,7 @@ Look at MIT MAIA, Harvard AISST, Princeton PAIA and BU AISA for register. The pa
 works: restrained, text-forward, one accent colour, generous whitespace, no stock photography
 of robots or glowing brains. Serious rather than slick.
 
-Northeastern red is `#C8102E`. Use it as an accent only. Do **not** use the Northeastern
-wordmark, seal, or logo anywhere: the group has no licence to.
+Northeastern red is `#C8102E`. Use it as an accent only.
 
 Mobile first. Most traffic will be a student on a phone who saw a flyer.
 

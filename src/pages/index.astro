@@ -1,21 +1,27 @@
 ---
 import Base from '../layouts/Base.astro';
 import Signup from '../components/Signup.astro';
+import HeroArt from '../components/HeroArt.astro';
 ---
 <Base>
   <section class="hero">
-    <div class="wrap">
-      <h1>NU AI Safety</h1>
-      <p class="tagline">AI safety and interpretability at Northeastern.</p>
-      <p>
-        Northeastern hosts David Bau’s interpretability lab and NDIF, the infrastructure a lot
-        of external researchers use to look inside large models. We are the first student group
-        built to put Northeastern students next to that work.
-      </p>
-      <div class="actions">
-        <Signup />
-        <a class="btn btn--ghost" href="/about">What we do</a>
+    <div class="wrap hero__grid">
+      <div class="hero__text">
+        <h1>NU AI Safety</h1>
+        <p class="tagline">AI safety and interpretability at Northeastern.</p>
+        <p>
+          Northeastern hosts David Bau’s interpretability lab and NDIF, the infrastructure a lot
+          of external researchers use to look inside large models. We are the first student group
+          built to put Northeastern students next to that work.
+        </p>
+        <div class="actions">
+          <Signup />
+          <a class="btn btn--ghost" href="/about">What we do</a>
+        </div>
       </div>
+      <figure class="hero__art">
+        <HeroArt />
+      </figure>
     </div>
   </section>
 
