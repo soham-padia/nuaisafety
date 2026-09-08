@@ -1,0 +1,83 @@
+---
+import '../styles/global.css';
+import { SITE, NAV, EMAIL } from '../config';
+
+interface Props {
+  title?: string;
+  description?: string;
+}
+
+const { title, description = SITE.description } = Astro.props;
+const pageTitle = title ? `${title} | ${SITE.name}` : `${SITE.name} | ${SITE.tagline}`;
+const path = Astro.url.pathname.replace(/\.html$/, '').replace(/\/$/, '') || '/';
+const canonical = new URL(Astro.url.pathname, Astro.site);
+---
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{pageTitle}</title>
+    <meta name="description" content={description} />
+    <link rel="canonical" href={canonical} />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content={SITE.name} />
+    <meta property="og:title" content={pageTitle} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonical} />
+    <meta name="twitter:card" content="summary" />
+  </head>
+
+  <body>
+    <a class="skip" href="#main">Skip to content</a>
+
+    <header class="masthead">
+      <div class="wrap">
+        <a class="wordmark" href="/">NU AI Safety</a>
+        <nav class="nav" aria-label="Primary">
+          {NAV.map((item) => (
+            <a href={item.href} aria-current={path === item.href ? 'page' : undefined}>
+              {item.label}
+            </a>
+          ))}
+        </nav>
+      </div>
+    </header>
+
+    <main id="main">
+      <slot />
+    </main>
+
+    <footer class="foot">
+      <div class="wrap">
+        <div class="cols">
+          <div>
+            <h2>NU AI Safety</h2>
+            <p>
+              A student-led AI safety and interpretability group at Northeastern.
+              Not a recognised student organisation. We are working through that process.
+            </p>
+          </div>
+          <div>
+            <h2>Pages</h2>
+            <ul>
+              {NAV.map((item) => <li><a href={item.href}>{item.label}</a></li>)}
+            </ul>
+          </div>
+          <div>
+            <h2>Contact</h2>
+            <ul>
+              <li><a href={`mailto:${EMAIL}`}>{EMAIL}</a></li>
+            </ul>
+          </div>
+        </div>
+        <p class="fine">
+          Run by students. Not affiliated with, endorsed by, or speaking for Northeastern
+          University or Khoury College.
+        </p>
+      </div>
+    </footer>
+  </body>
+</html>

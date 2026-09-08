@@ -1,0 +1,43 @@
+---
+import Base from '../layouts/Base.astro';
+
+/**
+ * Programme and bio are deliberately omitted until all four founders have supplied
+ * them. A page where two people have bios and two do not reads as though two did
+ * not reply. Fill in `programme` and `bio` for all four and the markup below picks
+ * them up. See FACTS.md, "Needs resolving before launch".
+ */
+const founders = [
+  { name: 'Elaine Ly' },
+  { name: 'Soham Padia' },
+  { name: 'Rohan Kathuria' },
+  { name: 'Julia Rowniewski' },
+] as { name: string; programme?: string; bio?: string }[];
+
+const complete = founders.every((p) => p.programme);
+---
+<Base title="Team" description="The four founders of NU AI Safety, and the faculty researcher advising the group.">
+  <section class="band">
+    <div class="wrap prose">
+      <h1>Team</h1>
+      <p class="lede">Four founders, September 2026.</p>
+
+      <ul class="people">
+        {founders.map((person) => (
+          <li class="person">
+            <span class="name">{person.name}</span>
+            {complete && person.programme && <span class="role">{person.programme}</span>}
+            {complete && person.bio && <p>{person.bio}</p>}
+          </li>
+        ))}
+      </ul>
+
+      <h2>Faculty</h2>
+      <p>
+        <strong>Professor David Bau</strong>, Khoury College, has agreed to advise the group and
+        to give guest talks from his lab this fall. His lab works on interpretability of large
+        models and runs NDIF, the National Deep Inference Fabric.
+      </p>
+    </div>
+  </section>
+</Base>

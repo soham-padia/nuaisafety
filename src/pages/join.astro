@@ -1,0 +1,46 @@
+---
+import Base from '../layouts/Base.astro';
+import Signup from '../components/Signup.astro';
+import { SIGNUP_URL } from '../config';
+---
+<Base title="Join" description="Open to anyone at Northeastern. No prerequisites, no application, no interview.">
+  <section class="band">
+    <div class="wrap prose">
+      <h1>Join</h1>
+
+      <h2>Who this is for</h2>
+      <p>Anyone at Northeastern. Undergraduate, master’s, PhD, any programme.</p>
+      <p>
+        <strong>No prerequisites.</strong> You do not need machine learning experience, a CS
+        degree, or prior knowledge of AI safety. The reading group starts from the beginning.
+      </p>
+      <p>
+        If you are technical and already know this field, there is a version of this group that
+        is about producing research rather than reading it, and we want you for that.
+      </p>
+
+      <h2>Time commitment</h2>
+      <p>
+        Around ninety minutes a week for the reading group. More if you want to run a project.
+        Less is fine, and co-op semesters are expected and normal.
+      </p>
+
+      <h2>How to join</h2>
+      <p>
+        {SIGNUP_URL
+          ? 'Sign up below. We will email you before the first session with a time, a place, and what to read. That is the whole process. No application, no interview.'
+          : 'Email us and we will add you to the list. We will be in touch before the first session with a time, a place, and what to read. That is the whole process. No application, no interview.'}
+      </p>
+      <div class="actions">
+        <Signup />
+      </div>
+
+      <h2>What happens next</h2>
+      <p>
+        We are new enough that the honest answer is: the first reading group, then a guest talk,
+        then whatever the people who show up want to build. If you have an opinion about that,
+        joining now is when it counts.
+      </p>
+    </div>
+  </section>
+</Base>

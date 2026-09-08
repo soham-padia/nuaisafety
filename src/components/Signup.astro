@@ -1,0 +1,26 @@
+---
+import { SIGNUP_URL, EMAIL } from '../config';
+
+interface Props {
+  /** "button" for a primary CTA, "inline" for a sentence-level link. */
+  variant?: 'button' | 'inline';
+  label?: string;
+}
+
+const { variant = 'button', label = 'Join the mailing list' } = Astro.props;
+---
+{SIGNUP_URL ? (
+  variant === 'button' ? (
+    <a class="btn" href={SIGNUP_URL}>{label} →</a>
+  ) : (
+    <a class="arrow" href={SIGNUP_URL}><span>{label}</span></a>
+  )
+) : variant === 'button' ? (
+  <a class="btn" href={`mailto:${EMAIL}?subject=Joining%20the%20mailing%20list`}>
+    Email us to join →
+  </a>
+) : (
+  <a class="arrow" href={`mailto:${EMAIL}?subject=Joining%20the%20mailing%20list`}>
+    <span>email us to join</span>
+  </a>
+)}

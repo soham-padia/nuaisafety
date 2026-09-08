@@ -1,0 +1,21 @@
+---
+import Base from '../layouts/Base.astro';
+import { EMAIL } from '../config';
+---
+<Base title="Contact" description="Get in touch about joining, speaking, or coordinating between AI safety groups.">
+  <section class="band">
+    <div class="wrap prose">
+      <h1>Contact</h1>
+
+      <p class="lede"><a href={`mailto:${EMAIL}`}>{EMAIL}</a></p>
+      <p>For anything: joining, speaking, collaborating, or asking what we are.</p>
+
+      <h2>Other groups</h2>
+      <p>
+        If you organise an AI safety group elsewhere and want to coordinate, please get in touch.
+        We are already talking to BU AI Safety, and we are new enough to be useful to other new
+        groups.
+      </p>
+    </div>
+  </section>
+</Base>

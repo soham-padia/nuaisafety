@@ -1,0 +1,80 @@
+---
+import Base from '../layouts/Base.astro';
+import Signup from '../components/Signup.astro';
+---
+<Base>
+  <section class="hero">
+    <div class="wrap">
+      <h1>NU AI Safety</h1>
+      <p class="tagline">AI safety and interpretability at Northeastern.</p>
+      <p>
+        Northeastern hosts David Bau’s interpretability lab and NDIF, the infrastructure a lot
+        of external researchers use to look inside large models. We are the first student group
+        built to put Northeastern students next to that work.
+      </p>
+      <div class="actions">
+        <Signup />
+        <a class="btn btn--ghost" href="/about">What we do</a>
+      </div>
+    </div>
+  </section>
+
+  <section class="band band--wash" aria-labelledby="what">
+    <div class="wrap">
+      <h2 id="what" class="sr-only-heading">What we do</h2>
+      <div class="grid grid--3">
+        <div class="block">
+          <h3>Reading group</h3>
+          <span class="meta">About 90 minutes a week</span>
+          <p>
+            A weekly session working through AI safety fundamentals, then papers. No
+            prerequisites, and no assumption you have done machine learning before.
+          </p>
+        </div>
+        <div class="block">
+          <h3>Guest talks</h3>
+          <span class="meta">This fall</span>
+          <p>
+            Professor David Bau has agreed to give guest talks from his lab this fall.
+            Interpretability research, from the people doing it, on campus.
+          </p>
+        </div>
+        <div class="block">
+          <h3>Research</h3>
+          <span class="meta">Members’ own projects</span>
+          <p>
+            The goal is members producing work, not just reading about it. If you want to run
+            something, we would rather help you run it than talk you out of it.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="band" aria-labelledby="new">
+    <div class="wrap">
+      <h2 id="new">We are new</h2>
+      <div class="callout">
+        <p>
+          Four people, a faculty researcher who agreed to help, and no events yet. If you join
+          now you are shaping what this is rather than attending something finished.
+        </p>
+      </div>
+      <div class="actions">
+        <Signup />
+      </div>
+    </div>
+  </section>
+</Base>
+
+<style>
+  /* The section needs a heading for the outline; the three blocks carry the meaning. */
+  .sr-only-heading {
+    position: absolute;
+    width: 1px; height: 1px;
+    padding: 0; margin: -1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+</style>
