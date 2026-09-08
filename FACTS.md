@@ -37,7 +37,8 @@ does not change that.
 - **Bau as formal faculty advisor.** The formal request is pending and the arrangement is not
   settled. Never "our faculty advisor".
 - **A date for anything.** No event has happened and none is scheduled. No dates, no photos,
-  no "past events". This includes attaching a term to Bau's talks; he has not agreed to one.
+  no "past events". "This fall" for Bau's talks is fine, since that is the context he agreed in.
+  A specific date is not, until one is actually agreed with him.
 - **Any member beyond the four founders.**
 - **NDIF as a group resource.** It is Bau's NSF-funded project. Soham's access is personal. The
   group does not run it and cannot promise access to members.
