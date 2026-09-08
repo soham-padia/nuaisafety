@@ -1,7 +1,7 @@
 ---
 import Base from '../layouts/Base.astro';
 import Signup from '../components/Signup.astro';
-import { SIGNUP_URL } from '../config';
+import { SIGNUP_URL, EMAIL } from '../config';
 ---
 <Base title="Join" description="Open to anyone at Northeastern. No prerequisites, no application, no interview.">
   <section class="band">
@@ -9,7 +9,7 @@ import { SIGNUP_URL } from '../config';
       <h1>Join</h1>
 
       <h2>Who this is for</h2>
-      <p>Anyone at Northeastern. Undergraduate, master’s, PhD, any programme.</p>
+      <p>Anyone at Northeastern. Undergraduate, master’s, PhD, any program.</p>
       <p>
         <strong>No prerequisites.</strong> You do not need machine learning experience, a CS
         degree, or prior knowledge of AI safety. The reading group starts from the beginning.
@@ -22,6 +22,8 @@ import { SIGNUP_URL } from '../config';
       <p>
         If you are technical and already know this field, there is a version of this group that
         is about producing research rather than reading it, and we want you for that.
+        <a class="arrow" href={`mailto:${EMAIL}`}><span>Email us directly</span></a> instead of
+        only joining the list, and we will talk about what you want to work on.
       </p>
 
       <h2>Time commitment</h2>
@@ -42,9 +44,9 @@ import { SIGNUP_URL } from '../config';
 
       <h2>What happens next</h2>
       <p>
-        We are new enough that the honest answer is: the first reading group, then a guest talk,
-        then whatever the people who show up want to build. If you have an opinion about that,
-        joining now is when it counts.
+        The honest answer: the first reading group, then a guest talk, then whatever the people
+        who show up want to build. If you have an opinion about that, joining now is when it
+        counts.
       </p>
     </div>
   </section>

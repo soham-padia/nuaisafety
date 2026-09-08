@@ -152,7 +152,7 @@ priority #1 in `CLAUDE.md` is the email address.
 |---|---|---|---|---|
 | 1 | Northeastern email | Short answer | Yes | Response validation → Regular expression → *Matches* → `.+@(.+\.)?northeastern\.edu` · error text: "Please use your Northeastern email." |
 | 2 | Name | Short answer | Yes | |
-| 3 | Programme and year | Short answer | No | e.g. "CS, 2nd year" or "MS AI, first semester" |
+| 3 | Program and year | Short answer | No | e.g. "CS, 2nd year" or "MS AI, first semester" |
 | 4 | What are you most interested in? | Paragraph | No | |
 | 5 | Anything you would want to help run? | Checkboxes | No | Options: `Reading group` · `Guest talks` · `My own research project` · `Not sure yet, just want to come along` |
 
@@ -191,7 +191,7 @@ A free `hello@nuaisafety.com` Porkbun forward into that account also exists.
 
 Publishing the Gmail rather than the domain address is a deliberate simplification, not an
 oversight. It costs some credibility with the priority-2 audience, a Khoury administrator or a
-funder, for whom `hello@nuaisafety.com` reads as an organisation and `nuaisafety@gmail.com` reads
+funder, for whom `hello@nuaisafety.com` reads as an organization and `nuaisafety@gmail.com` reads
 as four students. Worth revisiting once the forward is confirmed delivering. `EMAIL` in
 `src/config.ts` is the single source of truth, so it is a one-line change either way.
 Total cost $0. Porkbun gives 20 forwards free on the domain; Option 2 on the Email page, not the
@@ -216,11 +216,11 @@ path is one person is not actually shared.
   year even for a single seat. Two benefits are real: Google Groups as a proper mailing list with
   an archive, and a send limit around 2,000 recipients a day against free Gmail's ~500. Neither
   binds at four members. The timing argument is the stronger one: CSI recognition opens at the
-  end of the fall term, and recognised student organisations often get university-provided
+  end of the fall term, and recognized student organizations often get university-provided
   infrastructure, so committing to an annual contract weeks beforehand is premature. Revisit in
   January once recognition is settled and the mailing list has actual scale.
 - **Google for Nonprofits** (the free Workspace tier). Requires registered nonprofit status. The
-  group is neither a registered nonprofit nor a recognised student organisation. Do not attempt
+  group is neither a registered nonprofit nor a recognized student organization. Do not attempt
   to route around this; it is the same category of claim `FACTS.md` exists to prevent.
 - **Porkbun hosted inbox, $3/month.** The only option that allows replying *as*
   `hello@nuaisafety.com`, since free forwarding is receive-only and Gmail's "Send mail as"
@@ -318,7 +318,7 @@ That is the harness, not the site. Screenshot without it.
 }
 ```
 
-One accent colour, used for links, the primary button, and nothing else. No gradients.
+One accent color, used for links, the primary button, and nothing else. No gradients.
 
 Type: one serif for headings or one grotesque for everything. System stack is fine and loads
 instantly. If you want a webfont, one weight pair only.

@@ -2,9 +2,9 @@
 import Base from '../layouts/Base.astro';
 
 /**
- * Programme and bio are deliberately omitted until all four founders have supplied
+ * Program and bio are deliberately omitted until all four founders have supplied
  * them. A page where two people have bios and two do not reads as though two did
- * not reply. Fill in `programme` and `bio` for all four and the markup below picks
+ * not reply. Fill in `program` and `bio` for all four and the markup below picks
  * them up. See FACTS.md, "Needs resolving before launch".
  */
 const founders = [
@@ -12,9 +12,9 @@ const founders = [
   { name: 'Soham Padia' },
   { name: 'Rohan Kathuria' },
   { name: 'Julia Rowniewski' },
-] as { name: string; programme?: string; bio?: string }[];
+] as { name: string; program?: string; bio?: string }[];
 
-const complete = founders.every((p) => p.programme);
+const complete = founders.every((p) => p.program);
 ---
 <Base title="Team" description="The four founders of NU AI Safety, and the faculty researcher advising the group.">
   <section class="band">
@@ -26,7 +26,7 @@ const complete = founders.every((p) => p.programme);
         {founders.map((person) => (
           <li class="person">
             <span class="name">{person.name}</span>
-            {complete && person.programme && <span class="role">{person.programme}</span>}
+            {complete && person.program && <span class="role">{person.program}</span>}
             {complete && person.bio && <p>{person.bio}</p>}
           </li>
         ))}

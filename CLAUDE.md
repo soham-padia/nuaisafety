@@ -5,7 +5,7 @@ group at Northeastern University. Domain is already acquired: **nuaisafety.com**
 
 Read `FACTS.md` before writing any copy. It lists what is true, what is not yet true, and
 what must not be claimed. Getting this wrong creates a real institutional problem, because the
-group is not yet a recognised student organisation.
+group is not yet a recognized student organization.
 
 Copy lives in `CONTENT.md`. Use it close to verbatim. Do not invent testimonials, event
 history, member counts, or partnerships.
@@ -55,7 +55,7 @@ The full list is in `FACTS.md` and you should read it. These four are the ones t
 real institutional damage, so they are repeated here where they are always in context:
 
 - **Never** "official", "Northeastern's", or any phrasing implying recognition. The group is not
-  a recognised student organisation and cannot be until CSI forms open at the end of fall term.
+  a recognized student organization and cannot be until CSI forms open at the end of fall term.
 - **Never** "our faculty advisor" for David Bau. He *has agreed to advise the group and give
   guest talks*. The formal advisor request is pending. Use that wording.
 - **Never** render Harvard AISST, MIT MAIA or BU AISA as a partner logo grid. They *offered
@@ -91,7 +91,7 @@ than no page. Add it when there is a first event with a date.
 ## Design direction
 
 Look at MIT MAIA, Harvard AISST, Princeton PAIA and BU AISA for register. The pattern that
-works: restrained, text-forward, one accent colour, generous whitespace, no stock photography
+works: restrained, text-forward, one accent color, generous whitespace, no stock photography
 of robots or glowing brains. Serious rather than slick.
 
 Northeastern red is `#C8102E`. Use it as an accent only.

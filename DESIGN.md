@@ -35,7 +35,7 @@ The only one of the four that leads with the reader's trajectory rather than the
   get involved, start by joining our mailing list"*), and footer.
 - Abstract SVG only: orbital patterns, beam lines. No photography, no robots.
 - Alternating banded section backgrounds to segment a long homepage.
-- Partner organisation logo grid.
+- Partner organization logo grid.
 
 **Take:** mailing list three times, abstract SVG over photography, alternating bands.
 **Cannot take:** the partner logo grid. Harvard AISST and MIT MAIA *offered help*; BU AISA is a

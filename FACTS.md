@@ -10,7 +10,7 @@ evidence behind them. If you are working on copy, read the local one.
 
 ## The hard constraint
 
-**The group is not a recognised student organisation.** Recognition is not possible until the
+**The group is not a recognized student organization.** Recognition is not possible until the
 Center for Student Involvement opens its forms at the end of the fall term. External funding
 does not change that.
 
@@ -43,9 +43,9 @@ does not change that.
 - **NDIF as a group resource.** It is Bau's NSF-funded project. Soham's access is personal. The
   group does not run it and cannot promise access to members.
 - **Khoury or CSI endorsement.**
-- **Funding, fellowship or programme support from any organisation.** Applications, enquiries
+- **Funding, fellowship or program support from any organization.** Applications, enquiries
   and open conversations are none of those things and must never be written as partnership.
-- **Mentorship from any individual or organisation.** Introductions and single calls are not
+- **Mentorship from any individual or organization.** Introductions and single calls are not
   mentorship.
 - **A named speaker, before that person has agreed to be named.** Agreeing to present to a
   student reading group is not agreeing to appear on a public website as a scheduled speaker.
@@ -59,7 +59,7 @@ are deliberately shorter than they could be for exactly this reason.
 
 ## Open
 
-- Programme, department and year for all four founders. `/team` shows names only until then.
+- Program, department and year for all four founders. `/team` shows names only until then.
 - A date for the first session. This is the largest gap on the site.
 
 ## The honest differentiator
@@ -74,6 +74,6 @@ put Northeastern students next to it.**
 Say that plainly and it is both true and unique. Every generic mission statement about "reducing
 risks from advanced AI" is interchangeable with fifteen other sites.
 
-Second, from Elaine: Northeastern's co-op programme and its unusually broad student body mean
+Second, from Elaine: Northeastern's co-op program and its unusually broad student body mean
 this group can be the connective tissue for people who would find the Harvard and MIT groups
 intimidating. That is a real position and it is worth stating.

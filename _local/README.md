@@ -11,7 +11,7 @@ What belongs here:
 - `FACTS.md`, the full internal record: sourcing, quotes from email, Slack and
   WhatsApp, assessments of where each relationship actually stands, and the
   things that are not yet true. The committed `FACTS.md` at the repo root is a
-  sanitised subset with the rules but not the evidence.
+  sanitized subset with the rules but not the evidence.
 - Correspondence, meeting notes, application drafts.
 - Anything naming a person in a way they have not agreed to publish.
 
