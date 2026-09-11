@@ -31,6 +31,7 @@ Documents, and what each is authoritative for:
 | `_local/FACTS.md` | The real record: sourcing, quotes, where each relationship stands. Gitignored. |
 | `CONTENT.md` | Page copy, near-verbatim |
 | `DESIGN.md` | Layout and visual register, with the peer-site research behind it |
+| `WEB-CRAFT.md` | Transferable technique: method, motion rules, a11y, and the traps that cost time |
 | `BUILD.md` | Stack, palette, deploy, DNS, pre-launch checklist |
 | `CLAUDE.md` | Scope, priorities |
 
