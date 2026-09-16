@@ -334,6 +334,7 @@ strong { font-weight: 660; }
 .foot a { color: var(--muted); text-decoration: none; }
 .foot a:hover { color: var(--ink); text-decoration: underline; }
 .foot .fine { margin-block-start: 2rem; max-width: var(--measure); font-size: 0.875rem; }
+.foot .credit { margin-block-start: 0.6rem; font-size: 0.8125rem; color: var(--muted); }
 
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation: none !important; transition: none !important; }
