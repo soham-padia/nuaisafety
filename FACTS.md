@@ -39,6 +39,9 @@ does not change that.
 - **A date for anything.** No event has happened and none is scheduled. No dates, no photos,
   no "past events". "This fall" for Bau's talks is fine, since that is the context he agreed in.
   A specific date is not, until one is actually agreed with him.
+- **Any executive core member.** Recruitment opens September 2026. Until someone has accepted
+  a role, the site says we are recruiting, never that we have one. The same applies to the
+  areas listed as needing an owner: listing them is a plan, not a staffed team.
 - **Any member beyond the four founders.**
 - **NDIF as a group resource.** It is Bau's NSF-funded project. Soham's access is personal. The
   group does not run it and cannot promise access to members.

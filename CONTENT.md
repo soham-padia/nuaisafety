@@ -16,9 +16,11 @@ external researchers use to look inside large models. We are the first student g
 put Northeastern students next to that work. AI safety needs people from policy, security,
 biology and design as much as it needs engineers.
 
-`[ Join the mailing list ]`  `[ What we do ]`
+`[ Join the mailing list ]`  `[ Join the executive group ]`
 
-**Three blocks under the hero**
+`What we are planning to do →`
+
+**Three blocks under the hero** (section heading: What we are planning to do)
 
 **Reading group**
 A weekly session working through AI safety fundamentals, then papers. No prerequisites, and no
@@ -80,7 +82,7 @@ population of local students mean the people who should be thinking about this a
 computer science. AI safety is not only a machine learning problem. It runs through biology,
 policy, security and psychology, and Northeastern has all of them.
 
-## What we do
+## What we are planning to do
 
 - **A weekly reading group.** AI safety fundamentals first, then current papers.
 - **Guest talks from researchers**, starting with Professor Bau's lab this fall.
@@ -91,7 +93,13 @@ policy, security and psychology, and Northeastern has all of them.
 ## Where we are
 
 Founded September 2026 by four students, the first AI safety and interpretability group at
-Northeastern. Professor Bau has agreed to advise the group and give guest talks. We are working through Northeastern's student organization process, which does not
+Northeastern. Professor Bau has agreed to advise the group and give guest talks, and researchers
+from his lab have agreed to present their own work. Nothing has happened yet: no sessions, no
+members beyond the founders.
+
+This term we are recruiting an executive core and running the first talks. The reading cohort
+starts in January, because a cohort should start when a term does and because we would rather
+build the curriculum properly than rush it. We are working through Northeastern's student organization process, which does not
 open until the end of the fall term, so for now we are a group of people doing the work rather
 than an official organization. We would rather start than wait.
 
@@ -101,37 +109,58 @@ than an official organization. We would rather start than wait.
 
 # Join
 
-## Who this is for
+Two ways in. One is a few hours a week and real ownership. The other is an email address.
 
-Anyone at Northeastern. Undergraduate, master's, PhD, any program.
+## Join the executive group
+
+We are recruiting a small executive core for this year. This is the group that makes things
+happen: booking rooms, running sessions, reaching out to speakers, building the curriculum,
+keeping the list warm.
+
+> We are selecting on reliability, not credentials. A group fails when its core does not show up,
+> not when it lacks a star.
+
+If you do what you said you would do, in the week you said you would do it, you are who we are
+looking for. You do not need an AI safety background, a CS degree, or prior machine learning.
+Several of the areas that need owning are not technical at all.
+
+Areas we need owned this year: the reading cohort, events and socials, outreach and comms, and
+connections to other groups and funders.
+
+**What it involves.** A few hours a week, one planning meeting, and owning one area through the
+year. Co-op semesters are expected and we will work around them.
+
+`[ Join the executive group ]`
+
+## Join the mailing list
+
+Anyone at Northeastern. Undergraduate, master's, PhD, any program. No commitment beyond an email
+address.
 
 **No prerequisites.** You do not need machine learning experience, a CS degree, or prior
-knowledge of AI safety. The reading group starts from the beginning.
+knowledge of AI safety. The reading cohort starts from the beginning.
 
 We particularly want people from policy, law, security, biology, psychology, design and business.
 AI safety is not only a machine learning problem, and a room that is only engineers will miss
 things.
 
+Around ninety minutes a week once the reading cohort starts in January. Before then, talks and
+socials you can turn up to without signing up for anything.
+
+Sign up below and we will email you before the first session with a time, a place, and what to
+read. No application, no interview.
+
+`[ Join the mailing list ]`
+
 If you are technical and already know this field, there is a version of this group that is about
 producing research rather than reading it, and we want you for that. `[ Email us directly ]`
 instead of only joining the list, and we will talk about what you want to work on.
 
-## Time commitment
-
-Around ninety minutes a week for the reading group. More if you want to run a project. Less is
-fine, and co-op semesters are expected and normal.
-
-## How to join
-
-Sign up below. We will email you before the first session with a time, a place, and what to read.
-That is the whole process. No application, no interview.
-
-`[ SIGNUP FORM ]`
-
 ## What happens next
 
-The honest answer: the first reading group, then a guest talk, then whatever the people who show
-up want to build. If you have an opinion about that, joining now is when it counts.
+The honest answer: an executive core, then the first talks this term, then the reading cohort in
+January, then whatever the people who show up want to build. If you have an opinion about that,
+joining now is when it counts.
 
 ---
 
@@ -172,9 +201,5 @@ National Deep Inference Fabric.
 `[GROUP EMAIL, e.g. hello@nuaisafety.com]`
 
 For anything: joining, speaking, collaborating, or asking what we are.
-
-**Other groups.** If you organise an AI safety group elsewhere and want to coordinate, please
-get in touch. We are already talking to BU AI Safety, and we are new enough to be useful to
-other new groups.
 
 `[ DISCORD OR SLACK LINK, IF ONE EXISTS ]`

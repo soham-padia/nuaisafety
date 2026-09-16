@@ -8,6 +8,13 @@
  */
 export const SIGNUP_URL: string | null = 'https://forms.gle/dVHJ8bix2VHz8PUk9';
 
+/**
+ * EXEC_URL - the form for executive core applications.
+ *   Same pattern as SIGNUP_URL: while it is null, the CTA falls back to email,
+ *   so the button is never broken. Paste the form link to switch it on.
+ */
+export const EXEC_URL: string | null = null;
+
 export const EMAIL = 'nuaisafety@gmail.com';
 
 export const SITE = {
@@ -21,6 +28,7 @@ export const SITE = {
 
 /** Where a signup CTA should point right now. */
 export const signupHref = SIGNUP_URL ?? '/join';
+export const execHref = EXEC_URL ?? '/join';
 
 export const NAV = [
   { href: '/about', label: 'About' },

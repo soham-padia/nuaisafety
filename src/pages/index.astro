@@ -1,6 +1,7 @@
 ---
 import Base from '../layouts/Base.astro';
 import Signup from '../components/Signup.astro';
+import ExecCTA from '../components/ExecCTA.astro';
 import { Image } from 'astro:assets';
 import heroCollage from '../assets/hero-collage.png';
 ---
@@ -18,8 +19,11 @@ import heroCollage from '../assets/hero-collage.png';
         </p>
         <div class="actions">
           <Signup />
-          <a class="btn btn--ghost" href="/about">What we do</a>
+          <ExecCTA />
         </div>
+        <p class="hero__more">
+          <a class="arrow" href="/about"><span>What we are planning to do</span></a>
+        </p>
       </div>
       <figure class="hero__art">
         <Image
@@ -37,7 +41,7 @@ import heroCollage from '../assets/hero-collage.png';
 
   <section class="band band--wash" aria-labelledby="what">
     <div class="wrap">
-      <h2 id="what" class="sr-only-heading">What we do</h2>
+      <h2 id="what" class="sr-only-heading">What we are planning to do</h2>
       <div class="grid grid--3">
         <div class="block">
           <h3>Reading group</h3>
@@ -98,6 +102,7 @@ import heroCollage from '../assets/hero-collage.png';
       </p>
       <div class="actions">
         <Signup />
+        <ExecCTA />
       </div>
     </div>
   </section>
