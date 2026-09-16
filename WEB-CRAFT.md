@@ -254,6 +254,19 @@ screenshot rendered at roughly 500px and was cropped to 390, which looks exactly
 like horizontal overflow. Use real device emulation, for instance Lighthouse's
 `final-screenshot` audit, to check small screens.
 
+**A modifier class that loses to its base class is a source-order bug, not a
+specificity one.** `.btn--sm { display: none }` placed earlier in the stylesheet
+than `.btn { display: inline-block }` never applies, because both are single
+class selectors and the element carries both. Modifiers must come after the base
+rule. This failed silently: the CSS read correctly, compiled correctly, and did
+nothing.
+
+**Verify a media query at a real viewport, in an iframe.** Set an `<iframe>` to
+the width you care about and screenshot the parent. Media queries evaluate
+against the frame, so it is a true test. Lighthouse's `final-screenshot` was
+showing the element as visible and so was Chrome's `--window-size`, and only the
+iframe told me whether the rule or the tooling was at fault. It was the rule.
+
 **A multi-line string in an HTML attribute is a bug, not formatting.** Wrapping a
 long `alt` across lines in source puts a newline and a run of spaces inside the
 attribute value.

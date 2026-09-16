@@ -20,24 +20,33 @@ const complete = founders.every((p) => p.program);
   <section class="band">
     <div class="wrap prose">
       <h1>Team</h1>
-      <p class="lede">Four founders, September 2026.</p>
 
-      <ul class="people">
-        {founders.map((person) => (
-          <li class="person">
-            <span class="name">{person.name}</span>
-            {complete && person.program && <span class="role">{person.program}</span>}
-            {complete && person.bio && <p>{person.bio}</p>}
-          </li>
-        ))}
-      </ul>
+      <div class="row">
+        <h2>Founders</h2>
+        <div>
+          <p>Four founders, September 2026.</p>
+          <ul class="people">
+            {founders.map((person) => (
+              <li class="person">
+                <span class="name">{person.name}</span>
+                {complete && person.program && <span class="role">{person.program}</span>}
+                {complete && person.bio && <p>{person.bio}</p>}
+              </li>
+            ))}
+          </ul>
+        </div>
+      </div>
 
-      <h2>Faculty</h2>
-      <p>
-        <strong>Professor David Bau</strong>, Khoury College, has agreed to advise the group and
-        to give guest talks from his lab this fall. His lab works on interpretability of large
-        models and runs NDIF, the National Deep Inference Fabric.
-      </p>
+      <div class="row">
+        <h2>Faculty</h2>
+        <div>
+          <p>
+            <strong>Professor David Bau</strong>, Khoury College, has agreed to advise the group
+            and to give guest talks from his lab this fall. His lab works on interpretability of
+            large models and runs NDIF, the National Deep Inference Fabric.
+          </p>
+        </div>
+      </div>
     </div>
   </section>
 </Base>

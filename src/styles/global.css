@@ -104,6 +104,40 @@ strong { font-weight: 660; }
 .prose > * { max-width: var(--measure); }
 .prose h2 { margin-block: 2.25em 0.6em; }
 .prose h2:first-child { margin-block-start: 0; }
+
+/* Heading spine. On wide screens each section's heading sits in a left column
+   and its body in a right one, so the page uses its width and the headings form
+   a scannable spine down the page. Collapses to one column below 62rem, which
+   is the width at which two columns stop being worth the narrower measure.
+
+   The row has to opt out of .prose > * max-width, or the grid would be capped
+   at the prose measure and the columns would have nowhere to go. */
+.prose .row { max-width: none; display: grid; gap: 0.5rem; }
+.prose .row + .row { margin-block-start: 2.75rem; }
+.prose .row > :is(h2, h3) { margin-block: 0; max-width: none; }
+.prose .row > div > * { max-width: 40rem; }
+.prose .row > div > :first-child { margin-block-start: 0; }
+.prose .row > div > :last-child { margin-block-end: 0; }
+
+/* The h1 is outside the grid, so it needs its own separation from the first row. */
+.prose > h1 { margin-block-end: 2.25rem; }
+
+@media (min-width: 62rem) {
+  .prose .row {
+    grid-template-columns: 16rem minmax(0, 1fr);
+    gap: 3rem;
+    align-items: start;
+  }
+  .prose .row + .row { margin-block-start: 3.5rem; }
+
+  /* A spine heading is a label, not a banner. At display size it wrapped to
+     three lines in a 16rem column and shouted over the text it introduces. */
+  .prose .row > :is(h2, h3) {
+    font-size: var(--step-1);
+    letter-spacing: -0.014em;
+    padding-block-start: 0.28rem;
+  }
+}
 .prose h3 { margin-block: 1.9em 0.45em; }
 .prose ul { padding-inline-start: 1.15rem; max-width: var(--measure); }
 .prose li { margin-block-end: 0.6em; }
@@ -158,19 +192,6 @@ strong { font-weight: 660; }
   align-items: center;
   gap: 0.6rem 1.25rem;
 }
-
-/* Compact CTA that sits in the masthead on every page. The hero CTA is only
-   visible before the first scroll; this one is not.
-
-   Hidden on phones: there it would sit directly above the hero's own primary
-   button, duplicating it and pushing the headline below the fold. */
-.btn--sm {
-  display: none;
-  padding: 0.42em 0.85em;
-  font-size: 0.875rem;
-  border-radius: 3px;
-}
-@media (min-width: 46rem) { .btn--sm { display: inline-block; } }
 
 .nav { display: flex; flex-wrap: wrap; gap: 0.35rem 1.15rem; }
 .nav a {
@@ -228,6 +249,23 @@ strong { font-weight: 660; }
   box-shadow: 0 3px 10px rgb(20 22 26 / 0.08);
 }
 
+/* Compact CTA in the masthead, on every page. The hero CTA is only visible
+   before the first scroll; this one is not.
+
+   Hidden on phones, where it would sit directly above the hero's own primary
+   button, duplicate it, and push the headline below the fold.
+
+   This has to come AFTER .btn in the stylesheet. Both are single-class
+   selectors, so .btn { display: inline-block } would otherwise win on source
+   order and the element carries both classes. */
+.btn--sm {
+  display: none;
+  padding: 0.42em 0.85em;
+  font-size: 0.875rem;
+  border-radius: 3px;
+}
+@media (min-width: 46rem) { .btn--sm { display: inline-block; } }
+
 /* Trailing arrow on text CTAs, borrowed from UChicago. See DESIGN.md */
 .arrow { text-decoration: none; font-weight: 620; }
 .arrow span { text-decoration: underline; text-underline-offset: 0.18em; }
@@ -281,10 +319,11 @@ strong { font-weight: 660; }
 
 /* --- perceptron diagram -----------------------------------------------------
    Geometry comes from scripts/perceptron.py. Everything visual is here, so the
-   weights can be tuned without regenerating hundreds of coordinates. Lengths are user
-   units in a 1000 wide viewBox, which is about 0.52 CSS pixels at hero size. */
+   weights and the timing can be tuned without regenerating hundreds of
+   coordinates. Lengths are user units in a 1000 wide viewBox, which is about
+   0.52 CSS pixels at hero size. */
 
-.perceptron { overflow: visible; }
+.perceptron { overflow: visible; --p: 0s; }
 
 /* Cells are zero-length subpaths, so the stroke width is the cell diameter. */
 .perceptron path, .perceptron ellipse, .perceptron rect { fill: none; }
@@ -343,23 +382,42 @@ strong { font-weight: 660; }
   .perceptron .pt-label--foot text { font-size: 27px; }
 }
 
-/* Activation sweeps left to right: sensory, projection, association, response.
-   Behind prefers-reduced-motion, which leaves it in the fired state. */
-.perceptron .fire, .perceptron .fan { opacity: 1; }
+/* Without motion the diagram settles on one complete input, the letter X
+   firing R1. The other two inputs only exist inside the cycle. It is also the
+   frame the Open Graph card is rendered from, so it has to stand alone. */
+.perceptron .pat { opacity: 0; }
+.perceptron .pat--x { opacity: 1; }
 
+/* Three inputs in turn, five seconds each. Inside a slot the activation
+   crosses the stages left to right in one second, sensory, projection,
+   association, fan, response; the complete pattern then holds for two seconds,
+   which is the part the reader is meant to register; then it drains in the same
+   order, which reads as the impulse moving downstream; then a third of a second
+   of quiet mosaic before the next input arrives. Only opacity animates, so this
+   composites and costs no layout. */
 @media (prefers-reduced-motion: no-preference) {
-  .perceptron .fire, .perceptron .fan { opacity: 0; animation: pt-fire 6s ease-in-out infinite; }
-  .perceptron .st1 { animation-delay: 0s; }
-  .perceptron .st2 { animation-delay: 0.5s; }
-  .perceptron .st3 { animation-delay: 1s; }
-  .perceptron .fan { animation-delay: 1.3s; }
-  .perceptron .st4 { animation-delay: 1.6s; }
+  .perceptron .pat { opacity: 1; }
+  .perceptron .pat--x { --p: 0s; }
+  .perceptron .pat--o { --p: 5s; }
+  .perceptron .pat--t { --p: 10s; }
+
+  .perceptron .fire, .perceptron .fan {
+    opacity: 0;
+    animation: pt-fire 15s ease-in-out infinite;
+  }
+  .perceptron .st1 { animation-delay: calc(var(--p) + 0s); }
+  .perceptron .st2 { animation-delay: calc(var(--p) + 0.3s); }
+  .perceptron .st3 { animation-delay: calc(var(--p) + 0.6s); }
+  .perceptron .fan { animation-delay: calc(var(--p) + 0.8s); }
+  .perceptron .st4 { animation-delay: calc(var(--p) + 1s); }
 }
 
+/* One layer is lit for 3.7s of the 15s cycle. The five stage delays stagger it
+   into a wave that arrives and then leaves in the same order. */
 @keyframes pt-fire {
-  0%, 3%    { opacity: 0; }
-  11%, 68%  { opacity: 1; }
-  82%, 100% { opacity: 0; }
+  0%, 1%      { opacity: 0; }
+  3%, 23%     { opacity: 1; }
+  25.5%, 100% { opacity: 0; }
 }
 
 /* --- three-up grid --------------------------------------------------------- */
