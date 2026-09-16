@@ -2,8 +2,7 @@
 import Base from '../layouts/Base.astro';
 import Signup from '../components/Signup.astro';
 import ExecCTA from '../components/ExecCTA.astro';
-import { Image } from 'astro:assets';
-import heroCollage from '../assets/hero-collage.png';
+import Perceptron from '../components/Perceptron.astro';
 ---
 <Base>
   <section class="hero">
@@ -26,15 +25,11 @@ import heroCollage from '../assets/hero-collage.png';
         </p>
       </div>
       <figure class="hero__art">
-        <Image
-          src={heroCollage}
-          alt="A husky in profile against a red circle, layered with campus buildings, a river skyline, and a node-and-edge network diagram."
-          width={420}
-          densities={[1, 2]}
-          format="webp"
-          quality={72}
-          loading="eager"
-        />
+        <Perceptron />
+        <figcaption>
+          Organization of a perceptron, after Rosenblatt, 1958. Red marks the cells active for
+          the input.
+        </figcaption>
       </figure>
     </div>
   </section>

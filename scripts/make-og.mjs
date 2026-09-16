@@ -4,13 +4,17 @@
  * hero art or the tagline; the output is committed so the build stays dependency
  * free.
  *
+ * The art comes from brand/perceptron.png, a raster of the hero diagram, so the
+ * card and the site show the same thing. Regenerate that raster from the live
+ * component rather than maintaining a second copy of the drawing.
+ *
  * Text is drawn as SVG and rasterised by sharp, so it uses a system sans rather
  * than the exact stack in global.css. Close enough for a share card.
  */
 import sharp from 'sharp';
 
 const W = 1200, H = 630, PAD = 64;
-const ART = 470;
+const ART_W = 560;   // the diagram is landscape, not square
 
 const card = `<svg xmlns="http://www.w3.org/2000/svg" width="${W}" height="${H}">
   <rect width="${W}" height="${H}" fill="#ffffff"/>
@@ -25,19 +29,18 @@ const card = `<svg xmlns="http://www.w3.org/2000/svg" width="${W}" height="${H}"
   </g>
 </svg>`;
 
-const art = await sharp('src/assets/hero-collage.png')
-  .resize(ART, ART, { fit: 'cover' })
-  .composite([{
-    input: Buffer.from(
-      `<svg width="${ART}" height="${ART}"><rect width="${ART}" height="${ART}" rx="20" fill="#fff"/></svg>`
-    ),
-    blend: 'dest-in',
-  }])
+const art = await sharp('brand/perceptron.png')
+  .resize({ width: ART_W })
   .png()
   .toBuffer();
+const artMeta = await sharp(art).metadata();
 
 await sharp(Buffer.from(card))
-  .composite([{ input: art, left: W - ART - PAD, top: (H - ART) / 2 }])
+  .composite([{
+    input: art,
+    left: W - ART_W - PAD,
+    top: Math.round((H - artMeta.height) / 2),
+  }])
   .png({ compressionLevel: 9 })
   .toFile('public/og.png');
 

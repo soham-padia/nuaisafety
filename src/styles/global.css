@@ -18,8 +18,8 @@
   --sans: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto,
           "Helvetica Neue", Arial, sans-serif;
 
-  --measure: 34rem;   /* prose column */
-  --page:    64rem;   /* outer container */
+  --measure: 36rem;   /* prose column, the readable line length */
+  --page:    78rem;   /* outer container */
   --gutter:  1.5rem;
 
   --step-0: 1.0625rem;
@@ -247,7 +247,7 @@ strong { font-weight: 660; }
   max-width: 22ch;
   text-wrap: balance;
 }
-.hero p { font-size: var(--step-1); line-height: 1.55; max-width: 44ch; }
+.hero p { font-size: var(--step-1); line-height: 1.55; max-width: 48ch; }
 .hero .actions { margin-block-start: 2rem; }
 .hero__more { margin-block: 1.1rem 0; font-size: var(--step-0); }
 
@@ -260,20 +260,107 @@ strong { font-weight: 660; }
 
 .hero__art { margin: 0; }
 
-/* :is(img, svg) so the frame survives swapping the raster art back out for
-   vector art later. Border-radius plus a hairline makes the artwork's own
-   off-white background read as a deliberate panel rather than a mismatch
-   against --paper. */
+/* The hero art is a diagram, not a photograph, so it takes no panel and no
+   border. A rule around a line drawing only ever fights the line drawing. */
 .hero__art :is(img, svg) {
   display: block;
   width: 100%;
-  max-width: 340px;
+  max-width: 420px;
   height: auto;
   margin-inline: auto;
-  border-radius: 14px;
-  border: 1px solid var(--rule);
 }
-@media (min-width: 56rem) { .hero__art :is(img, svg) { max-width: 420px; } }
+@media (min-width: 56rem) { .hero__art :is(img, svg) { max-width: 520px; } }
+
+.hero__art figcaption {
+  max-width: 520px;
+  margin: 1rem auto 0;
+  font-size: 0.8125rem;
+  line-height: 1.45;
+  color: var(--muted);
+}
+
+/* --- perceptron diagram -----------------------------------------------------
+   Geometry comes from scripts/perceptron.py. Everything visual is here, so the
+   weights can be tuned without regenerating hundreds of coordinates. Lengths are user
+   units in a 1000 wide viewBox, which is about 0.52 CSS pixels at hero size. */
+
+.perceptron { overflow: visible; }
+
+/* Cells are zero-length subpaths, so the stroke width is the cell diameter. */
+.perceptron path, .perceptron ellipse, .perceptron rect { fill: none; }
+.perceptron .pt-cell, .perceptron .pt-hot {
+  stroke-linecap: round;
+  stroke-width: 6.6;
+}
+.perceptron .pt-cell { stroke: var(--muted); opacity: 0.45; }
+.perceptron .pt-hot  { stroke: var(--accent); stroke-width: 7.6; }
+.perceptron .pt-hot--a  { stroke-width: 8.6; }
+
+/* Outlines of the two mosaics, the association plane and the response units. */
+.perceptron .pt-body :is(ellipse, rect, path) {
+  fill: var(--paper);
+  stroke: var(--ink);
+  stroke-width: 3;
+}
+
+.perceptron .pt-wire { stroke: var(--muted); stroke-width: 2; opacity: 0.85; }
+.perceptron .pt-head {
+  stroke: var(--muted);
+  stroke-width: 2.2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.perceptron .pt-head--foot { opacity: 0.85; }
+.perceptron .fan { stroke: var(--accent); stroke-width: 1.9; stroke-opacity: 0.8; }
+.perceptron .pt-lit {
+  fill: var(--accent);
+  fill-opacity: 0.12;
+  stroke: var(--accent);
+  stroke-width: 3;
+}
+.perceptron .pt-out {
+  stroke: var(--accent);
+  stroke-width: 3;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.perceptron text {
+  font-family: var(--sans);
+  text-anchor: middle;
+  fill: var(--muted);
+  font-size: 23px;
+  letter-spacing: 0.01em;
+}
+.perceptron .pt-unit { fill: var(--ink); font-weight: 560; }
+.perceptron .pt-sub { font-size: 0.68em; }
+.perceptron .pt-label--foot text { font-size: 21px; }
+
+/* On a phone the diagram is only about 360 CSS pixels wide, so the labels are
+   sized in user units against the viewport rather than left to shrink. */
+@media (max-width: 55.999rem) {
+  .perceptron text { font-size: 30px; }
+  .perceptron .pt-label--foot text { font-size: 27px; }
+}
+
+/* Activation sweeps left to right: sensory, projection, association, response.
+   Behind prefers-reduced-motion, which leaves it in the fired state. */
+.perceptron .fire, .perceptron .fan { opacity: 1; }
+
+@media (prefers-reduced-motion: no-preference) {
+  .perceptron .fire, .perceptron .fan { opacity: 0; animation: pt-fire 6s ease-in-out infinite; }
+  .perceptron .st1 { animation-delay: 0s; }
+  .perceptron .st2 { animation-delay: 0.5s; }
+  .perceptron .st3 { animation-delay: 1s; }
+  .perceptron .fan { animation-delay: 1.3s; }
+  .perceptron .st4 { animation-delay: 1.6s; }
+}
+
+@keyframes pt-fire {
+  0%, 3%    { opacity: 0; }
+  11%, 68%  { opacity: 1; }
+  82%, 100% { opacity: 0; }
+}
 
 /* --- three-up grid --------------------------------------------------------- */
 
@@ -282,7 +369,7 @@ strong { font-weight: 660; }
   gap: 2.25rem 2.5rem;
   grid-template-columns: 1fr;
 }
-@media (min-width: 46rem) { .grid--3 { grid-template-columns: repeat(3, 1fr); } }
+@media (min-width: 46rem) { .grid--3 { grid-template-columns: repeat(3, 1fr); gap: 2.5rem 3.5rem; } }
 @media (min-width: 40rem) { .grid--2 { grid-template-columns: repeat(2, 1fr); } }
 
 .block h3 { margin-block-end: 0.4rem; }
