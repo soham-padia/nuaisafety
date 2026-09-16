@@ -152,6 +152,26 @@ strong { font-weight: 660; }
   vertical-align: 0.06em;
 }
 
+.masthead__right {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.6rem 1.25rem;
+}
+
+/* Compact CTA that sits in the masthead on every page. The hero CTA is only
+   visible before the first scroll; this one is not.
+
+   Hidden on phones: there it would sit directly above the hero's own primary
+   button, duplicating it and pushing the headline below the fold. */
+.btn--sm {
+  display: none;
+  padding: 0.42em 0.85em;
+  font-size: 0.875rem;
+  border-radius: 3px;
+}
+@media (min-width: 46rem) { .btn--sm { display: inline-block; } }
+
 .nav { display: flex; flex-wrap: wrap; gap: 0.35rem 1.15rem; }
 .nav a {
   color: var(--muted);

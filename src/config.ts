@@ -13,7 +13,7 @@ export const SIGNUP_URL: string | null = 'https://forms.gle/dVHJ8bix2VHz8PUk9';
  *   Same pattern as SIGNUP_URL: while it is null, the CTA falls back to email,
  *   so the button is never broken. Paste the form link to switch it on.
  */
-export const EXEC_URL: string | null = null;
+export const EXEC_URL: string | null = 'https://forms.gle/sPaXtz6pq6hDyQBq8';
 
 export const EMAIL = 'nuaisafety@gmail.com';
 

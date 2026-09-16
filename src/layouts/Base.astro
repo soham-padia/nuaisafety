@@ -1,6 +1,6 @@
 ---
 import '../styles/global.css';
-import { SITE, NAV, EMAIL } from '../config';
+import { SITE, NAV, EMAIL, signupHref } from '../config';
 
 interface Props {
   title?: string;
@@ -43,13 +43,16 @@ const ogImage = new URL('/og.png', Astro.site);
     <header class="masthead">
       <div class="wrap">
         <a class="wordmark" href="/">NU AI Safety</a>
-        <nav class="nav" aria-label="Primary">
-          {NAV.map((item) => (
-            <a href={item.href} aria-current={path === item.href ? 'page' : undefined}>
-              {item.label}
-            </a>
-          ))}
-        </nav>
+        <div class="masthead__right">
+          <nav class="nav" aria-label="Primary">
+            {NAV.map((item) => (
+              <a href={item.href} aria-current={path === item.href ? 'page' : undefined}>
+                {item.label}
+              </a>
+            ))}
+          </nav>
+          <a class="btn btn--sm" href={signupHref}>Join the list →</a>
+        </div>
       </div>
     </header>
 
