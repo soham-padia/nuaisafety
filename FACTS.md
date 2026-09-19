@@ -54,6 +54,35 @@ does not change that.
   student reading group is not agreeing to appear on a public website as a scheduled speaker.
   Get explicit consent for the second thing, separately from the first.
 
+## Northeastern and Khoury branding rules
+
+From Khoury's Brand Guidelines for Student Clubs and Organizations, 24-25. These are the
+university's rules, not ours, and they apply whether or not we are recognized.
+
+Applies now:
+
+- **Student groups may create their own logo and branding.** Ours is a text wordmark and an
+  accent dot, which is allowed.
+- **Never incorporate a Northeastern or Khoury trademark, logo or icon.** Not in the site, the
+  share card, a flyer, swag, or a slide.
+- **Never use "NEU."** It is an outdated abbreviation and is explicitly prohibited. We use
+  "NU AI Safety" everywhere, and it must stay that way.
+- All student logos remain subject to review by the Northeastern marketing team.
+
+Applies only if Khoury sponsors the group in any capacity, which it does not today:
+
+- **"Khoury" must appear in the title or description** of the website or social handle. It does
+  not have to be in the group's name.
+- **Approval is required from the Khoury brand team** for a new logo or brand, swag and
+  merchandise, **web updates**, and any use of the Khoury College name.
+
+That web-updates clause is worth weighing before asking Khoury for sponsorship. This site ships
+several times a day. Sponsorship would put those changes behind a brand approval step.
+
+Using `#c8102e`, which is Northeastern red, is not prohibited. The guidelines say a group may
+choose its own fonts and colors, and a color is not a logo or an icon. It is a judgment call
+rather than a rule.
+
 ## Never invent
 
 Events, dates, member counts, testimonials, partnerships, or a bio for someone whose bio you
