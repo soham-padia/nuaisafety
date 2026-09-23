@@ -168,7 +168,7 @@ joining now is when it counts.
 
 # Team
 
-Four founders, September 2026.
+Founding members, September 2026.
 
 **Elaine Ly** `[DEGREE AND PROGRAM, ASK HER]`
 `[BIO, ASK HER]` Previously co-president of Women in CyberSecurity and president of the Society
@@ -186,11 +186,8 @@ its name says.
 **Julia Rowniewski** `[PROGRAM, ASK]`
 `[BIO, ASK]`
 
-## Faculty
-
-**Professor David Bau**, Khoury College, has agreed to advise the group and to give guest talks
-from his lab this fall. His lab works on interpretability of large models and runs NDIF, the
-National Deep Inference Fabric.
+**Eric Shi** `[PROGRAM, ASK]`
+`[BIO, ASK]`
 
 ---
 

@@ -19,7 +19,7 @@ export const EMAIL = 'nuaisafety@gmail.com';
 
 export const SITE = {
   name: 'NU AI Safety',
-  tagline: 'AI safety and interpretability at Northeastern.',
+  tagline: 'AI Safety at Northeastern',
   description:
     'A student-led AI safety and interpretability group at Northeastern University. ' +
     'Weekly reading group, guest talks, and support for members’ own research. ' +
@@ -31,8 +31,7 @@ export const signupHref = SIGNUP_URL ?? '/join';
 export const execHref = EXEC_URL ?? '/join';
 
 export const NAV = [
-  { href: '/about', label: 'About' },
   { href: '/join', label: 'Join' },
   { href: '/team', label: 'Team' },
-  { href: '/contact', label: 'Contact' },
+  { href: '/about', label: 'About' },
 ];

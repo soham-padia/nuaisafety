@@ -2,51 +2,47 @@
 import Base from '../layouts/Base.astro';
 
 /**
- * Program and bio are deliberately omitted until all four founders have supplied
+ * Program and bio are deliberately omitted until every founding member has supplied
  * them. A page where two people have bios and two do not reads as though two did
- * not reply. Fill in `program` and `bio` for all four and the markup below picks
- * them up. See FACTS.md, "Needs resolving before launch".
+ * not reply. Fill in `program` and `bio` for everyone and the markup below picks
+ * them up. See FACTS.md, "Open".
+ *
+ * `linkedin` takes a full profile URL. The icon only renders for people who have one.
  */
 const founders = [
   { name: 'Elaine Ly' },
   { name: 'Soham Padia' },
   { name: 'Rohan Kathuria' },
   { name: 'Julia Rowniewski' },
-] as { name: string; program?: string; bio?: string }[];
+  { name: 'Eric Shi' },
+] as { name: string; program?: string; bio?: string; linkedin?: string }[];
 
 const complete = founders.every((p) => p.program);
 ---
-<Base title="Team" description="The four founders of NU AI Safety, and the faculty researcher advising the group.">
+<Base title="Team" description="The founding members of NU AI Safety.">
   <section class="band">
     <div class="wrap prose">
       <h1>Team</h1>
+      <p class="lede">Founding members, September 2026.</p>
 
-      <div class="row">
-        <h2>Founders</h2>
-        <div>
-          <p>Four founders, September 2026.</p>
-          <ul class="people">
-            {founders.map((person) => (
-              <li class="person">
-                <span class="name">{person.name}</span>
-                {complete && person.program && <span class="role">{person.program}</span>}
-                {complete && person.bio && <p>{person.bio}</p>}
-              </li>
-            ))}
-          </ul>
-        </div>
-      </div>
-
-      <div class="row">
-        <h2>Faculty</h2>
-        <div>
-          <p>
-            <strong>Professor David Bau</strong>, Khoury College, has agreed to advise the group
-            and to give guest talks from his lab this fall. His lab works on interpretability of
-            large models and runs NDIF, the National Deep Inference Fabric.
-          </p>
-        </div>
-      </div>
+      <ul class="people">
+        {founders.map((person) => (
+          <li class="person">
+            <span class="name">
+              {person.name}
+              {person.linkedin && (
+                <a class="linkedin" href={person.linkedin} aria-label={`${person.name} on LinkedIn`}>
+                  <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true" focusable="false">
+                    <path fill="currentColor" d="M20.45 20.45h-3.56v-5.57c0-1.33-.02-3.04-1.85-3.04-1.85 0-2.14 1.45-2.14 2.94v5.67H9.34V9h3.42v1.56h.05c.48-.9 1.64-1.85 3.37-1.85 3.6 0 4.27 2.37 4.27 5.46v6.28zM5.34 7.43a2.07 2.07 0 1 1 0-4.14 2.07 2.07 0 0 1 0 4.14zM7.12 20.45H3.56V9h3.56v11.45zM22.22 0H1.77C.79 0 0 .77 0 1.73v20.54C0 23.23.79 24 1.77 24h20.45c.98 0 1.78-.77 1.78-1.73V1.73C24 .77 23.2 0 22.22 0z"/>
+                  </svg>
+                </a>
+              )}
+            </span>
+            {complete && person.program && <span class="role">{person.program}</span>}
+            {complete && person.bio && <p>{person.bio}</p>}
+          </li>
+        ))}
+      </ul>
     </div>
   </section>
 </Base>

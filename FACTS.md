@@ -42,7 +42,7 @@ does not change that.
 - **Any executive core member.** Recruitment opens September 2026. Until someone has accepted
   a role, the site says we are recruiting, never that we have one. The same applies to the
   areas listed as needing an owner: listing them is a plan, not a staffed team.
-- **Any member beyond the four founders.**
+- **Any member beyond the five founding members.**
 - **NDIF as a group resource.** It is Bau's NSF-funded project. Soham's access is personal. The
   group does not run it and cannot promise access to members.
 - **Khoury or CSI endorsement.**
@@ -91,7 +91,7 @@ are deliberately shorter than they could be for exactly this reason.
 
 ## Open
 
-- Program, department and year for all four founders. `/team` shows names only until then.
+- Program, department and year for all five founding members. `/team` shows names only until then.
 - A date for the first session. This is the largest gap on the site.
 
 ## The honest differentiator

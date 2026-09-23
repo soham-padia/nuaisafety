@@ -1,6 +1,6 @@
 ---
 import '../styles/global.css';
-import { SITE, NAV, EMAIL, signupHref } from '../config';
+import { SITE, NAV, EMAIL } from '../config';
 
 interface Props {
   title?: string;
@@ -43,16 +43,13 @@ const ogImage = new URL('/og.png', Astro.site);
     <header class="masthead">
       <div class="wrap">
         <a class="wordmark" href="/">NU AI Safety</a>
-        <div class="masthead__right">
-          <nav class="nav" aria-label="Primary">
-            {NAV.map((item) => (
-              <a href={item.href} aria-current={path === item.href ? 'page' : undefined}>
-                {item.label}
-              </a>
-            ))}
-          </nav>
-          <a class="btn btn--sm" href={signupHref}>Join the list →</a>
-        </div>
+        <nav class="nav" aria-label="Primary">
+          {NAV.map((item) => (
+            <a href={item.href} aria-current={path === item.href ? 'page' : undefined}>
+              {item.label}
+            </a>
+          ))}
+        </nav>
       </div>
     </header>
 
@@ -62,31 +59,18 @@ const ogImage = new URL('/og.png', Astro.site);
 
     <footer class="foot">
       <div class="wrap">
-        <div class="cols">
-          <div>
-            <h2>NU AI Safety</h2>
-            <p>
-              A student-led AI safety and interpretability group at Northeastern.
-              Not a recognized student organization. We are working through that process.
-            </p>
-          </div>
-          <div>
-            <h2>Pages</h2>
-            <ul>
-              {NAV.map((item) => <li><a href={item.href}>{item.label}</a></li>)}
-            </ul>
-          </div>
-          <div>
-            <h2>Contact</h2>
-            <ul>
-              <li><a href={`mailto:${EMAIL}`}>{EMAIL}</a></li>
-            </ul>
-          </div>
+        <div class="foot__row">
+        <div>
+          <p>Northeastern's Student Led AI Safety Group</p>
+          <nav class="foot__nav" aria-label="Footer">
+            {NAV.map((item) => <a href={item.href}>{item.label}</a>)}
+          </nav>
         </div>
-        <p class="fine">
-          Run by students. Not affiliated with, endorsed by, or speaking for Northeastern
-          University or Khoury College.
+        <p>
+          <span class="foot__label">Contact</span>
+          <a href={`mailto:${EMAIL}`}>{EMAIL}</a>
         </p>
+        </div>
         <p class="credit">
           Built by <a href="https://soham-padia.github.io">Soham Padia</a>.
           <a href="https://github.com/soham-padia/nuaisafety">Source on GitHub</a>.

@@ -139,7 +139,7 @@ strong { font-weight: 660; }
   }
 }
 .prose h3 { margin-block: 1.9em 0.45em; }
-.prose ul { padding-inline-start: 1.15rem; max-width: var(--measure); }
+.prose :is(ul, ol) { padding-inline-start: 1.15rem; max-width: var(--measure); }
 .prose li { margin-block-end: 0.6em; }
 
 .lede { font-size: var(--step-1); color: var(--muted); line-height: 1.5; }
@@ -210,6 +210,7 @@ strong { font-weight: 660; }
 /* --- buttons --------------------------------------------------------------- */
 
 .actions { display: flex; flex-wrap: wrap; gap: 0.75rem 1rem; align-items: center; }
+.prose .actions + p { margin-block-start: 2rem; }
 
 .btn {
   display: inline-block;
@@ -430,8 +431,9 @@ strong { font-weight: 660; }
 @media (min-width: 46rem) { .grid--3 { grid-template-columns: repeat(3, 1fr); gap: 2.5rem 3.5rem; } }
 @media (min-width: 40rem) { .grid--2 { grid-template-columns: repeat(2, 1fr); } }
 
-.block h3 { margin-block-end: 0.4rem; }
+.block h3 { margin-block: 0 0.4rem; }
 .block p { color: var(--muted); margin-block-end: 0.5rem; max-width: 40ch; }
+.prose .block p { max-width: none; }
 .block .meta {
   display: block;
   font-size: 0.8125rem;
@@ -453,6 +455,8 @@ strong { font-weight: 660; }
 .person .name { font-weight: 640; font-size: var(--step-1); letter-spacing: -0.014em; }
 .person .role { color: var(--muted); display: block; font-size: 0.9375rem; }
 .person p { margin-block: 0.4rem 0; color: var(--muted); }
+.person .linkedin { display: inline-flex; vertical-align: -0.1em; margin-inline-start: 0.5rem; padding: 0.25rem; color: var(--muted); }
+.person .linkedin:hover, .person .linkedin:focus-visible { color: var(--accent); }
 
 /* --- callout --------------------------------------------------------------- */
 
@@ -471,14 +475,25 @@ strong { font-weight: 660; }
   color: var(--muted);
   font-size: 0.9375rem;
 }
-.foot .cols { display: grid; gap: 1.5rem; grid-template-columns: 1fr; }
-@media (min-width: 40rem) { .foot .cols { grid-template-columns: 2fr 1fr 1fr; } }
-.foot h2 { font-size: 0.8125rem; letter-spacing: 0.055em; text-transform: uppercase; margin-block-end: 0.5rem; }
-.foot ul { list-style: none; padding: 0; margin: 0; }
-.foot li { margin-block-end: 0.3rem; }
+/* Blurb with the nav under it on the left, email on the right. Stacks on a phone. */
+.foot__row {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 1.25rem 2.5rem;
+}
+.foot p { margin: 0; }
+.foot__label {
+  font-size: 0.8125rem;
+  letter-spacing: 0.055em;
+  text-transform: uppercase;
+  font-weight: 620;
+  margin-inline-end: 0.5rem;
+}
+.foot__nav { display: flex; flex-wrap: wrap; gap: 0.35rem 1.15rem; margin-block-start: 0.5rem; }
 .foot a { color: var(--muted); text-decoration: none; }
 .foot a:hover { color: var(--ink); text-decoration: underline; }
-.foot .fine { margin-block-start: 2rem; max-width: var(--measure); font-size: 0.875rem; }
 .foot .credit { margin-block-start: 0.6rem; font-size: 0.8125rem; color: var(--muted); }
 
 @media (prefers-reduced-motion: reduce) {

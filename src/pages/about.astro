@@ -1,89 +1,58 @@
 ---
 import Base from '../layouts/Base.astro';
-import Signup from '../components/Signup.astro';
 ---
 <Base title="About" description="Why a new AI safety group at Northeastern, and what is specific to Northeastern.">
   <section class="band">
     <div class="wrap prose">
       <h1>About</h1>
 
+      <p>
+        AI systems are becoming more capable and dangerous at a rate faster than we can control
+        them. Models are now able to
+        <a href="https://openai.com/index/hugging-face-incident-and-the-road-ahead/">hack into other companies</a>,
+        <a href="https://www.anthropic.com/research/agentic-misalignment">blackmail users</a>,
+        <a href="https://arxiv.org/abs/2505.23836">know when they’re being evaluated</a>, and
+        even be
+        <a href="https://www.anthropic.com/news/disrupting-AI-espionage">used en masse for cyber espionage</a>.
+      </p>
+      <p>
+        We want to give Northeastern students the tools and knowledge they need to help align and
+        govern AI systems.
+      </p>
+
       <div class="row">
-        <h2>Why this group</h2>
+        <h2>Why Northeastern?</h2>
         <div>
         <p>
-          AI capabilities are moving faster than our ability to see what these systems are doing
-          internally, and they are being deployed into high-stakes settings anyway. Closing that
-          gap is one of the few problems that is both urgent and still tractable by people at the
-          start of their careers.
+          Boston is home to one of the most active AI safety communities in the world. Student
+          groups at Harvard, MIT and BU have built serious programs, and organizations such as the
+          Cambridge Boston Alignment Initiative support research across the region. Few places
+          offer students closer proximity to the field.
         </p>
         <p>
-          Boston already has strong AI safety groups at Harvard, MIT and BU. We are not here
-          because Northeastern is missing one. We are here because of something specific to
-          Northeastern.
+          <strong>Northeastern is no stranger to AI safety research.</strong> Professor David Bau’s
+          lab in Khoury College is among the leading groups in mechanistic interpretability, the
+          study of how neural networks work internally. It also leads the
+          <a href="https://ndif.us">National Deep Inference Fabric (NDIF)</a>, an NSF-funded
+          project that lets researchers across the country study the inner workings of AI models.
+        </p>
+        <p>
+          We want to take advantage of Northeastern’s incredibly diverse programs to bring
+          together students from every college to help align AI systems.
         </p>
         </div>
       </div>
       <div class="row">
-        <h2>What is specific to Northeastern</h2>
-        <div>
-        <p>
-          Professor David Bau’s lab is here, and so is NDIF, the National Deep Inference Fabric.
-          A significant amount of the tooling that researchers elsewhere use to study model
-          internals is built on this campus. Until now there has been no student group positioned
-          to connect Northeastern students to it.
-        </p>
-        <p>
-          Northeastern is also unusually broad. The range of disciplines and a large population of
-          local students mean the people who should be thinking about this are not only in computer
-          science. AI safety is not only a machine learning problem. It runs through biology,
-          policy, security and psychology, and Northeastern has all of them.
-        </p>
-        <p>
-          Then there is co-op. Six months at a time inside industry, government and security work
-          is a route into evaluations, operations and policy that does not require becoming a
-          researcher first, and it is the part of this university the other Boston groups cannot
-          copy. Most of the work in this field is not research, and most of our students already
-          spend half their degree somewhere that work happens.
-        </p>
-        </div>
-      </div>
-      <div class="row">
-        <h2>What we are planning to do</h2>
+        <h2>What we do</h2>
         <div>
         <ul>
-          <li><strong>A weekly reading group.</strong> AI safety fundamentals first, then current papers.</li>
-          <li><strong>Guest talks from researchers</strong>, starting with Professor Bau’s lab this fall.</li>
-          <li><strong>Support for members’ own projects.</strong> Compute, feedback, and people to argue with.</li>
-          <li>
-            <strong>Connections outward.</strong> We are coordinating with BU AI Safety, and Harvard
-            AISST and MIT MAIA have both offered help.
-          </li>
+          <li>A weekly reading group covering everything from fundamentals to current research</li>
+          <li>Guest talks from researchers across the Boston area and beyond</li>
+          <li>Support and compute for research projects</li>
+          <li>Connection to the AI safety community</li>
         </ul>
         </div>
       </div>
-      <div class="row">
-        <h2>Where we are</h2>
-        <div>
-        <p>
-          Founded September 2026 by four students, the first AI safety and interpretability group
-          at Northeastern. Professor Bau has agreed to advise the group and give guest talks, and
-          researchers from his lab have agreed to present their own work. Nothing has happened yet:
-          no sessions, no members beyond the founders.
-        </p>
-        <p>
-          This term we are recruiting an executive core and running the first talks. The reading
-          cohort starts in January, because a cohort should start when a term does and because we
-          would rather build the curriculum properly than rush it.
-        </p>
-        <p>
-          We are working through Northeastern’s student organization process, which does not open
-          until the end of the fall term, so for now we are a group of people doing the work rather
-          than an official organization. We would rather start than wait.
-        </p>
-        </div>
-      </div>
-
-      <p>If that sounds like something you want to be early to, <Signup variant="inline" /></p>
     </div>
   </section>
 </Base>
