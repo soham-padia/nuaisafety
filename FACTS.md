@@ -43,7 +43,9 @@ does it apply, and does it cover the website.
 - **Five co-founders**: Elaine Ly, Soham Padia, Rohan Kathuria, Julia Rowniewski, Eric Shi.
   The Khoury registration officially lists two, Elaine Ly and Soham Padia, because they filed
   it. Both are true: five is the group's own account, two is the official record. The site says
-  five. Do not give anyone a role title; the group has deliberately not assigned any.
+  five. **Everyone carries the same title, "Exec Board Member".** The group has deliberately
+  not differentiated roles yet, so no one is a president, chair or lead. A uniform title is
+  not a hierarchy; a differentiated one would be a claim the group has not made.
 - **Club advisor: Cailyn Ellard**, `c.ellard@northeastern.edu`, named on the Khoury club page.
   A Khoury advisor, separate from David Bau and separate again from the faculty advisor CSI
   will require later.
