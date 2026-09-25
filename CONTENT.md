@@ -89,8 +89,14 @@ people have agreed to anything, so every entry uses their own words for their ow
 links to their own page. See `_local/northeastern-ai-safety.md` for the full index, the
 sources, and the ones that were checked and left off.
 
+Split into two tabs, Professors and Organizations. Both panels are server-rendered visible
+under their own headings, so with no JavaScript the section reads as two ordinary labelled
+sections with everything present.
+
 Interpretability is not the only relevant work on campus. A partial list, described the way
 each person or group describes it:
+
+### Professors
 
 - [Weiyan Shi](https://wyshi.github.io/) lists AI safety among her research interests, and
   holds two Open Philanthropy grants on emergent misalignment and on evaluating agent safety.
@@ -98,13 +104,27 @@ each person or group describes it:
   learning and trustworthy AI, and on security architectures for language model agents.
 - [Malihe Alikhani](https://www.khoury.northeastern.edu/people/malihe-alikhani/) works on AI
   ethics and is a visiting fellow at the Brookings Institution.
+- [Sina Fazelpour](https://sinafazelpour.com/), appointed jointly in Khoury and in philosophy,
+  works on the epistemology, ethics and governance of knowledge practices in AI-mediated
+  societies, including recent papers on disagreement in AI design, evaluation and alignment.
+
+### Organizations
+
+- [NDIF](https://ndif.us/), described above, calls itself a nationwide research computing
+  fabric for transparent and reproducible experiments on the largest open AI systems. It is
+  Professor Bau's NSF-funded project, not something this group runs.
 - Northeastern is one of four universities in
   [CRAIG](https://cssh.northeastern.edu/research/projects/center-for-responsible-ai-and-governance/),
-  an NSF center on responsible AI and governance, and the Institute for Experiential AI runs a
+  an NSF center on responsible AI and governance.
+- The [Institute for Experiential AI](https://ai.northeastern.edu/) names responsible AI as one
+  of its four research areas and runs a
   [Responsible AI Practice](https://ai.northeastern.edu/responsible-ai-practice).
+- The [Ethics Institute](https://cssh.northeastern.edu/ethics/) lists AI, information and data
+  ethics as a primary research area.
 
-None of them are involved with this group and we are not claiming them. They are here because a
-student deciding where to spend four years should know the work is going on around them.
+None of these people or groups are involved with this group and we are not claiming them. They
+are here because a student deciding where to spend four years should know the work is going on
+around them.
 
 ## What we are planning to do
 

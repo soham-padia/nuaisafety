@@ -560,6 +560,69 @@ strong { font-weight: 660; }
 .person__links a { display: inline-flex; color: var(--muted); }
 .person__links a:hover { color: var(--accent); }
 
+/* --- tabs ------------------------------------------------------------------
+   Progressive enhancement, not a CSS radio hack. Both panels ship visible under
+   real headings; the inline script in /about adds the tablist roles and hides
+   all but the selected panel. Everything below is written so that the no-JS
+   state is the correct one and the .tabs--js state is the addition.
+
+   The selected tab is marked by an accent rule under it, not by colour alone,
+   and the weight is deliberately left alone: bolding the selected tab would
+   change its width and shove the next tab sideways on every switch. */
+
+.tabs { margin-block: 1.6rem 1.75rem; }
+
+/* The heading is the first child, and the script hides it rather than removing
+   it, so the element that actually leads the panel is the one after it. Both
+   need the .prose depth to outrank .prose ul. */
+.prose .tabs__panel > :first-child,
+.prose .tabs__panel > .tabs__heading + * { margin-block-start: 0; }
+.prose .tabs__panel > :last-child { margin-block-end: 0; }
+/* Only ever seen with no JavaScript. The script hides the heading, and a hidden
+   element's margins go with it, so the spacing below is the tablist's. */
+.prose .tabs__panel > .tabs__heading { margin-block: 0 0.8rem; }
+/* Only ever seen with no JavaScript, where the two panels stack. */
+.tabs__panel + .tabs__panel { margin-block-start: 2.25rem; }
+.tabs__panel[hidden] { display: none; }
+
+.tabs__list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0 1.6rem;
+  border-block-end: 1px solid var(--rule);
+  margin-block-end: 1.35rem;
+}
+
+.tabs__tab {
+  appearance: none;
+  background: none;
+  border: 0;
+  border-block-end: 2px solid transparent;
+  margin-block-end: -1px;          /* sit the tab rule on the list rule */
+  border-radius: 0;
+  font: inherit;
+  font-size: 0.9375rem;
+  line-height: 1.4;
+  color: var(--muted);
+  padding: 0.1rem 0 0.55rem;
+  cursor: pointer;
+  transition: color 160ms ease, border-color 160ms ease;
+}
+.tabs__tab:hover { color: var(--ink); }
+.tabs__tab[aria-selected="true"] {
+  color: var(--ink);
+  border-block-end-color: var(--accent);
+}
+
+/* The panel's resting state is visible, so a failed or skipped animation can
+   never strand it. The keyframe only supplies a start. */
+@media (prefers-reduced-motion: no-preference) {
+  .tabs--js .tabs__panel:not([hidden]) { animation: tab-in 200ms ease-out; }
+}
+@keyframes tab-in {
+  from { opacity: 0.25; transform: translateY(5px); }
+}
+
 /* --- callout --------------------------------------------------------------- */
 
 .callout {
