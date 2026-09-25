@@ -107,60 +107,65 @@ than an official organization. We would rather start than wait.
 
 ## `/join`
 
+Four cards plus a closing note. The two fellowships are a matched pair. The executive group and
+the mailing list sit in a separate band, because they are a different kind of commitment, not a
+third and fourth option of the same kind.
+
 # Join
 
-Two ways in. One is a few hours a week and real ownership. The other is an email address.
+Four ways in, from an email address to running part of the group. None of them needs a technical
+background or any prior knowledge of AI safety.
 
-## Join the executive group
+## Fellowships
 
-We are recruiting a small executive core for this year. This is the group that makes things
-happen: booking rooms, running sessions, reaching out to speakers, building the curriculum,
-keeping the list warm.
+**Technical Fellowship** · `JANUARY 2027 · WEEKLY, ABOUT 90 MINUTES`
 
-> We are selecting on reliability, not credentials. A group fails when its core does not show up,
-> not when it lacks a star.
+An introduction to the technical side of AI safety: how modern AI systems are trained, why
+aligning them is difficult, and current research in areas such as mechanistic interpretability.
 
-If you do what you said you would do, in the week you said you would do it, you are who we are
-looking for. You do not need an AI safety background, a CS degree, or prior machine learning.
-Several of the areas that need owning are not technical at all.
+No prerequisites, and no assumption you have done machine learning before.
 
-Areas we need owned this year: the reading cohort, events and socials, outreach and comms, and
-connections to other groups and funders.
+**Policy Fellowship** · `JANUARY 2027 · WEEKLY, ABOUT 90 MINUTES`
 
-**What it involves.** A few hours a week, one planning meeting, and owning one area through the
-year. Co-op semesters are expected and we will work around them.
+An introduction to AI governance: the risks posed by advanced AI, how governments and companies
+are responding, and what effective policy could look like. No technical background required.
+
+Neither fellowship carries a button. There is nothing to apply to until they start, and a button
+that only routes to the mailing list would be pretending otherwise.
+
+## Other ways in
+
+**Executive membership** · `RECRUITING NOW · A FEW HOURS A WEEK`
+
+We are selecting on reliability, not credentials. A group fails when its core does not show up,
+not when it lacks a star.
+
+We are recruiting a small executive core for this year: booking rooms, running sessions, reaching
+out to speakers, building the curriculum. A few hours a week, one planning meeting, and one area
+owned through the year. Co-op semesters are expected and we will work around them.
 
 `[ Join the executive group ]`
 
-## Join the mailing list
+**Mailing list** · `OPEN NOW · AN EMAIL ADDRESS`
 
-Anyone at Northeastern. Undergraduate, master's, PhD, any program. No commitment beyond an email
-address.
-
-**No prerequisites.** You do not need machine learning experience, a CS degree, or prior
-knowledge of AI safety. The reading cohort starts from the beginning.
+Anyone at Northeastern. Undergraduate, master's, PhD, any program, and no commitment beyond an
+email address.
 
 We particularly want people from policy, law, security, biology, psychology, design and business.
 AI safety is not only a machine learning problem, and a room that is only engineers will miss
 things.
 
-Around ninety minutes a week once the reading cohort starts in January. Before then, talks and
-socials you can turn up to without signing up for anything.
-
-Sign up below and we will email you before the first session with a time, a place, and what to
-read. No application, no interview.
-
 `[ Join the mailing list ]`
+
+## How to join
+
+The fellowships start in January 2027. Sign up for the mailing list and we will email you before
+they begin, with a time, a place, and what to read. No application, no interview. The executive
+group has its own short form.
 
 If you are technical and already know this field, there is a version of this group that is about
 producing research rather than reading it, and we want you for that. `[ Email us directly ]`
 instead of only joining the list, and we will talk about what you want to work on.
-
-## What happens next
-
-The honest answer: an executive core, then the first talks this term, then the reading cohort in
-January, then whatever the people who show up want to build. If you have an opinion about that,
-joining now is when it counts.
 
 ---
 
