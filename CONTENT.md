@@ -82,6 +82,30 @@ population of local students mean the people who should be thinking about this a
 computer science. AI safety is not only a machine learning problem. It runs through biology,
 policy, security and psychology, and Northeastern has all of them.
 
+## Who else is working on this here
+
+A landscape of the university, not a roster of people connected to the group. None of these
+people have agreed to anything, so every entry uses their own words for their own work and
+links to their own page. See `_local/northeastern-ai-safety.md` for the full index, the
+sources, and the ones that were checked and left off.
+
+Interpretability is not the only relevant work on campus. A partial list, described the way
+each person or group describes it:
+
+- [Weiyan Shi](https://wyshi.github.io/) lists AI safety among her research interests, and
+  holds two Open Philanthropy grants on emergent misalignment and on evaluating agent safety.
+- [Alina Oprea](https://www.khoury.northeastern.edu/home/alina/) works on adversarial machine
+  learning and trustworthy AI, and on security architectures for language model agents.
+- [Malihe Alikhani](https://www.khoury.northeastern.edu/people/malihe-alikhani/) works on AI
+  ethics and is a visiting fellow at the Brookings Institution.
+- Northeastern is one of four universities in
+  [CRAIG](https://cssh.northeastern.edu/research/projects/center-for-responsible-ai-and-governance/),
+  an NSF center on responsible AI and governance, and the Institute for Experiential AI runs a
+  [Responsible AI Practice](https://ai.northeastern.edu/responsible-ai-practice).
+
+None of them are involved with this group and we are not claiming them. They are here because a
+student deciding where to spend four years should know the work is going on around them.
+
 ## What we are planning to do
 
 - **A weekly reading group.** AI safety fundamentals first, then current papers.
