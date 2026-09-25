@@ -209,6 +209,23 @@ explicit `width`/`height`, and CLS of 0.
 Explicit dimensions are the entire reason CLS stayed at zero. An image without
 them reserves no space and shifts everything below it.
 
+### Designing for an image that does not exist yet
+
+A team page was needed before anyone had been photographed. The pattern that
+worked, and generalises to any grid waiting on assets:
+
+- Give the tile a fixed `aspect-ratio` and let the fallback and the real image
+  fill the same box. Adding a photograph then shifts nothing, so the photos can
+  arrive one person at a time without the grid going ragged halfway through.
+- Make the fallback typographic. An initials plate is honest about being a
+  placeholder. A stock portrait or a generated avatar is a small lie, and on a
+  page about who a group actually is, it is the worst possible thing to fake.
+- Keep the later work to one line of data. The path lives beside the name in
+  the config file, not in the template, so filling it in needs no markup.
+- Let the layout follow the data it has. The same grid runs five columns for a
+  name and a title and three once anyone has a bio, decided in the template
+  from the data rather than left as a trap for whoever writes the first bio.
+
 ### Open Graph cards
 
 Generate rather than hand-design, so the card regenerates when the brand changes.

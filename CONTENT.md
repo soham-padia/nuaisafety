@@ -46,7 +46,7 @@ exactly the gap we are built for.
 
 **Closing band**
 
-We are new. Four people, a faculty researcher who agreed to help, and no events yet. If you
+We are new. Five people, a faculty researcher who agreed to help, and no events yet. If you
 join now you are shaping what this is rather than attending something finished.
 
 We are not doing it alone. We are coordinating with BU AI Safety, and Harvard AISST and MIT MAIA
@@ -92,7 +92,7 @@ policy, security and psychology, and Northeastern has all of them.
 
 ## Where we are
 
-Founded September 2026 by four students, the first AI safety and interpretability group at
+Founded September 2026 by five students, the first AI safety and interpretability group at
 Northeastern. Professor Bau has agreed to advise the group and give guest talks, and researchers
 from his lab have agreed to present their own work. Nothing has happened yet: no sessions, no
 members beyond the founders.
@@ -173,7 +173,27 @@ instead of only joining the list, and we will talk about what you want to work o
 
 # Team
 
-Four founders, September 2026.
+## Exec board
+
+Five co-founders, September 2026. Everyone carries the same title. We have not divided the group
+into offices yet, and we would rather say that than invent a hierarchy.
+
+A grid of five: headshot, name, and the one title. No photograph has been taken yet, so every
+tile currently falls back to an initials plate in the wash. That is deliberate. A stock face or
+a generated avatar would be a small lie about a group that has neither.
+
+| | |
+|---|---|
+| Elaine Ly | Exec Board Member |
+| Soham Padia | Exec Board Member |
+| Rohan Kathuria | Exec Board Member |
+| Julia Rowniewski | Exec Board Member |
+| Eric Shi | Exec Board Member |
+
+Program, level, bio, email and LinkedIn are optional per person and none is known for anyone
+yet, so none of them renders. They are fields in `src/config.ts`, not copy to be written here
+until somebody supplies them. Do not invent any. What has been collected so far, and is still
+short of a full set:
 
 **Elaine Ly** `[DEGREE AND PROGRAM, ASK HER]`
 `[BIO, ASK HER]` Previously co-president of Women in CyberSecurity and president of the Society
@@ -189,6 +209,9 @@ its name says.
 `[BIO, ASK]`
 
 **Julia Rowniewski** `[PROGRAM, ASK]`
+`[BIO, ASK]`
+
+**Eric Shi** `[PROGRAM, ASK]`
 `[BIO, ASK]`
 
 ## Faculty

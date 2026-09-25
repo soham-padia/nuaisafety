@@ -90,7 +90,8 @@ This is the register `CLAUDE.md` asks for, independently confirmed.
 | CTA count in hero | Two, different in kind | BAISH |
 | CTA affordance | Trailing `→` on text links | UChicago |
 | Mailing list placement | Three times: hero, mid-body, footer | Cornell |
-| Imagery | Abstract SVG or nothing. No photography. | All four |
+| Imagery | Abstract SVG or nothing. No stock photography. | All four |
+| Headshots | The one exception, on `/team` only. Real people, never stock or generated. Initials plate until the real file exists. | MIT MAIA |
 | Type | One sans, system stack, weight for hierarchy | All four |
 | Accent `#c8102e` | Links, primary button, nothing else | UChicago, `BUILD.md` |
 | Section rhythm | Alternating `--paper` / `--wash` bands | Cornell |
@@ -99,10 +100,10 @@ This is the register `CLAUDE.md` asks for, independently confirmed.
 
 ### The move none of the four make
 
-All four are established enough to project confidence. We are four people with no events, and
+All four are established enough to project confidence. We are five people with no events, and
 `CONTENT.md` already has the right instinct:
 
-> We are new. Four people, a faculty researcher who agreed to help, and no events yet. If you
+> We are new. Five people, a faculty researcher who agreed to help, and no events yet. If you
 > join now you are shaping what this is rather than attending something finished.
 
 Treat that as the design's organising idea, not an apology buried at the bottom. Newness is the

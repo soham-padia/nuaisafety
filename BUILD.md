@@ -140,7 +140,7 @@ Until the form exists and its URL is set in `src/config.ts`, every signup CTA fa
 > A student-led AI safety and interpretability group at Northeastern. We will email you before
 > the first reading group with a time, a place, and what to read. No application, no interview.
 >
-> We are new: four people and no events yet. Joining now means shaping what this becomes.
+> We are new: five people and no events yet. Joining now means shaping what this becomes.
 
 Note the description repeats the honesty from `/join` rather than hiding it. Someone who fills
 this in should already know what they are joining.
@@ -192,7 +192,7 @@ A free `hello@nuaisafety.com` Porkbun forward into that account also exists.
 Publishing the Gmail rather than the domain address is a deliberate simplification, not an
 oversight. It costs some credibility with the priority-2 audience, a Khoury administrator or a
 funder, for whom `hello@nuaisafety.com` reads as an organization and `nuaisafety@gmail.com` reads
-as four students. Worth revisiting once the forward is confirmed delivering. `EMAIL` in
+as five students. Worth revisiting once the forward is confirmed delivering. `EMAIL` in
 `src/config.ts` is the single source of truth, so it is a one-line change either way.
 Total cost $0. Porkbun gives 20 forwards free on the domain; Option 2 on the Email page, not the
 $3/month hosted inbox.
@@ -206,7 +206,7 @@ If a Form ever has to move accounts later, transfer ownership via Drive rather t
 it: the file ID survives, so the `forms.gle` link and `SIGNUP_URL` stay valid. Recreating is only
 the cheaper option while the link is not yet public anywhere.
 
-Credentials and 2FA belong in a password manager vault all four founders can open, with account
+Credentials and 2FA belong in a password manager vault all five founders can open, with account
 recovery pointed at a founder other than the one who created it. A shared account whose recovery
 path is one person is not actually shared.
 
