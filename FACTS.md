@@ -8,21 +8,45 @@ quotes email, Slack and WhatsApp from people who never agreed to be published, a
 each relationship actually stands. This file is the public subset: the rules, without the
 evidence behind them. If you are working on copy, read the local one.
 
-## The hard constraint
+## Institutional standing
 
-**The group is not a recognized student organization.** Recognition is not possible until the
-Center for Student Involvement opens its forms at the end of the fall term. External funding
-does not change that.
+Two separate layers. Do not collapse them.
+
+**Khoury College club.** Listed in Khoury's Graduate Clubs and Organizations directory at
+`khoury.northeastern.edu/clubs_and_orgs/nu-ai-safety/`, with a Khoury club advisor, Cailyn
+Ellard. This is real and can be stated. Khoury is a college of Northeastern, so
+"Northeastern's student led AI safety group" is supported by it.
+
+**CSI recognition, at university level, has not happened.** The Center for Student Involvement
+confirmed on 2 September 2026 that recognition is not possible until its forms open at the end
+of the fall term, and that external funding does not change that.
+
+The rule that follows is narrow: **never claim CSI recognition, and never call the group an
+officially recognized student organization.** There is no obligation to disclaim it. Saying
+nothing about CSI is legitimate now that the Khoury standing is real; claiming a recognition
+that does not exist is not.
 
 | Do not write | Write instead |
 |---|---|
-| "Northeastern's official AI safety group" | "a student-led group at Northeastern" |
+| "officially recognized student organization" | nothing, or "a Khoury club" |
 | "Northeastern University AI Safety" as an institutional voice | "NU AI Safety", clearly student-run |
-| "in partnership with Khoury College" | nothing, this is pending |
+| "in partnership with Khoury College" | "a Khoury College club", which is what it is |
+
+**Khoury brand guidelines now likely apply.** Their student club guidance says a club sponsored
+by Khoury in any capacity must carry "Khoury" in the site's title or description, and needs
+brand team approval for a new logo, swag, use of the Khoury name, and web updates. A directory
+listing plus an assigned advisor is plausibly that capacity. Open question for Cailyn Ellard:
+does it apply, and does it cover the website.
 
 ## Safe to state
 
-- Four founding members: Elaine Ly, Soham Padia, Rohan Kathuria, Julia Rowniewski.
+- **Five co-founders**: Elaine Ly, Soham Padia, Rohan Kathuria, Julia Rowniewski, Eric Shi.
+  The Khoury registration officially lists two, Elaine Ly and Soham Padia, because they filed
+  it. Both are true: five is the group's own account, two is the official record. The site says
+  five. Do not give anyone a role title; the group has deliberately not assigned any.
+- **Club advisor: Cailyn Ellard**, `c.ellard@northeastern.edu`, named on the Khoury club page.
+  A Khoury advisor, separate from David Bau and separate again from the faculty advisor CSI
+  will require later.
 - **David Bau has agreed to advise the group and to give guest talks.** Use that wording.
   He is a leading interpretability researcher at Khoury and runs NDIF.
 - Coordinating with **BU AI Safety**. **Harvard AISST** and **MIT MAIA** have offered help.
@@ -42,7 +66,7 @@ does not change that.
 - **Any executive core member.** Recruitment opens September 2026. Until someone has accepted
   a role, the site says we are recruiting, never that we have one. The same applies to the
   areas listed as needing an owner: listing them is a plan, not a staffed team.
-- **Any member beyond the four founders.**
+- **Any member beyond the five co-founders.**
 - **NDIF as a group resource.** It is Bau's NSF-funded project. Soham's access is personal. The
   group does not run it and cannot promise access to members.
 - **Khoury or CSI endorsement.**
@@ -91,7 +115,10 @@ are deliberately shorter than they could be for exactly this reason.
 
 ## Open
 
-- Program, department and year for all four founders. `/team` shows names only until then.
+- Program, level, short bio, contact and headshot for all five co-founders. `/team` degrades
+  until each is supplied. Collect it with one form rather than chasing fields individually,
+  which has not worked for three weeks.
+- Whether the Khoury brand guidelines cover the website. Ask Cailyn Ellard.
 - A date for the first session. This is the largest gap on the site.
 
 ## The honest differentiator
