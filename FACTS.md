@@ -109,34 +109,12 @@ Using `#c8102e`, which is Northeastern red, is not prohibited. The guidelines sa
 choose its own fonts and colors, and a color is not a logo or an icon. It is a judgment call
 rather than a rule.
 
-## Knowingly accepted deviations
+## Deliberate copy choices
 
-Decided by Soham on 25 September 2026, after the conflicts below were set out. These are
-choices, not oversights. **Do not "correct" them back**, and do not extend them to other pages.
+Some wording on `/about` was chosen knowingly against rules elsewhere in this file. It is not an
+oversight. **Do not "correct" it back, and do not copy that phrasing onto other pages.** The
+reasoning is recorded privately in `_local/FACTS.md`; ask Soham if you need it.
 
-`/about` uses the heading **"What we do"** and this list:
-
-- "A weekly reading group covering everything from fundamentals to current research"
-- "Guest talks from researchers across the Boston area and beyond"
-- "Support and compute for research projects"
-- "Connection to the AI safety community"
-
-Three of those sit against rules elsewhere in this file:
-
-1. **"What we do"** states as current a set of activities that have not happened. Nothing has
-   run: no sessions, no members beyond the co-founders.
-2. **"across the Boston area and beyond"** implies speakers who have not agreed. Only David Bau
-   has agreed, and only to advise and to give guest talks.
-3. **"compute"** implies a resource the group can offer. NDIF is Bau's NSF-funded project,
-   Soham's access is personal, and the group cannot promise access to anyone.
-
-The `/about` status section, which said nothing had run yet, was removed at the same time.
-
-Consequence worth tracking: combined with dropping the CSI disclaimer, the "not affiliated with
-Northeastern" line and the home page's "We are new" band, the site no longer states anywhere
-that it has not yet run anything, while describing itself as Northeastern's student led AI
-safety group. If anyone asks about compute or about Boston-wide speakers, these three lines are
-why.
 
 ## Never invent
 
