@@ -60,27 +60,31 @@ have both offered help.
 
 # About
 
-## Why this group
+AI systems are becoming more capable faster than we can control them. Models have
+[broken into other companies](https://openai.com/index/hugging-face-incident-and-the-road-ahead/),
+[blackmailed users](https://www.anthropic.com/research/agentic-misalignment),
+[worked out when they are being evaluated](https://arxiv.org/abs/2505.23836), and been
+[used at scale for cyber espionage](https://www.anthropic.com/news/disrupting-AI-espionage).
 
-AI capabilities are moving faster than our ability to see what these systems are doing
-internally, and they are being deployed into high-stakes settings anyway. Closing that gap is
-one of the few problems that is both urgent and still tractable by people at the start of their
-careers.
+We want to give Northeastern students the tools and the knowledge to help align and govern
+these systems.
 
-Boston already has strong AI safety groups at Harvard, MIT and BU. We are not here because
-Northeastern is missing one. We are here because of something specific to Northeastern.
+## Why Northeastern?
 
-## What is specific to Northeastern
+Boston has one of the most active AI safety communities anywhere. Student groups at Harvard,
+MIT and BU have built serious programs, and organizations such as the Cambridge Boston
+Alignment Initiative support research across the region.
 
-Professor David Bau's lab is here, and so is NDIF, the National Deep Inference Fabric. A
-significant amount of the tooling that researchers elsewhere use to study model internals is
-built on this campus. Until now there has been no student group positioned to connect
-Northeastern students to it.
+**Northeastern is no stranger to AI safety research.** Professor David Bau's lab in Khoury
+College is among the leading groups in mechanistic interpretability, the study of how neural
+networks work internally, and it runs the [National Deep Inference Fabric](https://ndif.us),
+an NSF-funded project used across the country to study the insides of large models. Professor
+Bau has agreed to advise the group and to give guest talks from his lab this fall.
 
-Northeastern is also unusually broad. The co-op program, the range of disciplines, and a large
-population of local students mean the people who should be thinking about this are not only in
-computer science. AI safety is not only a machine learning problem. It runs through biology,
-policy, security and psychology, and Northeastern has all of them.
+Northeastern is also unusually broad, and we want students from every college. Then there is
+co-op: six months at a time inside industry, government and security work is a route into
+evaluations, operations and policy that does not require becoming a researcher, and no other
+Boston group can copy it.
 
 ## Who else is working on this here
 
@@ -128,7 +132,7 @@ around them.
 
 ## What we are planning to do
 
-- **A weekly reading group.** AI safety fundamentals first, then current papers.
+- **Technical and policy fellowships**, weekly, starting January 2027. No prerequisites.
 - **Guest talks from researchers**, starting with Professor Bau's lab this fall.
 - **Support for members' own projects.** Compute, feedback, and people to argue with.
 - **Connections outward.** We are coordinating with BU AI Safety, and Harvard AISST and MIT MAIA
@@ -136,16 +140,12 @@ around them.
 
 ## Where we are
 
-Founded September 2026 by five students, the first AI safety and interpretability group at
-Northeastern. Professor Bau has agreed to advise the group and give guest talks, and researchers
-from his lab have agreed to present their own work. Nothing has happened yet: no sessions, no
-members beyond the founders.
+Founded in September 2026 by five co-founders, the first AI safety and interpretability group
+at Northeastern and a club in Khoury College. Nothing has run yet: no sessions, no members
+beyond the five of us. This term we are recruiting an executive core and running the first
+talks, and the fellowships start in January 2027.
 
-This term we are recruiting an executive core and running the first talks. The reading cohort
-starts in January, because a cohort should start when a term does and because we would rather
-build the curriculum properly than rush it. We are working through Northeastern's student organization process, which does not
-open until the end of the fall term, so for now we are a group of people doing the work rather
-than an official organization. We would rather start than wait.
+If that sounds like something you want to be early to, `[ Join the mailing list ]`
 
 ---
 
