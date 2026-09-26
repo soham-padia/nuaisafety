@@ -11,10 +11,9 @@ Use close to verbatim. `[BRACKETS]` mark decisions that need a human answer firs
 # NU AI Safety
 ### AI safety and interpretability at Northeastern.
 
-Northeastern hosts David Bau's interpretability lab and NDIF, the infrastructure a lot of
-external researchers use to look inside large models. We are the first student group built to
-put Northeastern students next to that work. AI safety needs people from policy, security,
-biology and design as much as it needs engineers.
+We are a student-led group preparing Northeastern students to help align and govern advanced
+AI systems. We will run technical and policy fellowships, host talks from researchers, and
+support student research.
 
 `[ Join the mailing list ]`  `[ Join the executive group ]`
 
@@ -22,17 +21,16 @@ biology and design as much as it needs engineers.
 
 **Three blocks under the hero** (section heading: What we are planning to do)
 
-**Reading group**
-A weekly session working through AI safety fundamentals, then papers. No prerequisites, and no
-assumption you have done machine learning before.
+**Fellowships**
+Weekly reading groups on the technical and policy sides of AI safety, from the fundamentals to
+current research.
 
 **Guest talks**
-Professor David Bau has agreed to give guest talks from his lab this fall. Interpretability
-research, from the people doing it, on campus.
+Talks from researchers in AI safety and interpretability.
 
 **Research**
-The goal is members producing work, not just reading about it. If you want to run something,
-we would rather help you run it than talk you out of it.
+Support for members pursuing their own AI safety research, with feedback and collaboration from
+other members.
 
 **Who this is for**
 
