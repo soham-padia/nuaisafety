@@ -44,11 +44,9 @@ exactly the gap we are built for.
 
 **Closing band**
 
-We are new. Five people, a faculty researcher who agreed to help, and no events yet. If you
-join now you are shaping what this is rather than attending something finished.
+## Join us
 
-We are not doing it alone. We are coordinating with BU AI Safety, and Harvard AISST and MIT MAIA
-have both offered help.
+Fellowships start in January 2027. Learn more `[ here ]`.
 
 `[ Join the mailing list ]`
 
