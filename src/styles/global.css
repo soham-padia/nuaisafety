@@ -648,6 +648,36 @@ strong { font-weight: 660; }
 .foot a { color: var(--muted); text-decoration: none; }
 .foot a:hover { color: var(--ink); text-decoration: underline; }
 .foot .fine { margin-block-start: 2rem; max-width: var(--measure); font-size: 0.875rem; }
+/* One row: who we are and the nav on the left, contact and social on the right.
+   Replaces a three column block that repeated the nav and carried two
+   disclaimers the group no longer makes. */
+.foot__row {
+  display: grid;
+  gap: 1.5rem;
+  align-items: start;
+}
+@media (min-width: 46rem) {
+  .foot__row { grid-template-columns: 1fr auto; gap: 3rem; }
+  .foot__contact { text-align: right; }
+}
+
+.foot__name { margin-block-end: 0.55rem; max-width: none; color: var(--ink); }
+
+.foot__nav { display: flex; flex-wrap: wrap; gap: 0.3rem 1.1rem; }
+
+.foot__contact p { margin-block-end: 0.35rem; max-width: none; }
+.foot__contact p:last-child { margin-block-end: 0; }
+.foot__contact a + a { margin-inline-start: 0.9rem; }
+
+.foot__label {
+  display: block;
+  font-size: 0.75rem;
+  letter-spacing: 0.055em;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin-block-end: 0.15rem;
+}
+
 .foot .credit { margin-block-start: 0.6rem; font-size: 0.8125rem; color: var(--muted); }
 
 @media (prefers-reduced-motion: reduce) {

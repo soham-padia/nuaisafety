@@ -36,6 +36,14 @@ export const SITE = {
 export const signupHref = SIGNUP_URL ?? '/join';
 export const execHref = EXEC_URL ?? '/join';
 
+/**
+ * Social. Add Instagram here once the account exists; the footer renders only
+ * what is present, so an empty entry never leaves a dead link.
+ */
+export const SOCIAL = [
+  { href: 'https://www.linkedin.com/company/nu-ai-safety/', label: 'LinkedIn' },
+];
+
 export const NAV = [
   { href: '/about', label: 'About' },
   { href: '/join', label: 'Join' },

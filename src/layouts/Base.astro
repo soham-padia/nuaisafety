@@ -1,6 +1,6 @@
 ---
 import '../styles/global.css';
-import { SITE, NAV, EMAIL, signupHref } from '../config';
+import { SITE, NAV, SOCIAL, EMAIL, signupHref } from '../config';
 
 interface Props {
   title?: string;
@@ -62,34 +62,28 @@ const ogImage = new URL('/og.png', Astro.site);
 
     <footer class="foot">
       <div class="wrap">
-        <div class="cols">
+        <div class="foot__row">
           <div>
-            <h2>NU AI Safety</h2>
+            <p class="foot__name">Northeastern's Student Led AI Safety Group</p>
+            <nav class="foot__nav" aria-label="Footer">
+              {NAV.map((item) => <a href={item.href}>{item.label}</a>)}
+            </nav>
+          </div>
+          <div class="foot__contact">
             <p>
-              A student-led AI safety and interpretability group at Northeastern.
-              Not a recognized student organization. We are working through that process.
+              <span class="foot__label">Contact</span>
+              <a href={`mailto:${EMAIL}`}>{EMAIL}</a>
             </p>
-          </div>
-          <div>
-            <h2>Pages</h2>
-            <ul>
-              {NAV.map((item) => <li><a href={item.href}>{item.label}</a></li>)}
-            </ul>
-          </div>
-          <div>
-            <h2>Contact</h2>
-            <ul>
-              <li><a href={`mailto:${EMAIL}`}>{EMAIL}</a></li>
-            </ul>
+            {SOCIAL.length > 0 && (
+              <p>
+                <span class="foot__label">Follow</span>
+                {SOCIAL.map((s) => <a href={s.href}>{s.label}</a>)}
+              </p>
+            )}
           </div>
         </div>
-        <p class="fine">
-          Run by students. Not affiliated with, endorsed by, or speaking for Northeastern
-          University or Khoury College.
-        </p>
         <p class="credit">
-          Built by <a href="https://soham-padia.github.io">Soham Padia</a>.
-          <a href="https://github.com/soham-padia/nuaisafety">Source on GitHub</a>.
+          <a href="https://github.com/soham-padia/nuaisafety">Source on GitHub</a>
         </p>
       </div>
     </footer>
