@@ -33,5 +33,5 @@ export const execHref = EXEC_URL ?? '/join';
 export const NAV = [
   { href: '/join', label: 'Join' },
   { href: '/team', label: 'Team' },
-  { href: '/about', label: 'About' },
+  { href: '/resources', label: 'Resources' },
 ];

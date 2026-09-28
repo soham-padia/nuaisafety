@@ -10,7 +10,7 @@ const { variant = 'button', label = 'Join the executive group' } = Astro.props;
 const href = EXEC_URL ?? `mailto:${EMAIL}?subject=Executive%20group`;
 ---
 {variant === 'button' ? (
-  <a class="btn btn--alt" href={href}>{label} →</a>
+  <a class="btn" href={href}>{label} →</a>
 ) : (
   <a class="arrow" href={href}><span>{label}</span></a>
 )}

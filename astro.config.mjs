@@ -6,4 +6,8 @@ import { defineConfig } from 'astro/config';
 export default defineConfig({
   site: 'https://nuaisafety.com',
   trailingSlash: 'never',
+  // About became Resources. Keep old links and shares working.
+  redirects: {
+    '/about': '/resources',
+  },
 });
