@@ -15,6 +15,17 @@ export const SIGNUP_URL: string | null = 'https://forms.gle/dVHJ8bix2VHz8PUk9';
  */
 export const EXEC_URL: string | null = 'https://forms.gle/sPaXtz6pq6hDyQBq8';
 
+/**
+ * LUMA_CALENDAR_ID - the Luma calendar shown in the Events section on the home page.
+ *   It starts with "cal-". Find it in Luma under the calendar's Settings → Embed.
+ *   Set it to null to hide the Events section entirely.
+ *   TEMPORARY: this is South Park Commons' calendar, a stand-in until ours exists.
+ */
+export const LUMA_CALENDAR_ID: string | null = 'cal-Ve0M7LoDOpdnF3z';
+
+/** The calendar's public Luma page, where the "Subscribe on Luma" button goes. */
+export const LUMA_CALENDAR_URL = 'https://luma.com/southparkcommons-events';
+
 export const EMAIL = 'nuaisafety@gmail.com';
 
 export const SITE = {
