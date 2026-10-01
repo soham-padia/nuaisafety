@@ -1,12 +1,12 @@
 /**
  * Site-wide constants. Everything a non-developer might need to change lives here.
  *
- * SIGNUP_URL: the Google Form that collects mailing-list signups.
+ * SIGNUP_URL: the Airtable form that collects mailing-list signups.
  *   Until it is set, every "Join the mailing list" CTA routes to /join, and /join
  *   falls back to emailing the group address. Nothing ships broken either way.
  *   To switch it on: paste the form's share link below. That is the only edit needed.
  */
-export const SIGNUP_URL: string | null = 'https://forms.gle/dVHJ8bix2VHz8PUk9';
+export const SIGNUP_URL: string | null = 'https://airtable.com/appTpg6JO93Aqr1xs/pagh3n1xdPrxEB8nk/form';
 
 /**
  * EXEC_URL - the form for executive core applications.
@@ -25,6 +25,14 @@ export const LUMA_CALENDAR_ID: string | null = 'cal-Ve0M7LoDOpdnF3z';
 
 /** The calendar's public Luma page, where the "Subscribe on Luma" button goes. */
 export const LUMA_CALENDAR_URL = 'https://luma.com/southparkcommons-events';
+
+/**
+ * SLACK_URL - the invite link for the group's Slack. Joining the Slack is how
+ *   someone becomes a member. Same pattern as SIGNUP_URL: while it is null, the
+ *   "Join our Slack" button falls back to emailing the group, so it is never
+ *   broken. Paste the invite link to switch it on.
+ */
+export const SLACK_URL: string | null = null;
 
 export const EMAIL = 'nuaisafety@gmail.com';
 
@@ -64,9 +72,8 @@ export const NAV = [
 /* -------------------------------------------------------------------------
    The exec board, rendered by /team.
 
-   Everyone carries the same title. The group has deliberately not
-   differentiated roles, so nobody is a president, chair or lead. Do not add a
-   per-person role field. See FACTS.md, "Safe to state".
+   People appear on /team in the order listed. Anyone without a `title` is
+   shown as an Exec Board Member.
 
    Only `name` is required. Every other field renders only when it is filled
    in, so the page never shows an empty label or a half-finished card.
@@ -77,10 +84,12 @@ export const NAV = [
           back to an initials plate, which reserves exactly the same space, so
           adding a photo shifts nothing on the page.
    level  'Undergraduate', 'Master’s' or 'PhD'.
+   title  Overrides the default title, e.g. 'President'.
    ------------------------------------------------------------------------- */
 
 export type Person = {
   name: string;
+  title?: string;
   photo?: string;
   program?: string;
   level?: string;
@@ -89,7 +98,7 @@ export type Person = {
   linkedin?: string;
 };
 
-/** The one title, used for every person on the board. */
+/** The default title, for anyone on the board without their own `title`. */
 export const BOARD_TITLE = 'Exec Board Member';
 
 /** Intrinsic size of a headshot file, used for the img width/height so the
@@ -97,9 +106,19 @@ export const BOARD_TITLE = 'Exec Board Member';
 export const PHOTO_PX = 960;
 
 export const TEAM: Person[] = [
-  { name: 'Elaine Ly' },
-  { name: 'Soham Padia' },
+  { name: 'Elaine Ly', title: 'President' },
+  { name: 'Soham Padia', title: 'President' },
   { name: 'Rohan Kathuria' },
   { name: 'Julia Rowniewski' },
   { name: 'Eric Shi' },
 ];
+
+/** Title shown under each fellow's name on /team. */
+export const FELLOW_TITLE = 'Fellow';
+
+/* PLACEHOLDER. These names are made up, to fill out the Fellows section while
+   the layout is worked on. Replace them with real fellows, or set this to []
+   to hide the section, before the page goes live. */
+export const FELLOWS: Person[] = Array.from({ length: 10 }, () => ({
+  name: 'Timmy Tuffknuckles',
+}));

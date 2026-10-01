@@ -2,103 +2,97 @@
 import Base from '../layouts/Base.astro';
 import Signup from '../components/Signup.astro';
 import ExecCTA from '../components/ExecCTA.astro';
-import { EMAIL } from '../config';
+import { EMAIL, SLACK_URL } from '../config';
+
+const slackHref = SLACK_URL ?? `mailto:${EMAIL}?subject=Joining%20the%20Slack`;
 ---
 <Base
   title="Join"
-  description="Technical and policy fellowships for Northeastern students, and applications for the executive team."
+  description="Join our Slack, take a technical or policy fellowship, or apply to the executive team."
 >
   <section class="band">
-    <div class="wrap prose">
+    <div class="wrap">
       <h1>Join</h1>
-      <p class="lede">
-        There are two ways to get involved! Join a fellowship to become a member, or apply to be
-        on our executive board!
+      <p class="lede join__lede">
+        Become a member by joining our Slack. To become a fellow, complete one of our two
+        fellowships. You can also apply to join our executive board.
       </p>
-
-      <div class="row">
-        <h2>Fellowships</h2>
-        <div>
-        <p>
-          We run two fellowships. Joining either one automatically makes you a general member.
-          Members work on AI safety alongside other students, through research projects and
-          discussion of current work.
-        </p>
-        <div class="grid grid--2">
-          <div class="block">
-            <h3>Technical Fellowship</h3>
-            <span class="meta">January 2027 · Weekly, 90 minutes</span>
-            <p>
-              An introduction to the technical side of AI safety: how modern AI systems are
-              trained, why aligning them is difficult, and current research in areas such as
-              mechanistic interpretability.
-            </p>
-          </div>
-          <div class="block">
-            <h3>Policy Fellowship</h3>
-            <span class="meta">January 2027 · Weekly, 90 minutes</span>
-            <p>
-              An introduction to AI governance: the risks posed by advanced AI, how governments
-              and companies are responding, and what effective policy could look like. No
-              technical background required.
-            </p>
-          </div>
-        </div>
-        <p>
-          Sign up for the mailing list, and we’ll email you before the fellowships begin.
-          Already have a background in AI safety?
-          <a href={`mailto:${EMAIL}`}>Email us</a> about joining as a member directly.
-        </p>
-        <div class="actions">
-          <Signup />
-        </div>
-        </div>
+      <div class="actions join__slack">
+        <a class="btn btn--ghost" href={slackHref}>Join our Slack →</a>
       </div>
-    </div>
-  </section>
 
-  <section class="band band--wash">
-    <div class="wrap prose">
-      <div class="row">
-        <h2>Executive team</h2>
-        <div>
-        <p>
-          The executive team runs the group. We are looking for a few students to each take on
-          one area this year.
-        </p>
-        <div class="grid grid--2">
-          <div class="block">
-            <h3>Fellowships</h3>
-            <p>Organize the technical and policy fellowships.</p>
+      <div class="paths">
+        <section class="path" aria-labelledby="fellowships">
+          <h2 id="fellowships">Fellowships</h2>
+          <span class="meta">Starts January 2027 · Weekly, 90 minutes</span>
+          <p>
+            We run two fellowships. Complete either one to become a fellow.
+          </p>
+
+          <ol class="steps">
+            <li>
+              <h3>Technical Fellowship</h3>
+              <p>
+                An introduction to the technical side of AI safety: how modern AI systems are
+                trained, why aligning them is difficult, and current research in areas such as
+                mechanistic interpretability.
+              </p>
+            </li>
+            <li>
+              <h3>Policy Fellowship</h3>
+              <p>
+                An introduction to AI governance: the risks posed by advanced AI, how governments
+                and companies are responding, and what effective policy could look like. No
+                technical background required.
+              </p>
+            </li>
+          </ol>
+
+          <p>
+            Sign up for the mailing list, and we’ll email you before the fellowships begin.
+          </p>
+          <div class="actions path__cta">
+            <Signup />
           </div>
-          <div class="block">
-            <h3>Events</h3>
-            <p>Plan talks and socials.</p>
+        </section>
+
+        <section class="path path--exec" aria-labelledby="exec">
+          <h2 id="exec">Executive team</h2>
+          <span class="meta">Now recruiting · 3–5 hours a week</span>
+          <p>
+            The executive team runs the group. We are looking for a few students to each take on
+            one area this year.
+          </p>
+
+          <ul class="steps">
+            <li>
+              <h3>Fellowships</h3>
+              <p>Organize the technical and policy fellowships.</p>
+            </li>
+            <li>
+              <h3>Events</h3>
+              <p>Plan talks and socials.</p>
+            </li>
+            <li>
+              <h3>Outreach</h3>
+              <p>Handle communications and bring in new members.</p>
+            </li>
+            <li>
+              <h3>Partnerships</h3>
+              <p>Build connections with other AI safety groups and funders.</p>
+            </li>
+          </ul>
+
+          <p>
+            You do not need a background in AI safety or machine learning, and several roles are
+            not technical. Expect 3–5 hours a week, including one team meeting. If you are on
+            co-op, we will work around it.
+          </p>
+          <div class="actions path__cta">
+            <ExecCTA label="Apply to the executive team" />
           </div>
-          <div class="block">
-            <h3>Outreach</h3>
-            <p>Handle communications and bring in new members.</p>
-          </div>
-          <div class="block">
-            <h3>Partnerships</h3>
-            <p>Build connections with other AI safety groups and funders.</p>
-          </div>
-        </div>
-        <p>
-          You do not need a background in AI safety or machine learning, and several roles are
-          not technical. Expect 3–5 hours a week, including one team meeting. If you are on
-          co-op, we will work around it.
-        </p>
-        <div class="actions">
-          <ExecCTA label="Apply to the executive team" />
-        </div>
-        </div>
+        </section>
       </div>
     </div>
   </section>
 </Base>
-
-<style>
-  /* Text sits above and below each card grid here, so give the grid room. */
-  .grid { margin-block: 1.75rem 2rem; }
-</style>
