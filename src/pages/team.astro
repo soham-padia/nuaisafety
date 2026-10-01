@@ -1,48 +1,112 @@
 ---
 import Base from '../layouts/Base.astro';
+import { TEAM, BOARD_TITLE, PHOTO_PX } from '../config';
 
 /**
- * Program and bio are deliberately omitted until every founding member has supplied
- * them. A page where two people have bios and two do not reads as though two did
- * not reply. Fill in `program` and `bio` for everyone and the markup below picks
- * them up. See FACTS.md, "Open".
+ * A headshot grid built to be good before the headshots exist.
  *
- * `linkedin` takes a full profile URL. The icon only renders for people who have one.
+ * No photo has been taken yet, so every tile currently falls back to an
+ * initials plate in the wash. That is a deliberate typographic mark, not a
+ * stand-in face: CLAUDE.md forbids placeholder headshots that look like real
+ * people, and a stock portrait or an illustrated avatar would be a small lie
+ * about a group that has none of them.
+ *
+ * The plate and the photo occupy the same square, so adding a photo later is
+ * one file in `public/team/` and one `photo:` line in `src/config.ts`. Nothing
+ * about the layout moves.
+ *
+ * Program, level, bio, email and LinkedIn are all optional and none is known
+ * for anyone yet. They render per person the moment they are filled in. Do not
+ * invent any of them. See FACTS.md, "Open".
  */
-const founders = [
-  { name: 'Elaine Ly' },
-  { name: 'Soham Padia' },
-  { name: 'Rohan Kathuria' },
-  { name: 'Julia Rowniewski' },
-  { name: 'Eric Shi' },
-] as { name: string; program?: string; bio?: string; linkedin?: string }[];
 
-const complete = founders.every((p) => p.program);
+/** Initials for the fallback plate. Two letters at most, so a long name does
+    not produce a row of letters that reads as a word. */
+const initials = (name: string) =>
+  name
+    .split(/\s+/)
+    .filter(Boolean)
+    .map((part) => part[0])
+    .slice(0, 2)
+    .join('');
+
+/* Five tiles across is right for a name and a title. It is far too narrow for
+   a paragraph, so the grid widens its columns the moment anyone has a bio.
+   That keeps the current, bio-less page compact without leaving a trap for
+   whoever fills the first bio in. */
+const hasBio = TEAM.some((person) => person.bio);
 ---
-<Base title="Team" description="The founding members of NU AI Safety.">
+<Base
+  title="Team"
+  description="The five people who founded NU AI Safety, and the faculty researcher who has agreed to advise the group."
+>
   <section class="band">
     <div class="wrap prose">
       <h1>Team</h1>
-      <p class="lede">Founding members, September 2026.</p>
 
-      <ul class="people">
-        {founders.map((person) => (
-          <li class="person">
-            <span class="name">
-              {person.name}
-              {person.linkedin && (
-                <a class="linkedin" href={person.linkedin} aria-label={`${person.name} on LinkedIn`}>
-                  <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true" focusable="false">
-                    <path fill="currentColor" d="M20.45 20.45h-3.56v-5.57c0-1.33-.02-3.04-1.85-3.04-1.85 0-2.14 1.45-2.14 2.94v5.67H9.34V9h3.42v1.56h.05c.48-.9 1.64-1.85 3.37-1.85 3.6 0 4.27 2.37 4.27 5.46v6.28zM5.34 7.43a2.07 2.07 0 1 1 0-4.14 2.07 2.07 0 0 1 0 4.14zM7.12 20.45H3.56V9h3.56v11.45zM22.22 0H1.77C.79 0 0 .77 0 1.73v20.54C0 23.23.79 24 1.77 24h20.45c.98 0 1.78-.77 1.78-1.73V1.73C24 .77 23.2 0 22.22 0z"/>
-                  </svg>
-                </a>
-              )}
-            </span>
-            {complete && person.program && <span class="role">{person.program}</span>}
-            {complete && person.bio && <p>{person.bio}</p>}
-          </li>
-        ))}
-      </ul>
+      <div class="row">
+        <h2>Exec board</h2>
+        <div>
+          <p>
+            Five co-founders, September 2026. Everyone carries the same title. We have not
+            divided the group into offices yet, and we would rather say that than invent a
+            hierarchy.
+          </p>
+
+          <ul class:list={['people', 'people--grid', hasBio && 'people--roomy']}>
+            {TEAM.map((person) => (
+              <li class="person">
+                <div class="portrait">
+                  {person.photo ? (
+                    /* Alt is empty on purpose. The name is the next line of text,
+                       so a filled alt would read the person out twice. */
+                    <img src={person.photo} alt="" width={PHOTO_PX} height={PHOTO_PX} />
+                  ) : (
+                    <span class="portrait__initials" aria-hidden="true">{initials(person.name)}</span>
+                  )}
+                </div>
+                <span class="name">{person.name}</span>
+                <span class="role">{BOARD_TITLE}</span>
+                {/* Separate lines rather than one joined line. A column this
+                    narrow wraps a separator to the end of a line, where it
+                    reads as a typo. */}
+                {person.program && <span class="person__meta">{person.program}</span>}
+                {person.level && <span class="person__meta">{person.level}</span>}
+                {person.bio && <p>{person.bio}</p>}
+                {(person.email || person.linkedin) && (
+                  <span class="person__links">
+                    {person.email && (
+                      <a href={`mailto:${person.email}`} aria-label={`Email ${person.name}`}>
+                        <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true" focusable="false">
+                          <path fill="currentColor" d="M2.4 4.8h19.2c.66 0 1.2.54 1.2 1.2v12c0 .66-.54 1.2-1.2 1.2H2.4c-.66 0-1.2-.54-1.2-1.2V6c0-.66.54-1.2 1.2-1.2zm9.6 7.63L3.6 7.05V18h16.8V7.05L12 12.43zM12 10.6l7.8-4.6H4.2l7.8 4.6z"/>
+                        </svg>
+                      </a>
+                    )}
+                    {person.linkedin && (
+                      <a href={person.linkedin} aria-label={`${person.name} on LinkedIn`}>
+                        <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true" focusable="false">
+                          <path fill="currentColor" d="M20.45 20.45h-3.56v-5.57c0-1.33-.02-3.04-1.85-3.04-1.85 0-2.14 1.45-2.14 2.94v5.67H9.34V9h3.42v1.56h.05c.48-.9 1.64-1.85 3.37-1.85 3.6 0 4.27 2.37 4.27 5.46v6.28zM5.34 7.43a2.07 2.07 0 1 1 0-4.14 2.07 2.07 0 0 1 0 4.14zM7.12 20.45H3.56V9h3.56v11.45zM22.22 0H1.77C.79 0 0 .77 0 1.73v20.54C0 23.23.79 24 1.77 24h20.45c.98 0 1.78-.77 1.78-1.73V1.73C24 .77 23.2 0 22.22 0z"/>
+                        </svg>
+                      </a>
+                    )}
+                  </span>
+                )}
+              </li>
+            ))}
+          </ul>
+        </div>
+      </div>
+
+      <div class="row">
+        <h2>Faculty</h2>
+        <div>
+          <p>
+            <strong>Professor David Bau</strong>, Khoury College, has agreed to advise the group
+            and to give guest talks from his lab this fall. His lab works on interpretability of
+            large models and runs NDIF, the National Deep Inference Fabric.
+          </p>
+        </div>
+      </div>
     </div>
   </section>
 </Base>

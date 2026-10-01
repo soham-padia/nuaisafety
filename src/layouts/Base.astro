@@ -1,6 +1,6 @@
 ---
 import '../styles/global.css';
-import { SITE, NAV, EMAIL } from '../config';
+import { SITE, NAV, SOCIAL, EMAIL, signupHref } from '../config';
 
 interface Props {
   title?: string;
@@ -60,20 +60,27 @@ const ogImage = new URL('/og.png', Astro.site);
     <footer class="foot">
       <div class="wrap">
         <div class="foot__row">
-        <div>
-          <p>Northeastern's Student Led AI Safety Group</p>
-          <nav class="foot__nav" aria-label="Footer">
-            {NAV.map((item) => <a href={item.href}>{item.label}</a>)}
-          </nav>
-        </div>
-        <p>
-          <span class="foot__label">Contact</span>
-          <a href={`mailto:${EMAIL}`}>{EMAIL}</a>
-        </p>
+          <div>
+            <p class="foot__name">Northeastern's Student Led AI Safety Group</p>
+            <nav class="foot__nav" aria-label="Footer">
+              {NAV.map((item) => <a href={item.href}>{item.label}</a>)}
+            </nav>
+          </div>
+          <div class="foot__contact">
+            <p>
+              <span class="foot__label">Contact</span>
+              <a href={`mailto:${EMAIL}`}>{EMAIL}</a>
+            </p>
+            {SOCIAL.length > 0 && (
+              <p>
+                <span class="foot__label">Follow</span>
+                {SOCIAL.map((s) => <a href={s.href}>{s.label}</a>)}
+              </p>
+            )}
+          </div>
         </div>
         <p class="credit">
-          Built by <a href="https://soham-padia.github.io">Soham Padia</a>.
-          <a href="https://github.com/soham-padia/nuaisafety">Source on GitHub</a>.
+          <a href="https://github.com/soham-padia/nuaisafety">Source on GitHub</a>
         </p>
       </div>
     </footer>

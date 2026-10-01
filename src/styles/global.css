@@ -139,7 +139,7 @@ strong { font-weight: 660; }
   }
 }
 .prose h3 { margin-block: 1.9em 0.45em; }
-.prose :is(ul, ol) { padding-inline-start: 1.15rem; max-width: var(--measure); }
+.prose ul { padding-inline-start: 1.15rem; max-width: var(--measure); }
 .prose li { margin-block-end: 0.6em; }
 
 .lede { font-size: var(--step-1); color: var(--muted); line-height: 1.5; }
@@ -210,7 +210,6 @@ strong { font-weight: 660; }
 /* --- buttons --------------------------------------------------------------- */
 
 .actions { display: flex; flex-wrap: wrap; gap: 0.75rem 1rem; align-items: center; }
-.prose .actions + p { margin-block-start: 2rem; }
 
 .btn {
   display: inline-block;
@@ -431,10 +430,12 @@ strong { font-weight: 660; }
 @media (min-width: 46rem) { .grid--3 { grid-template-columns: repeat(3, 1fr); gap: 2.5rem 3.5rem; } }
 @media (min-width: 40rem) { .grid--2 { grid-template-columns: repeat(2, 1fr); } }
 
+/* Explicit block-start, because a card grid inside .prose would otherwise
+   inherit the 1.9em run-in margin .prose h3 gives a heading in running text,
+   and the title would float clear of its own hairline. */
 .block h3 { margin-block: 0 0.4rem; }
 .block p { color: var(--muted); margin-block-end: 0.5rem; max-width: 40ch; }
-.prose .block p { max-width: none; }
-:is(.block, .path) .meta {
+.block .meta {
   display: block;
   font-size: 0.8125rem;
   letter-spacing: 0.055em;
@@ -447,16 +448,180 @@ strong { font-weight: 660; }
 /* Hairline above each block, the only ornament on the page. */
 .block { border-block-start: 2px solid var(--ink); padding-block-start: 0.9rem; }
 
-/* --- people ---------------------------------------------------------------- */
+/* A card grid can sit inside the heading spine, in the body column. It has to
+   opt out of the 40rem measure the spine puts on its children, or two columns
+   would be squeezed into the width meant for one column of prose. */
+.prose .row > div > .grid { max-width: none; }
+
+/* The opening line of a card, when the card has one sentence that carries it.
+   Ink rather than muted, so the eye lands there first. Needs two classes to
+   outrank .block p, which is a class plus a type selector. */
+.block .block__lead { color: var(--ink); }
+
+/* Cards that can be acted on now carry their own button. The fellowships do
+   not: they are described, not applied to, until they start.
+
+   The column plus auto margin puts the buttons on one line across a row of
+   cards whatever their text runs to, which is the difference between a row of
+   cards and a row of boxes that happen to be next to each other. */
+.block { display: flex; flex-direction: column; }
+.block .actions { margin-block-start: auto; padding-block-start: 1.15rem; }
+
+/* --- people ----------------------------------------------------------------
+   A headshot grid. It has to look deliberate with zero photos, because there
+   are zero photos: every tile currently falls back to an initials plate. The
+   plate and a photo fill the same square, so a portrait can be dropped in one
+   person at a time without the page reflowing or the grid going ragged.
+
+   The tile is the .block ornament applied to a square: the same 2px ink rule
+   on top, wash inside. It gives an empty plate a drawn edge instead of leaving
+   five pale ghosts on white, and it still reads as a caption rule once there
+   is a photograph under it. */
 
 .people { list-style: none; padding: 0; margin: 0; }
-.person { border-block-start: 1px solid var(--rule); padding-block: 0.95rem; }
-.person:first-child { border-block-start: 1px solid var(--ink); }
-.person .name { font-weight: 640; font-size: var(--step-1); letter-spacing: -0.014em; }
+
+.people--grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 2rem 1.5rem;
+  margin-block-start: 1.9rem;
+}
+@media (min-width: 34rem) {
+  .people--grid { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 2.25rem 2rem; }
+}
+/* Five across, one row, which is the shape of the group. It only turns on at
+   75rem, because that is the first width at which the heading spine has given
+   the body column enough room for the longest name to hold one line. Below it
+   the grid is three and two, which reads as a shape rather than a remainder. */
+@media (min-width: 75rem) {
+  .people--grid { grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 1.5rem; }
+}
+
+/* Set by /team when anyone has a bio. Five columns is right for a name and a
+   title and hopeless for a paragraph, so the grid stops at three and the
+   columns get wide enough to read. */
+@media (min-width: 34rem) {
+  .people--roomy { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 2.5rem 2.25rem; }
+}
+
+/* Two rules in one, both about the heading spine.
+
+   The grid has to opt out of the 40rem measure the spine puts on its children,
+   or three columns get squeezed into the width meant for one column of prose.
+   It then needs a cap of its own, because three columns across the full body
+   column produce 270px plates, and a 270px plate with no photograph in it is
+   just a large grey square.
+
+   Both need the spine's own selector depth. A lone .people--grid { max-width }
+   loses to .prose .row > div > *, which is two classes and a type. */
+.prose .row > div > .people--grid { max-width: 41rem; }
+@media (min-width: 75rem) {
+  .prose .row > div > .people--grid { max-width: none; }
+}
+.prose .row > div > .people--roomy { max-width: none; }
+
+.person { display: flex; flex-direction: column; }
+
+.portrait {
+  aspect-ratio: 1;
+  display: grid;
+  place-items: center;
+  overflow: hidden;
+  background: var(--wash);
+  border-block-start: 2px solid var(--ink);
+  margin-block-end: 0.85rem;
+}
+/* Fills the square whatever the file's own aspect ratio turns out to be, so a
+   headshot that is not quite square cannot stretch the grid. */
+.portrait img { display: block; width: 100%; height: 100%; object-fit: cover; }
+
+/* Initials, not a face. A typographic mark is honest about being a placeholder
+   in a way that a stock portrait or a generated avatar is not. Hidden from
+   assistive technology, since the name is the next line of text. */
+.portrait__initials {
+  font-size: var(--step-2);
+  font-weight: 620;
+  letter-spacing: 0.08em;
+  text-indent: 0.08em;   /* recentre against the trailing letter-space */
+  color: var(--muted);
+}
+
+.person .name {
+  font-weight: 640;
+  font-size: var(--step-0);
+  letter-spacing: -0.012em;
+  line-height: 1.3;
+}
 .person .role { color: var(--muted); display: block; font-size: 0.9375rem; }
-.person p { margin-block: 0.4rem 0; color: var(--muted); }
-.person .linkedin { display: inline-flex; vertical-align: -0.1em; margin-inline-start: 0.5rem; padding: 0.25rem; color: var(--muted); }
-.person .linkedin:hover, .person .linkedin:focus-visible { color: var(--accent); }
+.person__meta { color: var(--muted); display: block; font-size: 0.9375rem; }
+.person p { margin-block: 0.5rem 0; color: var(--muted); font-size: 0.9375rem; max-width: none; }
+
+.person__links { display: flex; gap: 0.6rem; margin-block-start: 0.6rem; }
+.person__links a { display: inline-flex; color: var(--muted); }
+.person__links a:hover { color: var(--accent); }
+
+/* --- tabs ------------------------------------------------------------------
+   Progressive enhancement, not a CSS radio hack. Both panels ship visible under
+   real headings; the inline script in /about adds the tablist roles and hides
+   all but the selected panel. Everything below is written so that the no-JS
+   state is the correct one and the .tabs--js state is the addition.
+
+   The selected tab is marked by an accent rule under it, not by colour alone,
+   and the weight is deliberately left alone: bolding the selected tab would
+   change its width and shove the next tab sideways on every switch. */
+
+.tabs { margin-block: 1.6rem 1.75rem; }
+
+/* The heading is the first child, and the script hides it rather than removing
+   it, so the element that actually leads the panel is the one after it. Both
+   need the .prose depth to outrank .prose ul. */
+.prose .tabs__panel > :first-child,
+.prose .tabs__panel > .tabs__heading + * { margin-block-start: 0; }
+.prose .tabs__panel > :last-child { margin-block-end: 0; }
+/* Only ever seen with no JavaScript. The script hides the heading, and a hidden
+   element's margins go with it, so the spacing below is the tablist's. */
+.prose .tabs__panel > .tabs__heading { margin-block: 0 0.8rem; }
+/* Only ever seen with no JavaScript, where the two panels stack. */
+.tabs__panel + .tabs__panel { margin-block-start: 2.25rem; }
+.tabs__panel[hidden] { display: none; }
+
+.tabs__list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0 1.6rem;
+  border-block-end: 1px solid var(--rule);
+  margin-block-end: 1.35rem;
+}
+
+.tabs__tab {
+  appearance: none;
+  background: none;
+  border: 0;
+  border-block-end: 2px solid transparent;
+  margin-block-end: -1px;          /* sit the tab rule on the list rule */
+  border-radius: 0;
+  font: inherit;
+  font-size: 0.9375rem;
+  line-height: 1.4;
+  color: var(--muted);
+  padding: 0.1rem 0 0.55rem;
+  cursor: pointer;
+  transition: color 160ms ease, border-color 160ms ease;
+}
+.tabs__tab:hover { color: var(--ink); }
+.tabs__tab[aria-selected="true"] {
+  color: var(--ink);
+  border-block-end-color: var(--accent);
+}
+
+/* The panel's resting state is visible, so a failed or skipped animation can
+   never strand it. The keyframe only supplies a start. */
+@media (prefers-reduced-motion: no-preference) {
+  .tabs--js .tabs__panel:not([hidden]) { animation: tab-in 200ms ease-out; }
+}
+@keyframes tab-in {
+  from { opacity: 0.25; transform: translateY(5px); }
+}
 
 /* --- callout --------------------------------------------------------------- */
 
@@ -467,46 +632,6 @@ strong { font-weight: 660; }
 }
 .callout p { font-size: var(--step-1); line-height: 1.5; margin-block-end: 0; max-width: 46ch; }
 
-/* --- join paths ---------------------------------------------------------------
-   /join offers two options as cards side by side: fellowships on the left, the
-   executive team on the right. On a phone they stack with fellowships first,
-   because the mailing list is the signup that matters most. Each card is a flex
-   column with its button pushed to the foot, so the two buttons line up however
-   long the copy above them runs. */
-
-.join__lede { margin-block: 0.75rem 0; max-width: 48rem; }
-
-.paths {
-  display: grid;
-  gap: 1.25rem;
-  margin-block-start: clamp(2rem, 1.5rem + 2vw, 3rem);
-}
-@media (min-width: 56rem) {
-  .paths { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1.75rem; }
-}
-
-.path {
-  --pad: clamp(1.35rem, 0.9rem + 2vw, 2.5rem);
-  display: flex;
-  flex-direction: column;
-  background: var(--wash);
-  border: 1px solid var(--rule);
-  border-radius: 8px;
-  padding: var(--pad);
-}
-.path > h2 { margin-block-end: 0.5rem; }
-.path p { max-width: 40rem; }
-.path__cta { margin-block-start: auto; padding-block-start: 0.75rem; }
-
-/* The list inside each card: the fellowship track on the left, the roles on the
-   right. Hairlines between items, matching the Team list, drawn a shade darker
-   than --rule so they still show on the wash. */
-.steps { list-style: none; padding: 0; margin: 0.25rem 0 1.75rem; }
-.steps li { border-block-start: 1px solid #d9dde1; padding-block: 0.9rem; }
-.steps li:last-child { border-block-end: 1px solid #d9dde1; }
-.steps h3 { margin: 0; }
-.steps p { color: var(--muted); margin-block: 0.3rem 0; }
-
 /* --- footer ---------------------------------------------------------------- */
 
 .foot {
@@ -515,25 +640,44 @@ strong { font-weight: 660; }
   color: var(--muted);
   font-size: 0.9375rem;
 }
-/* Blurb with the nav under it on the left, email on the right. Stacks on a phone. */
-.foot__row {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: space-between;
-  align-items: baseline;
-  gap: 1.25rem 2.5rem;
-}
-.foot p { margin: 0; }
-.foot__label {
-  font-size: 0.8125rem;
-  letter-spacing: 0.055em;
-  text-transform: uppercase;
-  font-weight: 620;
-  margin-inline-end: 0.5rem;
-}
-.foot__nav { display: flex; flex-wrap: wrap; gap: 0.35rem 1.15rem; margin-block-start: 0.5rem; }
+.foot .cols { display: grid; gap: 1.5rem; grid-template-columns: 1fr; }
+@media (min-width: 40rem) { .foot .cols { grid-template-columns: 2fr 1fr 1fr; } }
+.foot h2 { font-size: 0.8125rem; letter-spacing: 0.055em; text-transform: uppercase; margin-block-end: 0.5rem; }
+.foot ul { list-style: none; padding: 0; margin: 0; }
+.foot li { margin-block-end: 0.3rem; }
 .foot a { color: var(--muted); text-decoration: none; }
 .foot a:hover { color: var(--ink); text-decoration: underline; }
+.foot .fine { margin-block-start: 2rem; max-width: var(--measure); font-size: 0.875rem; }
+/* One row: who we are and the nav on the left, contact and social on the right.
+   Replaces a three column block that repeated the nav and carried two
+   disclaimers the group no longer makes. */
+.foot__row {
+  display: grid;
+  gap: 1.5rem;
+  align-items: start;
+}
+@media (min-width: 46rem) {
+  .foot__row { grid-template-columns: 1fr auto; gap: 3rem; }
+  .foot__contact { text-align: right; }
+}
+
+.foot__name { margin-block-end: 0.55rem; max-width: none; color: var(--ink); }
+
+.foot__nav { display: flex; flex-wrap: wrap; gap: 0.3rem 1.1rem; }
+
+.foot__contact p { margin-block-end: 0.35rem; max-width: none; }
+.foot__contact p:last-child { margin-block-end: 0; }
+.foot__contact a + a { margin-inline-start: 0.9rem; }
+
+.foot__label {
+  display: block;
+  font-size: 0.75rem;
+  letter-spacing: 0.055em;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin-block-end: 0.15rem;
+}
+
 .foot .credit { margin-block-start: 0.6rem; font-size: 0.8125rem; color: var(--muted); }
 
 @media (prefers-reduced-motion: reduce) {

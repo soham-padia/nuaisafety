@@ -17,3 +17,10 @@ _local/*
 .env
 .env.*
 *.local
+
+# Project documentation stays local. The repository is public because GitHub
+# Pages requires it, and the footer links it, so anything here is readable by
+# Khoury, CBAI and anyone else who follows that link. These files keep working
+# on disk: CLAUDE.md still loads for Claude Code, FACTS.md still governs copy.
+*.md
+!brand/README.md
