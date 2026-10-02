@@ -11,7 +11,7 @@
     "og": "node scripts/make-og.mjs"
   },
   "dependencies": {
-    "astro": "^5.14.1",
+    "astro": "^5.18.2",
     "motion": "^13.2.0"
   }
 }

@@ -1,0 +1,165 @@
+---
+import Base from '../layouts/Base.astro';
+---
+<Base title="Resources" description="Why AI safety matters, and what NU AI Safety is for.">
+  <section class="band">
+    <div class="wrap prose">
+      <h1>Resources</h1>
+
+      <p>
+        AI systems are becoming more capable and dangerous at a rate faster than we can control
+        them. Models are now able to
+        <a href="https://openai.com/index/hugging-face-incident-and-the-road-ahead/">hack into other companies</a>,
+        <a href="https://www.anthropic.com/research/agentic-misalignment">blackmail users</a>,
+        <a href="https://arxiv.org/abs/2505.23836">know when they’re being evaluated</a>, and
+        even be
+        <a href="https://www.anthropic.com/news/disrupting-AI-espionage">used en masse for cyber espionage</a>.
+      </p>
+      <p>
+        We want to give Northeastern students the tools and knowledge they need to help align and
+        govern AI systems.
+      </p>
+
+      <p>
+        Some of the people and groups working on this here, described the way each of them
+        describes it:
+      </p>
+
+      <div class="tabs" data-tabs>
+        <section class="tabs__panel" id="landscape-professors" aria-labelledby="landscape-professors-heading" data-tabs-panel>
+          <h3 class="tabs__heading" id="landscape-professors-heading" data-tabs-heading>Professors</h3>
+          <ul>
+            <li>
+              <a href="https://baulab.info/">David Bau</a> studies the structure and
+              interpretation of deep networks, and leads the
+              <a href="https://ndif.us/">National Deep Inference Fabric</a>. He has agreed to
+              advise this group and to give guest talks from his lab.
+            </li>
+            <li>
+              <a href="https://wyshi.github.io/">Weiyan Shi</a> lists AI safety among her research
+              interests, and holds two Open Philanthropy grants on emergent misalignment and on
+              evaluating agent safety.
+            </li>
+            <li>
+              <a href="https://www.khoury.northeastern.edu/home/alina/">Alina Oprea</a> works on
+              adversarial machine learning and trustworthy AI, and on security architectures for
+              language model agents.
+            </li>
+            <li>
+              <a href="https://www.khoury.northeastern.edu/people/malihe-alikhani/">Malihe Alikhani</a>
+              works on AI ethics and is a visiting fellow at the Brookings Institution.
+            </li>
+            <li>
+              <a href="https://sinafazelpour.com/">Sina Fazelpour</a>, appointed jointly in Khoury
+              and in philosophy, works on the epistemology, ethics and governance of knowledge
+              practices in AI-mediated societies, including recent papers on disagreement in AI
+              design, evaluation and alignment.
+            </li>
+          </ul>
+        </section>
+
+        <section class="tabs__panel" id="landscape-organizations" aria-labelledby="landscape-organizations-heading" data-tabs-panel>
+          <h3 class="tabs__heading" id="landscape-organizations-heading" data-tabs-heading>Organizations</h3>
+          <ul>
+            <li>
+              <a href="https://ndif.us/">NDIF</a>, described above, calls itself a nationwide
+              research computing fabric for transparent and reproducible experiments on the
+              largest open AI systems. It is Professor Bau’s NSF-funded project, not something
+              this group runs.
+            </li>
+            <li>
+              Northeastern is one of four universities in
+              <a href="https://cssh.northeastern.edu/research/projects/center-for-responsible-ai-and-governance/">CRAIG</a>,
+              an NSF center on responsible AI and governance.
+            </li>
+            <li>
+              The <a href="https://ai.northeastern.edu/">Institute for Experiential AI</a> names
+              responsible AI as one of its four research areas and runs a
+              <a href="https://ai.northeastern.edu/responsible-ai-practice">Responsible AI Practice</a>.
+            </li>
+            <li>
+              The <a href="https://cssh.northeastern.edu/ethics/">Ethics Institute</a> lists AI,
+              information and data ethics as a primary research area.
+            </li>
+          </ul>
+        </section>
+      </div>
+
+      <script is:inline>
+        /* Progressive enhancement. The two panels are server-rendered visible, each under
+           its own heading, so with no JavaScript this section reads as two ordinary
+           labelled regions with every entry present. This upgrades them to a real tablist:
+           roles, aria-selected, aria-controls, roving tabindex, Left/Right/Home/End.
+           It runs inline, immediately after the markup it owns, so the panel that is not
+           selected is hidden before first paint rather than flashing. */
+        (function () {
+          var root = document.querySelector('[data-tabs]');
+          if (!root) return;
+          var panels = Array.prototype.slice.call(root.querySelectorAll('[data-tabs-panel]'));
+          if (panels.length < 2) return;
+
+          var list = document.createElement('div');
+          list.className = 'tabs__list';
+          list.setAttribute('role', 'tablist');
+          list.setAttribute('aria-label', 'AI safety work at Northeastern');
+
+          var tabs = panels.map(function (panel) {
+            var heading = panel.querySelector('[data-tabs-heading]');
+            var tab = document.createElement('button');
+            tab.type = 'button';
+            tab.className = 'tabs__tab';
+            tab.id = panel.id + '-tab';
+            tab.setAttribute('role', 'tab');
+            tab.setAttribute('aria-controls', panel.id);
+            tab.textContent = heading.textContent.trim();
+            list.appendChild(tab);
+
+            panel.setAttribute('role', 'tabpanel');
+            /* The tab now names the panel, so the visible heading would be read twice. */
+            panel.setAttribute('aria-labelledby', tab.id);
+            heading.hidden = true;
+            return tab;
+          });
+
+          function select(i, moveFocus) {
+            tabs.forEach(function (tab, j) {
+              var on = i === j;
+              tab.setAttribute('aria-selected', on ? 'true' : 'false');
+              tab.tabIndex = on ? 0 : -1;
+              panels[j].hidden = !on;
+            });
+            if (moveFocus) tabs[i].focus();
+          }
+
+          list.addEventListener('click', function (e) {
+            var i = tabs.indexOf(e.target.closest('[role="tab"]'));
+            if (i > -1) select(i, false);
+          });
+
+          list.addEventListener('keydown', function (e) {
+            var i = tabs.indexOf(document.activeElement);
+            if (i < 0) return;
+            var next = null;
+            if (e.key === 'ArrowRight') next = (i + 1) % tabs.length;
+            else if (e.key === 'ArrowLeft') next = (i - 1 + tabs.length) % tabs.length;
+            else if (e.key === 'Home') next = 0;
+            else if (e.key === 'End') next = tabs.length - 1;
+            if (next === null) return;
+            e.preventDefault();
+            select(next, true);
+          });
+
+          root.insertBefore(list, root.firstChild);
+          root.classList.add('tabs--js');
+          select(0, false);
+        })();
+      </script>
+
+      <p>
+        None of these people or groups are involved with this group and we are not claiming
+        them. They are here because a student deciding where to spend four years should know
+        the work is going on around them.
+      </p>
+    </div>
+  </section>
+</Base>

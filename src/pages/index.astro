@@ -1,27 +1,24 @@
 ---
 import Base from '../layouts/Base.astro';
 import Signup from '../components/Signup.astro';
-import ExecCTA from '../components/ExecCTA.astro';
 import Perceptron from '../components/Perceptron.astro';
+import { LUMA_CALENDAR_ID, LUMA_CALENDAR_URL } from '../config';
 ---
 <Base>
   <section class="hero">
     <div class="wrap hero__grid">
       <div class="hero__text">
         <h1>NU AI Safety</h1>
-        <p class="tagline">AI safety and interpretability at Northeastern.</p>
+        <p class="tagline">AI Safety at Northeastern</p>
         <p>
           We are a student-led group preparing Northeastern students to help align and govern
-          advanced AI systems. We will run technical and policy fellowships, host talks from
+          advanced AI systems. We run technical and policy fellowships, host talks from
           researchers, and support student research.
         </p>
         <div class="actions">
           <Signup />
-          <ExecCTA />
+          <a class="btn btn--ghost" href="/resources">What we do</a>
         </div>
-        <p class="hero__more">
-          <a class="arrow" href="/about"><span>What we are planning to do</span></a>
-        </p>
       </div>
       <figure class="hero__art">
         <Perceptron />
@@ -35,11 +32,11 @@ import Perceptron from '../components/Perceptron.astro';
 
   <section class="band band--wash" aria-labelledby="what">
     <div class="wrap">
-      <h2 id="what" class="sr-only-heading">What we are planning to do</h2>
+      <h2 id="what" class="sr-only-heading">What we do</h2>
       <div class="grid grid--3">
         <div class="block">
           <h3>Fellowships</h3>
-          <span class="meta">About 90 minutes a week</span>
+          <span class="meta">Technical and policy</span>
           <p>
             Weekly reading groups on the technical and policy sides of AI safety, from the
             fundamentals to current research.
@@ -49,15 +46,16 @@ import Perceptron from '../components/Perceptron.astro';
           <h3>Guest talks</h3>
           <span class="meta">On campus</span>
           <p>
-            Talks from researchers in AI safety and interpretability.
+            Talks from researchers in AI safety and interpretability, from across Boston and
+            beyond.
           </p>
         </div>
         <div class="block">
           <h3>Research</h3>
-          <span class="meta">Members’ own projects</span>
+          <span class="meta">Member projects</span>
           <p>
             Support for members pursuing their own AI safety research, with feedback and
-            collaboration from other members.
+            collaboration from other members and Northeastern faculty.
           </p>
         </div>
       </div>
@@ -68,25 +66,37 @@ import Perceptron from '../components/Perceptron.astro';
     <div class="wrap prose">
       <h2 id="whofor">Who this is for</h2>
       <p>
-        AI safety is not only a machine learning problem. It runs through policy, security,
-        biology, law and psychology, and it needs people who are good at those things. A room
-        that is only engineers will miss things.
-      </p>
-      <p>
-        You do not need machine learning experience, a CS degree, or any prior knowledge of AI
-        safety. If the groups that already exist feel like they are for people who know all this
-        already, that is exactly the gap we are built for.
+        <strong>AI safety needs more than just AI researchers and software engineers.</strong>
+        Many of its most important problems concern policy, law, cybersecurity, biology, and psychology. Anyone
+        interested in making AI go well is welcome!
       </p>
     </div>
   </section>
 
-  <section class="band band--wash" aria-labelledby="new">
-    <div class="wrap">
-      <h2 id="new">Join us</h2>
+  {LUMA_CALENDAR_ID && (
+    <section class="band band--wash" aria-labelledby="events">
+      <div class="wrap">
+        <h2 id="events">Events</h2>
+        <iframe
+          class="events"
+          src={`https://luma.com/embed/calendar/${LUMA_CALENDAR_ID}/events?lt=light`}
+          title="Upcoming events"
+          loading="lazy"
+          allowfullscreen
+        ></iframe>
+        <p class="events__sub">
+          <a class="arrow" href={LUMA_CALENDAR_URL}><span>Subscribe on Luma</span></a>
+        </p>
+      </div>
+    </section>
+  )}
+
+  <section class="band" aria-labelledby="new">
+    <div class="wrap prose">
+      <h2 id="new">Join Us!</h2>
       <p class="lede">Fellowships start in January 2027. Learn more <a href="/join">here</a>.</p>
       <div class="actions">
         <Signup />
-        <ExecCTA />
       </div>
     </div>
   </section>
@@ -102,4 +112,17 @@ import Perceptron from '../components/Perceptron.astro';
     clip-path: inset(50%);
     white-space: nowrap;
   }
+
+  /* Luma's list sizes itself to the frame, so the frame sets the height.
+     Lazy, because it is well below the fold and would otherwise load with the page. */
+  .events {
+    display: block;
+    width: 100%;
+    height: 600px;
+    margin-block-start: 1.5rem;
+    border: 1px solid var(--rule);
+    border-radius: 8px;
+    background: var(--paper);
+  }
+  .events__sub { margin-block: 1rem 0; font-size: 0.9375rem; }
 </style>
