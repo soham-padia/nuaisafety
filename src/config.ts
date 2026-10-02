@@ -19,12 +19,11 @@ export const EXEC_URL: string | null = 'https://forms.gle/sPaXtz6pq6hDyQBq8';
  * LUMA_CALENDAR_ID - the Luma calendar shown in the Events section on the home page.
  *   It starts with "cal-". Find it in Luma under the calendar's Settings → Embed.
  *   Set it to null to hide the Events section entirely.
- *   TEMPORARY: this is South Park Commons' calendar, a stand-in until ours exists.
  */
-export const LUMA_CALENDAR_ID: string | null = 'cal-Ve0M7LoDOpdnF3z';
+export const LUMA_CALENDAR_ID: string | null = 'cal-ttsDYte35jjI4Od';
 
 /** The calendar's public Luma page, where the "Subscribe on Luma" button goes. */
-export const LUMA_CALENDAR_URL = 'https://luma.com/southparkcommons-events';
+export const LUMA_CALENDAR_URL = 'https://luma.com/nuaisafety';
 
 /**
  * SLACK_URL - the invite link for the group's Slack. Joining the Slack is how
@@ -32,7 +31,8 @@ export const LUMA_CALENDAR_URL = 'https://luma.com/southparkcommons-events';
  *   "Join our Slack" button falls back to emailing the group, so it is never
  *   broken. Paste the invite link to switch it on.
  */
-export const SLACK_URL: string | null = null;
+export const SLACK_URL: string | null =
+  'https://join.slack.com/t/nuaisafety/shared_invite/zt-4bwdf0z1w-DnPKeS6kprWA~7e1_BPCQw';
 
 export const EMAIL = 'nuaisafety@gmail.com';
 
@@ -116,9 +116,7 @@ export const TEAM: Person[] = [
 /** Title shown under each fellow's name on /team. */
 export const FELLOW_TITLE = 'Fellow';
 
-/* PLACEHOLDER. These names are made up, to fill out the Fellows section while
-   the layout is worked on. Replace them with real fellows, or set this to []
-   to hide the section, before the page goes live. */
-export const FELLOWS: Person[] = Array.from({ length: 10 }, () => ({
-  name: 'Timmy Tuffknuckles',
-}));
+/* Fellows shown on /team. The section is hidden while this is empty. Add one
+   entry per fellow, e.g. { name: 'Jane Doe' }, once someone has completed a
+   fellowship. */
+export const FELLOWS: Person[] = [];
