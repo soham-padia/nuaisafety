@@ -125,6 +125,8 @@ export const TEAM: Person[] = [
   { name: 'Rohan Kathuria' },
   { name: 'Julia Rowniewski' },
   { name: 'Eric Shi' },
+  { name: 'Ryan Baylon' },
+  { name: 'Max Eng' },
 ];
 
 /** Title shown under each fellow's name on /team. */
