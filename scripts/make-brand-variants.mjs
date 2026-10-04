@@ -1,5 +1,5 @@
 /**
- * Dark-surface variants of the brand assets.
+ * Surface variants of the brand assets.
  *
  * Recolours the existing PNGs rather than re-rendering them, so the letterforms
  * and the layout are pixel-identical to the versions already in circulation.
@@ -7,15 +7,25 @@
  * Each source pixel is decomposed into (foreground colour, coverage) against the
  * background it was drawn on, then recomposited on the new background. Doing it
  * that way keeps the anti-aliased edges clean; a straight channel inversion
- * leaves a light halo around the accent dot.
+ * leaves a light halo around the accent dot, and a plain white-to-alpha trick
+ * leaves a grey fringe on the letterforms.
  */
 import sharp from 'sharp';
 
 const INK = [20, 22, 26];       // #14161a
 const ACCENT = [200, 16, 46];   // #c8102e
+const WHITE = [255, 255, 255];
 const clamp = (v) => Math.max(0, Math.min(255, Math.round(v)));
 const luma = (r, g, b) => 0.2126 * r + 0.7152 * g + 0.0722 * b;
 const isAccent = (r, g, b) => r - (g + b) / 2 > 30;
+const unit = (v) => Math.max(0, Math.min(1, v));
+
+/** How much of this pixel is mark rather than white background, 0 to 1. */
+function coverage(r, g, b) {
+  return isAccent(r, g, b)
+    ? unit((255 - b) / (255 - ACCENT[2]))
+    : unit((255 - luma(r, g, b)) / (255 - luma(...INK)));
+}
 
 const SRC = 'brand';
 const OUT = SRC;
@@ -47,17 +57,30 @@ async function inverseOnWhite(src, dest) {
   const out = Buffer.alloc(info.width * info.height * 3);
   for (let i = 0, o = 0; i < data.length; i += info.channels, o += 3) {
     const [r, g, b] = [data[i], data[i + 1], data[i + 2]];
-    if (isAccent(r, g, b)) {
-      const a = Math.max(0, Math.min(1, (255 - b) / (255 - ACCENT[2])));
-      out[o] = clamp(ACCENT[0] * a);
-      out[o + 1] = clamp(ACCENT[1] * a);
-      out[o + 2] = clamp(ACCENT[2] * a);
-    } else {
-      const a = Math.max(0, Math.min(1, (255 - luma(r, g, b)) / (255 - luma(...INK))));
-      out[o] = out[o + 1] = out[o + 2] = clamp(255 * a);
-    }
+    const a = coverage(r, g, b);
+    const fg = isAccent(r, g, b) ? ACCENT : WHITE;
+    out[o] = clamp(fg[0] * a);
+    out[o + 1] = clamp(fg[1] * a);
+    out[o + 2] = clamp(fg[2] * a);
   }
   await sharp(out, { raw: { width: info.width, height: info.height, channels: 3 } })
+    .png({ compressionLevel: 9 })
+    .toFile(dest);
+  return info;
+}
+
+/** Opaque source drawn on white. Lifts the marks off the background entirely. */
+async function transparentFromWhite(src, dest, { ink }) {
+  const { data, info } = await sharp(src).removeAlpha().raw()
+    .toBuffer({ resolveWithObject: true });
+  const out = Buffer.alloc(info.width * info.height * 4);
+  for (let i = 0, o = 0; i < data.length; i += info.channels, o += 4) {
+    const [r, g, b] = [data[i], data[i + 1], data[i + 2]];
+    const fg = isAccent(r, g, b) ? ACCENT : ink;
+    [out[o], out[o + 1], out[o + 2]] = fg;
+    out[o + 3] = clamp(255 * coverage(r, g, b));
+  }
+  await sharp(out, { raw: { width: info.width, height: info.height, channels: 4 } })
     .png({ compressionLevel: 9 })
     .toFile(dest);
   return info;
@@ -83,7 +106,11 @@ await sharp({
 // 3. Square avatar on black.
 await inverseOnWhite(`${SRC}/logo-square.png`, `${OUT}/logo-square-black.png`);
 
-// 4. Hero diagram for dark slides. Transparent, so it sits on any dark surface.
+// 4 and 5. Square mark with no background at all, in both inks.
+await transparentFromWhite(`${SRC}/logo-square.png`, `${OUT}/logo-square-transparent.png`, { ink: INK });
+await transparentFromWhite(`${SRC}/logo-square.png`, `${OUT}/logo-square-inverse.png`, { ink: WHITE });
+
+// 6. Hero diagram for dark slides. Transparent, so it sits on any dark surface.
 await inverseTransparent(`${SRC}/perceptron.png`, `${OUT}/perceptron-inverse.png`);
 
-console.log('wrote logo-wordmark-inverse, logo-wordmark-black, logo-square-black, perceptron-inverse');
+console.log('wrote 6 variants into brand/');
