@@ -1,5 +1,5 @@
 ---
-import { SIGNUP_URL, EMAIL } from '../config';
+import { SIGNUP_URL, mailtoHref } from '../config';
 
 interface Props {
   /** "button" for a primary CTA, "inline" for a sentence-level link. */
@@ -8,19 +8,18 @@ interface Props {
 }
 
 const { variant = 'button', label = 'Join the mailing list' } = Astro.props;
+
+/* The form is the normal path. Without one we offer email instead, and with no
+   address to publish either, /join explains every way in. The CTA is never a
+   dead link and never says "email us" when there is nothing to email. */
+const email = mailtoHref('Joining the mailing list');
+const href = SIGNUP_URL ?? email ?? '/join';
+const text = !SIGNUP_URL && email
+  ? (variant === 'button' ? 'Email us to join' : 'email us to join')
+  : label;
 ---
-{SIGNUP_URL ? (
-  variant === 'button' ? (
-    <a class="btn" href={SIGNUP_URL}>{label} →</a>
-  ) : (
-    <a class="arrow" href={SIGNUP_URL}><span>{label}</span></a>
-  )
-) : variant === 'button' ? (
-  <a class="btn" href={`mailto:${EMAIL}?subject=Joining%20the%20mailing%20list`}>
-    Email us to join →
-  </a>
+{variant === 'button' ? (
+  <a class="btn" href={href}>{text} →</a>
 ) : (
-  <a class="arrow" href={`mailto:${EMAIL}?subject=Joining%20the%20mailing%20list`}>
-    <span>email us to join</span>
-  </a>
+  <a class="arrow" href={href}><span>{text}</span></a>
 )}

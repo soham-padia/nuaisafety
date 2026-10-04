@@ -13,7 +13,8 @@ export const SIGNUP_URL: string | null = 'https://airtable.com/appTpg6JO93Aqr1xs
  *   Same pattern as SIGNUP_URL: while it is null, the CTA falls back to email,
  *   so the button is never broken. Paste the form link to switch it on.
  */
-export const EXEC_URL: string | null = 'https://forms.gle/sPaXtz6pq6hDyQBq8';
+export const EXEC_URL: string | null =
+  'https://airtable.com/appTpg6JO93Aqr1xs/pagJpuw954bZSuywr/form';
 
 /**
  * LUMA_CALENDAR_ID - the Luma calendar shown in the Events section on the home page.
@@ -34,7 +35,20 @@ export const LUMA_CALENDAR_URL = 'https://luma.com/nuaisafety';
 export const SLACK_URL: string | null =
   'https://join.slack.com/t/nuaisafety/shared_invite/zt-4bwdf0z1w-DnPKeS6kprWA~7e1_BPCQw';
 
-export const EMAIL = 'nuaisafety@gmail.com';
+/**
+ * EMAIL - the address published in the footer, or null while there is none to
+ *   publish. The gmail address is retired pending a nuaisafety@northeastern.edu.
+ *   While this is null the footer drops its Contact line and every email
+ *   fallback routes elsewhere, so nothing renders a dead mailto. To switch it
+ *   back on, put the address here. That is the only edit needed.
+ */
+export const EMAIL: string | null = null;
+
+/** A mailto for the group, or null when there is no address to publish. */
+export const mailtoHref = (subject?: string): string | null =>
+  EMAIL === null
+    ? null
+    : `mailto:${EMAIL}${subject ? `?subject=${encodeURIComponent(subject)}` : ''}`;
 
 export const SITE = {
   name: 'NU AI Safety',

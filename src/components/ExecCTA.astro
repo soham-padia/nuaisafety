@@ -1,5 +1,5 @@
 ---
-import { EXEC_URL, EMAIL } from '../config';
+import { EXEC_URL, mailtoHref } from '../config';
 
 interface Props {
   variant?: 'button' | 'inline';
@@ -7,7 +7,7 @@ interface Props {
 }
 
 const { variant = 'button', label = 'Join the executive group' } = Astro.props;
-const href = EXEC_URL ?? `mailto:${EMAIL}?subject=Executive%20group`;
+const href = EXEC_URL ?? mailtoHref('Executive group') ?? '/join';
 ---
 {variant === 'button' ? (
   <a class="btn" href={href}>{label} →</a>

@@ -2,9 +2,9 @@
 import Base from '../layouts/Base.astro';
 import Signup from '../components/Signup.astro';
 import ExecCTA from '../components/ExecCTA.astro';
-import { EMAIL, SLACK_URL } from '../config';
+import { SLACK_URL, mailtoHref } from '../config';
 
-const slackHref = SLACK_URL ?? `mailto:${EMAIL}?subject=Joining%20the%20Slack`;
+const slackHref = SLACK_URL ?? mailtoHref('Joining the Slack');
 ---
 <Base
   title="Join"
@@ -18,7 +18,7 @@ const slackHref = SLACK_URL ?? `mailto:${EMAIL}?subject=Joining%20the%20Slack`;
         fellowships. You can also apply to join our executive board.
       </p>
       <div class="actions join__slack">
-        <a class="btn btn--ghost" href={slackHref}>Join our Slack →</a>
+        {slackHref && <a class="btn btn--ghost" href={slackHref}>Join our Slack →</a>}
       </div>
 
       <div class="paths">

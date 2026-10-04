@@ -67,10 +67,12 @@ const ogImage = new URL('/og.png', Astro.site);
             </nav>
           </div>
           <div class="foot__contact">
-            <p>
-              <span class="foot__label">Contact</span>
-              <a href={`mailto:${EMAIL}`}>{EMAIL}</a>
-            </p>
+            {EMAIL && (
+              <p>
+                <span class="foot__label">Contact</span>
+                <a href={`mailto:${EMAIL}`}>{EMAIL}</a>
+              </p>
+            )}
             {SOCIAL.length > 0 && (
               <p>
                 <span class="foot__label">Follow</span>
