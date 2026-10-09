@@ -1,0 +1,162 @@
+---
+/**
+ * The other slider. The hero hands the work to the machine; this one hands it
+ * to people. It writes `g`, which scales down every bit of damage the first
+ * slider did, here and on every other page, and adds things that only exist
+ * in the good ending: a crowd, kites, a banner for the fellowships.
+ *
+ * The face is the hero's face. As people arrive its shadow shrinks back from
+ * whatever size the visitor left it at to an ordinary shadow behind it.
+ *
+ * Copy is framed as what it would look like, never as what has happened. The
+ * one fact in here, the fellowship date, is true.
+ */
+import Signup from './Signup.astro';
+import ExecCTA from './ExecCTA.astro';
+
+const base = import.meta.env.BASE_URL.replace(/\/$/, '');
+const CROWD = 30;
+const BODY = ['#e2a59c', '#9db6cf', '#e5c88c', '#a7c3a0', '#c6a6c6', '#8ea8bf', '#e0b38f', '#b7b0d6'];
+const HEAD = ['#e8cdb5', '#c99d7e', '#a97b5c', '#e2bc9a', '#8d6248'];
+const crowd = Array.from({ length: CROWD }, (_, i) => {
+  const row = i < 15 ? 0 : 1;
+  const k = row ? i - 15 : i;
+  // The first few are always there: a handful of people already working on it.
+  const at = i < 5 ? -1 : +(0.08 + ((i * 7) % 25) / 25 * 0.86).toFixed(3);
+  return { x: 22 + k * 31 + (row ? 15 : 0), y: row ? 80 : 58, s: row ? 1.05 : 0.9, at,
+           body: BODY[i % BODY.length], head: HEAD[(i * 3) % HEAD.length] };
+});
+---
+<section class="band good" aria-labelledby="good">
+  <div class="wrap good__grid">
+    <div class="good__text">
+      <h2 id="good">Now hand it to more people.</h2>
+      <p class="lede">
+        The first slider handed the work to the machine. This one hands it to people. Drag it,
+        and watch what happens to everything you broke on the way down.
+      </p>
+      <p class="good__event" id="gdEvent">A handful of us. Not enough people to check much of anything.</p>
+      <input class="ovs__range ovs__range--untouched" type="range" id="gdRange"
+             min="0" max="4" step="1" value="0" aria-label="How many people work on this" />
+      <div class="ovs__ends"><span>A handful of us</span><span>Enough of us</span></div>
+      <p class="good__close" id="gdClose" hidden>
+        <strong>This is the version we are working toward.</strong> It needs people from every
+        discipline, and it starts with a few more of them this year.
+      </p>
+      <p class="good__fact">
+        Fellowships start in January 2027. <a href={`${base}/join`}>See every way to join</a>.
+      </p>
+      <div class="actions">
+        <Signup />
+        <ExecCTA variant="inline" />
+      </div>
+    </div>
+
+    <figure class="good__stage">
+      <div class="good__frame">
+        <svg viewBox="0 -28 480 300" role="img"
+             aria-label="The same smiling face from the top of the page. As more people work on it, its oversized shadow shrinks back to an ordinary shadow just behind it.">
+          <circle class="good__shadow" cx="295" cy="135" r="80" />
+          <g>
+            <circle class="ovs__head" cx="175" cy="190" r="58" />
+            <circle class="ovs__blush" cx="146" cy="207" r="7" />
+            <circle class="ovs__blush" cx="204" cy="207" r="7" />
+            <circle class="ovs__pupil" cx="157" cy="181" r="5.5" />
+            <circle class="ovs__pupil" cx="193" cy="181" r="5.5" />
+            <path class="ovs__mouth" d="M152,203 Q175,226 198,203" fill="none" stroke-width="3.5" stroke-linecap="round" />
+          </g>
+        </svg>
+        <p class="good__bubble" id="gdBubble" aria-hidden="true">Ready when you are!</p>
+      </div>
+      <svg class="good__crowd" viewBox="0 0 480 96" aria-hidden="true">
+        {crowd.map((p) => (
+          <g class="cg-in" style={`--at:${p.at}`}>
+            <g transform={`translate(${p.x} ${p.y}) scale(${p.s})`}>
+              <path d="M-9,0 Q-9,-21 0,-21 Q9,-21 9,0 Z" fill={p.body} />
+              <circle cx="0" cy="-29" r="6" fill={p.head} />
+            </g>
+          </g>
+        ))}
+        <rect x="0" y="86" width="480" height="5" rx="2" class="good__desk" />
+      </svg>
+      <figcaption class="good__count" id="gdCount">A handful of people check its work</figcaption>
+    </figure>
+  </div>
+</section>
+
+<style>
+  .good__grid { display: grid; gap: 2.5rem; align-items: center; }
+  @media (min-width: 62rem) { .good__grid { grid-template-columns: minmax(0, 1fr) minmax(0, 1.1fr); gap: 4rem; } }
+  .good__event { font-size: var(--step-1); line-height: 1.35; min-height: 2.7em; margin: 1.5rem 0 1rem; }
+  .good__close { margin: 1rem 0 0; }
+  .good__fact { color: var(--muted); margin: 1.25rem 0 1rem; }
+  .good__stage {
+    margin: 0; padding: .85rem; border-radius: 14px;
+    background: color-mix(in oklab, var(--paper) 90%, transparent);
+  }
+  .good__frame { position: relative; background: var(--wash); border-radius: 10px; overflow: hidden; }
+  .good__frame svg { display: block; width: 100%; height: auto; }
+  /* From whatever size the visitor left it at, back to an ordinary shadow. */
+  .good__shadow {
+    fill: var(--shadow);
+    transform-box: view-box; transform-origin: 295px 135px;
+    transform: translate(calc(var(--g) * -114px), calc(var(--g) * 61px))
+               scale(calc((1 + var(--t) * .34) * (1 - var(--g)) + .725 * var(--g)));
+    opacity: calc(.3 + var(--t) * .36 * (1 - var(--g)) + var(--g) * .12);
+  }
+  .good__bubble {
+    position: absolute; left: 3.5%; top: 9%; max-width: 50%; margin: 0;
+    background: var(--paper); border: 1.5px solid var(--ink); border-radius: 14px;
+    padding: .45rem .75rem; font-size: clamp(.8rem, 1.6vw, .95rem); font-weight: 600; line-height: 1.3;
+  }
+  .good__bubble.is-pop { animation: ovsPop .25s ease; }
+  .good__crowd { display: block; width: 100%; height: auto; margin-top: .75rem; }
+  .good__desk { fill: var(--muted); }
+  .good__count { font-size: .9rem; color: var(--muted); margin-top: .35rem; }
+</style>
+
+<script>
+  import { getG, setG, onG } from '../scripts/oversight';
+
+  const STEPS = [
+    { b: 'Ready when you are!', e: 'A handful of us. Not enough people to check much of anything.',
+      n: 'A handful of people check its work' },
+    { b: 'Here is how I got that answer.', e: 'A fellowship cohort learns to look inside the systems they will use.',
+      n: 'A cohort checks its work' },
+    { b: 'Want someone to check this first?', e: 'Policy students end up in the rooms where deployment gets decided.',
+      n: 'Dozens of people check its work' },
+    { b: 'I am not sure about this part. Flagging it.', e: 'Security and biology students build the layers that catch what slips through.',
+      n: 'Hundreds of people check its work' },
+    { b: 'Checked, and checked again.', e: 'Enough people checking that nothing important ships unread.',
+      n: 'Enough people check its work' },
+  ];
+  const LAST = STEPS.length - 1;
+  const $ = (id: string) => document.getElementById(id)!;
+  const range = $('gdRange') as HTMLInputElement;
+  let last = -1;
+
+  function render(L: number) {
+    const st = STEPS[L];
+    const bubble = $('gdBubble');
+    if (L !== last && last !== -1) { bubble.classList.remove('is-pop'); void bubble.offsetWidth; bubble.classList.add('is-pop'); }
+    last = L;
+    bubble.textContent = st.b;
+    $('gdEvent').textContent = st.e;
+    $('gdCount').textContent = st.n;
+    ($('gdClose') as HTMLElement).hidden = L !== LAST;
+    range.value = String(L);
+    range.style.setProperty('--p', `${(L / LAST) * 100}%`);
+    range.setAttribute('aria-valuetext', `${st.n}. ${st.e}`);
+  }
+
+  range.addEventListener('input', () => {
+    range.classList.remove('ovs__range--untouched');
+    render(+range.value);
+    setG(+range.value / LAST);
+  });
+  onG((g) => { const L = Math.round(g * LAST); if (L !== last) render(L); });
+
+  const start = Math.round(getG() * LAST);
+  if (start > 0) range.classList.remove('ovs__range--untouched');
+  render(start);
+</script>

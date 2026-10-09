@@ -1,0 +1,84 @@
+---
+/**
+ * Concentration of power, as a toy: influence collecting in a few nodes.
+ *
+ * Twenty nodes start as a mesh of equals, each linked to its neighbours, so
+ * anyone can check anyone. As capability rises, two nodes swell, the links
+ * between equals thin out, and every remaining link runs to one of the two.
+ *
+ * All of it is CSS reading --tb, so it moves with the hero slider and the
+ * pill. Its own slider writes the same shared value, which means dragging it
+ * here moves the whole page too. That is deliberate: there is one world.
+ */
+const COLS = 5, ROWS = 4;
+// Fixed jitter so the mesh looks hand-drawn but builds identically every time.
+const J = [[3, -4], [-5, 2], [4, 5], [-2, -3], [5, 1], [-4, 4], [2, -5], [-3, 3], [4, -2], [-5, -1],
+           [1, 4], [-2, -5], [5, 3], [-4, -2], [3, 5], [-1, -4], [4, 2], [-5, 5], [2, -3], [-3, 1]];
+const nodes = Array.from({ length: COLS * ROWS }, (_, i) => {
+  const c = i % COLS, r = Math.floor(i / COLS);
+  return { i, c, r, x: 36 + c * 62 + J[i][0], y: 26 + r * 44 + J[i][1] };
+});
+const HUBS = [6, 13];
+const near = (n: { x: number; y: number }) =>
+  HUBS.map((h) => nodes[h]).sort((a, b) => Math.hypot(a.x - n.x, a.y - n.y) - Math.hypot(b.x - n.x, b.y - n.y))[0];
+const mesh: [number, number][] = [];
+for (const n of nodes) {
+  if (n.c < COLS - 1) mesh.push([n.i, n.i + 1]);
+  if (n.r < ROWS - 1) mesh.push([n.i, n.i + COLS]);
+  if (n.c < COLS - 1 && n.r < ROWS - 1 && (n.c + n.r) % 2 === 0) mesh.push([n.i, n.i + COLS + 1]);
+}
+const spokes = nodes.filter((n) => !HUBS.includes(n.i)).map((n) => [n, near(n)] as const);
+---
+<div class="toy pg">
+  <svg viewBox="0 0 320 172" role="img" aria-labelledby="pgTitle">
+    <title id="pgTitle">A network of twenty equal nodes linked to their neighbours. As capability rises, two nodes grow large, the links between equals fade, and every other node ends up linked only to one of the two.</title>
+    <g class="pg__mesh">
+      {mesh.map(([a, b]) => <line x1={nodes[a].x} y1={nodes[a].y} x2={nodes[b].x} y2={nodes[b].y} />)}
+    </g>
+    <g class="pg__spokes">
+      {spokes.map(([n, h]) => <line x1={n.x} y1={n.y} x2={h.x} y2={h.y} />)}
+    </g>
+    {nodes.map((n) => (
+      <circle cx={n.x} cy={n.y} r="5" class={HUBS.includes(n.i) ? 'pg__node pg__node--hub' : 'pg__node'} />
+    ))}
+  </svg>
+  <input class="ovs__range pg__range" type="range" id="pgRange" min="0" max="100" step="1" value="0"
+         aria-label="Capability" />
+  <div class="ovs__ends"><span>Spread out</span><span>In a few hands</span></div>
+  <p class="toy__cap">
+    Each line is someone who can check someone else. Add capability and influence quietly
+    collects in a few places, while the links that let anyone else push back thin out.
+    <span class="toy__src">An illustration, not data.</span>
+  </p>
+</div>
+
+<style>
+  .pg__mesh line { stroke: var(--muted); stroke-width: 1.2; opacity: calc(.5 * (1 - var(--tb) * .92)); }
+  .pg__spokes line { stroke: var(--accent); stroke-width: 1.1; opacity: calc(var(--tb) * .75); }
+  .pg__node {
+    fill: var(--ink);
+    transform-box: fill-box; transform-origin: center;
+    transform: scale(calc(1 - var(--tb) * .45));
+    opacity: calc(1 - var(--tb) * .4);
+  }
+  .pg__node--hub {
+    fill: color-mix(in oklab, var(--ink), var(--accent) calc(var(--tb) * 100%));
+    transform: scale(calc(1 + var(--tb) * 2.3));
+    opacity: 1;
+  }
+  .pg__range { margin-block-start: .5rem; }
+</style>
+
+<script>
+  import { getT, setT, onT } from '../../scripts/oversight';
+
+  const range = document.getElementById('pgRange') as HTMLInputElement;
+  const show = (v: number) => {
+    range.value = String(v);
+    range.style.setProperty('--p', `${v}%`);
+    range.setAttribute('aria-valuetext', v < 15 ? 'Spread out' : v < 60 ? 'Collecting' : 'In a few hands');
+  };
+  show(Math.round(getT() * 100));
+  range.addEventListener('input', () => { show(+range.value); setT(+range.value / 100); });
+  onT((t) => { const v = Math.round(t * 100); if (v !== +range.value) show(v); });
+</script>

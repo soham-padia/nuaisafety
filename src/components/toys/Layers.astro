@@ -1,0 +1,167 @@
+---
+/**
+ * Biological misuse, as a toy: defence in depth, the Swiss cheese model.
+ *
+ * Abstract on purpose. Requests fly left to right through four layers of
+ * safeguards, each with holes in different places. A request only gets through
+ * if it finds a hole in every active layer. Turn a layer off and more get
+ * through. As capability rises (--tb), every hole widens, which is the
+ * argument for having several.
+ *
+ * Seeded, so the stream is the same on every visit, and pre-warmed so a
+ * static or reduced-motion view still shows requests stopped at each layer.
+ */
+const LAYERS = [
+  { x: 96, holes: [30, 96], label: 'Model refuses' },
+  { x: 146, holes: [52, 100], label: 'DNA order screening' },
+  { x: 196, holes: [40, 104], label: 'Lab access' },
+  { x: 246, holes: [62, 116], label: 'Early detection' },
+];
+const TOP = 18, BOT = 166;
+---
+<div class="toy ly">
+  <svg viewBox="0 0 320 184" role="img" aria-labelledby="lyTitle">
+    <title id="lyTitle">Dots representing requests travel left to right through four upright layers of safeguards. Each layer has a few gaps. Most dots are stopped at one layer or another; very few find a gap in every layer and get through.</title>
+    <rect x="300" y={TOP} width="10" height={BOT - TOP} rx="3" class="ly__goal" />
+    {LAYERS.map((l, i) => (
+      <g class="ly__layer" id={`lyL${i}`}>
+        <rect x={l.x} y={TOP} width="14" height={BOT - TOP} rx="3" class="ly__slab" />
+        {l.holes.map((y, j) => <rect id={`lyH${i}${j}`} x={l.x - 1} y={y} width="16" height="24" class="ly__hole" />)}
+      </g>
+    ))}
+    <g id="lyDots"></g>
+  </svg>
+  <p class="toy__stat">Stopped <b id="lyStop">0</b> &nbsp;·&nbsp; Got through <b id="lyPass" class="is-bad">0</b></p>
+  <div class="toy__row" role="group" aria-label="Safeguard layers">
+    {LAYERS.map((l, i) => (
+      <button type="button" class="toy__btn" data-layer={i} aria-pressed="true">{l.label}</button>
+    ))}
+  </div>
+  <p class="toy__cap">
+    No single safeguard stops everything. Several, with gaps in different places, stop
+    almost everything. Turn one off and watch. As models get more capable, every gap widens.
+  </p>
+</div>
+
+<style>
+  .ly__slab { fill: color-mix(in oklab, var(--ink), var(--wash) 72%); }
+  .ly__hole { fill: var(--wash); }
+  .ly__layer { transition: opacity .25s ease; }
+  .ly__layer.is-off { opacity: .14; }
+  .ly__goal { fill: color-mix(in oklab, var(--accent), var(--wash) 80%); }
+  :global(.ly__dot) { fill: var(--ink); }
+  :global(.ly__dot.is-stopped) { fill: var(--muted); }
+  :global(.ly__dot.is-through) { fill: var(--accent); }
+</style>
+
+<script>
+  import { getTb, onT, onG } from '../../scripts/oversight';
+
+  const LAYERS = [
+    { x: 96, holes: [30, 96] }, { x: 146, holes: [52, 100] },
+    { x: 196, holes: [40, 104] }, { x: 246, holes: [62, 116] },
+  ];
+  const TOP = 18, BOT = 166, SPEED = 82, EVERY = 0.38, FADE = 0.9, MAXDOTS = 40;
+  const NS = 'http://www.w3.org/2000/svg';
+  const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const $ = (id: string) => document.getElementById(id)!;
+  const layer = (i: number) => $(`lyL${i}`);
+
+  // mulberry32: a tiny seeded generator, so the stream is reproducible.
+  const seeded = (seed: number) => () => {
+    seed |= 0; seed = (seed + 0x6d2b79f5) | 0;
+    let t = Math.imul(seed ^ (seed >>> 15), 1 | seed);
+    t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+  };
+
+  const active = [true, true, true, true];
+  let holeH = 24, rand = seeded(7), spawnIn = 0, stopped = 0, through = 0;
+  type Dot = { el: SVGCircleElement; x: number; y: number; state: 'fly' | 'stopped' | 'through'; age: number };
+  let dots: Dot[] = [];
+  const group = $('lyDots');
+
+  function widen() {
+    // Capability widens every gap: 24 units at rest, 36 at full.
+    holeH = 24 + 12 * getTb();
+    LAYERS.forEach((l, i) => l.holes.forEach((_, j) => $(`lyH${i}${j}`).setAttribute('height', holeH.toFixed(1))));
+  }
+
+  const inHole = (i: number, y: number) => LAYERS[i].holes.some((h) => y >= h && y <= h + holeH);
+
+  function step(dt: number) {
+    spawnIn -= dt;
+    if (spawnIn <= 0 && dots.length < MAXDOTS) {
+      spawnIn += EVERY;
+      const el = document.createElementNS(NS, 'circle') as SVGCircleElement;
+      el.setAttribute('r', '3');
+      el.setAttribute('class', 'ly__dot');
+      group.appendChild(el);
+      dots.push({ el, x: 8, y: TOP + 4 + rand() * (BOT - TOP - 8), state: 'fly', age: 0 });
+    }
+    for (const d of dots) {
+      if (d.state !== 'fly') { d.age += dt; continue; }
+      const x0 = d.x; d.x += SPEED * dt;
+      for (let i = 0; i < LAYERS.length; i++) {
+        const lx = LAYERS[i].x;
+        if (active[i] && x0 < lx && d.x >= lx && !inHole(i, d.y)) {
+          d.x = lx - 3.5; d.state = 'stopped'; stopped++; break;
+        }
+      }
+      if (d.state === 'fly' && d.x >= 300) { d.x = 300; d.state = 'through'; through++; }
+    }
+    dots = dots.filter((d) => {
+      if (d.state !== 'fly' && d.age > FADE) { d.el.remove(); return false; }
+      return true;
+    });
+  }
+
+  function draw() {
+    for (const d of dots) {
+      d.el.setAttribute('cx', d.x.toFixed(1));
+      d.el.setAttribute('cy', d.y.toFixed(1));
+      d.el.setAttribute('class', `ly__dot${d.state === 'stopped' ? ' is-stopped' : d.state === 'through' ? ' is-through' : ''}`);
+      d.el.style.opacity = d.state === 'fly' ? '1' : String(Math.max(0, 1 - d.age / FADE));
+    }
+    $('lyStop').textContent = String(stopped);
+    $('lyPass').textContent = String(through);
+  }
+
+  /* A fresh, reproducible stream, run forward so there is something to see. */
+  function restart(seconds: number) {
+    dots.forEach((d) => d.el.remove());
+    dots = []; rand = seeded(7); spawnIn = 0; stopped = 0; through = 0;
+    for (let i = 0; i < seconds * 60; i++) step(1 / 60);
+    draw();
+  }
+
+  document.querySelectorAll<HTMLButtonElement>('.ly [data-layer]').forEach((b) =>
+    b.addEventListener('click', () => {
+      const i = +b.dataset.layer!;
+      active[i] = !active[i];
+      b.setAttribute('aria-pressed', String(active[i]));
+      layer(i).classList.toggle('is-off', !active[i]);
+      restart(reduce ? 14 : 4);
+    }));
+
+  const rewiden = () => { widen(); if (reduce) restart(14); };
+  onT(rewiden);
+  onG(rewiden);
+
+  widen();
+  restart(reduce ? 14 : 4);
+
+  if (!reduce) {
+    let running = false, prev = 0;
+    const loop = (now: number) => {
+      if (!running) return;
+      step(Math.min(0.05, (now - prev) / 1000)); prev = now;
+      draw();
+      requestAnimationFrame(loop);
+    };
+    new IntersectionObserver(([e]) => {
+      if (e.isIntersecting && !running) { running = true; prev = performance.now(); requestAnimationFrame(loop); }
+      else if (!e.isIntersecting) running = false;
+    }).observe(document.querySelector('.ly')!);
+  }
+</script>

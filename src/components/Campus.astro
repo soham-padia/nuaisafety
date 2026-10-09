@@ -98,6 +98,16 @@ const trees: [number, number, number, number][] = [
   [1320, 238, 24, 1], [1592, 232, 30, 2], [26, 240, 22, 1],
 ];
 const TREE = ['#bfd3b0', '#aecaa0', '#e2cf98'];
+
+/* The good ending, driven by --g from the slider at the bottom of the home
+   page. Everyone who left comes back on their own, because their fade reads
+   the damage (--tb), and these arrive on top: more people than there were. */
+const extra = [96, 160, 228, 286, 360, 436, 524, 618, 688, 762, 884, 952, 1030, 1112, 1220, 1300, 1372, 1444, 1520]
+  .map((x, i) => ({
+    x, y: 296 - ((i + 1) % 3) * 3, s: [.95, 1.04, .9][i % 3],
+    body: BODY[(i + 3) % BODY.length], head: HEAD[(i + 2) % HEAD.length],
+    at: +(.1 + ((i * 7) % 19) / 19 * .78).toFixed(3),
+  }));
 ---
 <div class="campus" aria-hidden="true" data-scene={scene}>
   <svg viewBox="0 0 1600 360" preserveAspectRatio="xMidYMax slice">
@@ -117,6 +127,14 @@ const TREE = ['#bfd3b0', '#aecaa0', '#e2cf98'];
       <ellipse class="cx-in cx-amp" style="--at:.42;--amp:.9;transform-origin:50% 100%"
                cx="330" cy="266" rx="460" ry="150" fill="url(#cxGlow)" />
     )}
+    <g class="cg-in" style="--at:.45">
+      <path d="M612,42 L626,58 L612,78 L598,58 Z" fill="#c8102e" opacity=".75" />
+      <path d="M612,78 Q600,140 640,200 Q660,232 652,262" fill="none" stroke="#b9b4ab" stroke-width="1" />
+    </g>
+    <g class="cg-in" style="--at:.65">
+      <path d="M1010,30 L1022,44 L1010,61 L998,44 Z" fill="#e5c88c" />
+      <path d="M1010,61 Q1030,130 990,190 Q975,230 984,264" fill="none" stroke="#b9b4ab" stroke-width="1" />
+    </g>
     <g class="cx-out" style="--at:.36" fill="none" stroke="#b9b4ab" stroke-width="2" stroke-linecap="round">
       <path d="M420,70 l8,-6 l8,6" /><path d="M446,84 l6,-5 l6,5" /><path d="M402,92 l6,-5 l6,5" />
     </g>
@@ -160,6 +178,10 @@ const TREE = ['#bfd3b0', '#aecaa0', '#e2cf98'];
       </g>
     ))}</g>
 
+    <g class="cg-in" style="--at:.72">
+      <rect x="882" y="176" width="216" height="24" rx="2" fill="#fbf9f4" stroke="#c8102e" stroke-width="2" />
+      <text x="990" y="192" font-size="10.5" font-weight="700" letter-spacing=".6" text-anchor="middle" fill="#c8102e">FELLOWSHIPS START JANUARY 2027</text>
+    </g>
     {scene === 'bio' && (
       <g class="cx-in" style="--at:.48">
         <rect x="596" y="178" width="198" height="28" rx="2" fill="#fbf9f4" stroke="#c8102e" stroke-width="2" />
@@ -217,6 +239,14 @@ const TREE = ['#bfd3b0', '#aecaa0', '#e2cf98'];
         </g>
       </g>
     ))}
+    {extra.map((p) => (
+      <g class="cg-in" style={`--at:${p.at}`}>
+        <g transform={`translate(${p.x} ${p.y}) scale(${p.s})`}>
+          <path d="M-8,0 Q-8,-19 0,-19 Q8,-19 8,0 Z" fill={p.body} />
+          <circle cx="0" cy="-26" r="5.5" fill={p.head} />
+        </g>
+      </g>
+    ))}
     {scene === 'power' && range(0, 7, 1).map((k) => (
       <g class="cx-in" style={`--at:${(.46 + k * .03).toFixed(2)}`}>
         <g transform={`translate(${430 + k * 92} 294)`}>
@@ -271,14 +301,19 @@ const TREE = ['#bfd3b0', '#aecaa0', '#e2cf98'];
 </div>
 
 <script>
-  /* On the home page the hero slider is the control, so the campus stays bright
-     while the hero is on screen and fades to a watermark once you scroll past.
-     On every other page the content sits over the scene, so it rests as a
-     watermark and only comes forward while the pill is held (see the pill). */
+  /* Bright while a control that drives it is on screen, a watermark otherwise.
+     On the home page that is the hero slider or the slider at the bottom. On
+     every other page the content sits over the scene, so it rests faint and
+     comes forward only while the pill is held (see OversightPill). */
   const campus = document.querySelector<HTMLElement>('.campus');
-  const fig = document.querySelector('.ovs');
-  if (campus && fig) {
-    new IntersectionObserver(([e]) => campus.classList.toggle('is-dim', !e.isIntersecting)).observe(fig);
+  const drivers = document.querySelectorAll('.ovs, .good__stage');
+  if (campus && drivers.length) {
+    const seen = new Set<Element>();
+    const io = new IntersectionObserver((entries) => {
+      for (const e of entries) e.isIntersecting ? seen.add(e.target) : seen.delete(e.target);
+      campus.classList.toggle('is-dim', seen.size === 0);
+    });
+    drivers.forEach((d) => io.observe(d));
   } else if (campus) {
     campus.classList.add('is-dim');
   }

@@ -35,7 +35,7 @@ const ogImage = new URL('/og.png', Astro.site);
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     {/* Before first paint, so a page opened mid-session never flashes the
         untouched campus and then snaps to the stored future. */}
-    <script is:inline>try{var t=sessionStorage.getItem('nuais-t');if(t!==null)document.documentElement.style.setProperty('--t',t)}catch(e){}</script>
+    <script is:inline>try{var s=sessionStorage,d=document.documentElement.style,t=s.getItem('nuais-t'),g=s.getItem('nuais-g');if(t!==null)d.setProperty('--t',t);if(g!==null)d.setProperty('--g',g)}catch(e){}</script>
     <title>{pageTitle}</title>
     <meta name="description" content={description} />
     <link rel="canonical" href={canonical} />

@@ -2,6 +2,11 @@
 import Base from '../layouts/Base.astro';
 import Signup from '../components/Signup.astro';
 import Oversight from '../components/Oversight.astro';
+import Perceptron from '../components/Perceptron.astro';
+import Goodnews from '../components/Goodnews.astro';
+import RewardHack from '../components/toys/RewardHack.astro';
+import PowerGraph from '../components/toys/PowerGraph.astro';
+import Layers from '../components/toys/Layers.astro';
 import { LUMA_CALENDAR_ID, LUMA_CALENDAR_URL } from '../config';
 ---
 <Base>
@@ -24,35 +29,79 @@ import { LUMA_CALENDAR_ID, LUMA_CALENDAR_URL } from '../config';
     </div>
   </section>
 
+  {/* The spine. The hero hands the work over; the fork draws that decision down
+      into the three ways it goes wrong, each with a toy that shows it; the
+      perceptron is where this group starts; the slider at the bottom hands it
+      to people instead. */}
   <section class="band" aria-labelledby="paths">
     <div class="wrap">
       <h2 id="paths">Three different problems. Three different kinds of people.</h2>
-      <p class="paths__lede">
-        AI safety is not one problem with one kind of answer. The three routes people
-        worry about most need different training, different rooms, and different arguments.
+      <p class="routes__lede">
+        Hand it enough, and the road splits. AI safety is not one problem with one kind of
+        answer, and the three routes people worry about most need different training,
+        different rooms, and different arguments.
       </p>
-      <div class="grid grid--3 paths">
-        <div class="path">
+      <svg class="fork" viewBox="0 0 1000 120" aria-hidden="true">
+        <g class="fork__ghost">
+          <path d="M500,0 L500,34 C500,82 168,66 168,120" />
+          <path d="M500,0 L500,120" />
+          <path d="M500,34 C500,82 832,66 832,120" />
+        </g>
+        <g class="fork__live">
+          <path pathLength="1" d="M500,0 L500,34 C500,82 168,66 168,120" />
+          <path pathLength="1" d="M500,0 L500,120" />
+          <path pathLength="1" d="M500,0 L500,34 C500,82 832,66 832,120" />
+        </g>
+      </svg>
+      <div class="grid grid--3 routes">
+        <article class="route">
           <h3>Loss of control</h3>
           <p>Systems that pursue something other than what we asked for, and that we cannot reliably stop.</p>
-          <p class="path__who">Interpretability, evaluations</p>
-        </div>
-        <div class="path">
+          <RewardHack />
+          <p class="route__who">Interpretability, evaluations</p>
+        </article>
+        <article class="route">
           <h3>Concentration of power</h3>
           <p>AI that lets a small group hold power nobody else can meaningfully challenge.</p>
-          <p class="path__who">Governance, law, policy</p>
-        </div>
-        <div class="path">
+          <PowerGraph />
+          <p class="route__who">Governance, law, policy</p>
+        </article>
+        <article class="route">
           <h3>Biological misuse</h3>
           <p>Models that lower the barrier to designing a pathogen, and the defences against that.</p>
-          <p class="path__who">Security, biology, public health</p>
-        </div>
+          <Layers />
+          <p class="route__who">Security, biology, public health</p>
+        </article>
       </div>
-      <p class="paths__note">
+      <p class="routes__note">
         This is roughly how <a href="https://bluedot.org/courses/agi-strategy">BlueDot's AGI Strategy
         course</a> splits the problem. We are not affiliated with them. Their curriculum is open, and
         it is a good place to start reading.
       </p>
+    </div>
+  </section>
+
+  <section class="band band--wash" aria-labelledby="inside">
+    <div class="wrap inside">
+      <div class="prose">
+        <h2 id="inside">Where we start: looking inside</h2>
+        <p>
+          Every one of those problems is easier to catch if you can see what a system is
+          actually doing, not only what it says it did. That boat looked like it was winning.
+        </p>
+        <p>
+          Interpretability is the work of opening the network up and finding which parts respond
+          to what, and why. It is the oldest question in the field, and the part of the problem
+          this group starts with.
+        </p>
+      </div>
+      <figure class="hero__art">
+        <Perceptron />
+        <figcaption>
+          Organization of a perceptron, after Rosenblatt, 1958. Red marks the cells active for
+          the input, and the response unit that fires as a result.
+        </figcaption>
+      </figure>
     </div>
   </section>
 
@@ -114,15 +163,7 @@ import { LUMA_CALENDAR_ID, LUMA_CALENDAR_URL } from '../config';
     </section>
   )}
 
-  <section class="band" aria-labelledby="new">
-    <div class="wrap prose">
-      <h2 id="new">Join Us!</h2>
-      <p class="lede">Fellowships start in January 2027. Learn more <a href="/join">here</a>.</p>
-      <div class="actions">
-        <Signup />
-      </div>
-    </div>
-  </section>
+  <Goodnews />
 </Base>
 
 <style>

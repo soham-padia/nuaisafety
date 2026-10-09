@@ -12,28 +12,22 @@
 </div>
 
 <script>
-  const KEY = 'nuais-t';
+  import { getT, setT, onT } from '../scripts/oversight';
+
   const range = document.getElementById('pillRange') as HTMLInputElement;
   const out = document.getElementById('pillOut')!;
   const words = (v: number) =>
     v < 8 ? 'everything' : v < 35 ? 'most of it' : v < 65 ? 'some of it' : v < 92 ? 'very little' : 'nothing';
 
-  function set(v: number, store: boolean) {
-    const t = v / 100;
-    document.documentElement.style.setProperty('--t', String(t));
+  function show(v: number) {
+    range.value = String(v);
     range.style.setProperty('--p', `${v}%`);
     out.textContent = words(v);
     range.setAttribute('aria-valuetext', `We check ${words(v)}`);
-    if (store) {
-      try { sessionStorage.setItem(KEY, String(t)); } catch { /* private mode */ }
-      dispatchEvent(new Event('nuais:t'));
-    }
   }
 
-  let start = 0;
-  try { start = Math.round(Math.min(1, Math.max(0, +(sessionStorage.getItem(KEY) ?? 0))) * 100); } catch { /* */ }
-  range.value = String(start);
-  set(start, false);
+  const start = Math.round(getT() * 100);
+  show(start);
   if (start > 0) range.classList.remove('ovs__range--untouched');
 
   /* Holding the pill fades the page so you can see the campus behind it, and
@@ -48,7 +42,9 @@
   range.addEventListener('pointerdown', peek);
   range.addEventListener('input', () => {
     range.classList.remove('ovs__range--untouched');
-    set(+range.value, true);
+    show(+range.value);
+    setT(+range.value / 100);
     peek();
   });
+  onT((t) => { const v = Math.round(t * 100); if (v !== +range.value) show(v); });
 </script>

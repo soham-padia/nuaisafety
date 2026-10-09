@@ -16,23 +16,41 @@
   inherits: true;
   initial-value: 0;
 }
+/* How many people have come to help, from the slider at the bottom of the home
+   page. See src/scripts/oversight.ts. */
+@property --g {
+  syntax: '<number>';
+  inherits: true;
+  initial-value: 0;
+}
+/* The damage actually visible: what was handed away, less what people fixed.
+   Everything that degrades reads this rather than --t. */
+@property --tb {
+  syntax: '<number>';
+  inherits: true;
+  initial-value: 0;
+}
 
 :root {
   --t: 0;
+  --g: 0;
+  --tb: calc(var(--t) * (1 - var(--g)));
   /* Where the paper ends up at full oversight loss. Each page overrides it, so
      the same slider sours the page towards a different future on each one. */
   --paper-end: #ece8e2;
   --wash-end:  #e2ddd5;
-  transition: --t .35s ease;
+  transition: --t .35s ease, --g .35s ease;
 
   --ink:    #14161a;
   --muted:  #5b6169;
   --accent: #c8102e;
   /* Warm paper rather than pure white, after Harvard AISST. */
-  --paper:  color-mix(in oklab, #fbf9f4, var(--paper-end) calc(var(--t) * 100%));
-  --wash:   color-mix(in oklab, #f3efe7, var(--wash-end) calc(var(--t) * 100%));
-  --rule:   color-mix(in oklab, #e5dfd5, var(--paper-end) calc(var(--t) * 70%));
-  --shadow: color-mix(in oklab, #b4b8c0, #9aa0a8 calc(var(--t) * 100%));
+  --paper:  color-mix(in oklab,
+              color-mix(in oklab, #fbf9f4, var(--paper-end) calc(var(--tb) * 100%)),
+              #fdf3dc calc(var(--g) * 55%));
+  --wash:   color-mix(in oklab, #f3efe7, var(--wash-end) calc(var(--tb) * 100%));
+  --rule:   color-mix(in oklab, #e5dfd5, var(--paper-end) calc(var(--tb) * 70%));
+  --shadow: color-mix(in oklab, #b4b8c0, #9aa0a8 calc(var(--tb) * 100%));
 
   /* #c8102e on white is 5.88:1, which passes AA for body text, not just large.
      Darkened for the visited/hover state so it stays distinguishable. */
@@ -773,8 +791,15 @@ strong { font-weight: 660; }
   transform-box: view-box;
   transform-origin: 295px 135px;
   fill: var(--shadow);
+  /* --hs and --ho are this step's size and darkness, set by the hero. As people
+     arrive (--g) the shadow slides back behind the face at ordinary size, the
+     same place the bottom slider's shadow ends up. */
+  transform: translate(calc(var(--g) * -114px), calc(var(--g) * 61px))
+             scale(calc(var(--hs, 1) * (1 - var(--g)) + .725 * var(--g)));
+  opacity: calc(var(--ho, .3) * (1 - var(--g)) + .42 * var(--g));
   transition: transform .45s ease, opacity .45s ease;
 }
+.ovs__devilish { opacity: calc(1 - var(--g)); }
 .ovs__shadow .ovs__tail { stroke: var(--shadow); }
 .ovs__horn {
   transform-box: fill-box;
@@ -812,7 +837,7 @@ strong { font-weight: 660; }
 .ovs__desk { position: relative; display: flex; align-items: center; gap: 1rem; margin-top: 1rem; }
 .ovs__desk svg { width: 150px; flex: none; }
 .ovs__person { fill: var(--ink); transition: opacity .4s ease; }
-.ovs__person.is-gone { opacity: .14; }
+.ovs__person.is-gone { opacity: calc(.14 + var(--g) * .86); }
 .ovs__deskline { fill: var(--muted); }
 .ovs__deskLabel { font-size: .9rem; color: var(--muted); }
 .ovs__stamp {
@@ -821,7 +846,7 @@ strong { font-weight: 660; }
   transform: rotate(-9deg) scale(1.6); opacity: 0; pointer-events: none;
   transition: opacity .2s ease, transform .3s cubic-bezier(.3, 1.6, .5, 1);
 }
-.ovs__stamp.is-on { opacity: 1; transform: rotate(-9deg) scale(1); }
+.ovs__stamp.is-on { opacity: calc(1 - var(--g)); transform: rotate(-9deg) scale(1); }
 
 .ovs__event { font-size: var(--step-1); line-height: 1.3; margin: 1.25rem 0 .35rem; min-height: 2.6em; }
 .ovs__source { font-size: .85rem; color: var(--muted); min-height: 1.4em; margin: 0 0 1.25rem; }
@@ -849,12 +874,17 @@ strong { font-weight: 660; }
   .ovs *, .ovs *::before, .ovs *::after { animation: none !important; transition: none !important; }
 }
 
-.paths__lede { color: var(--muted); max-width: var(--measure); }
-.path { border-top: 2px solid var(--accent); padding-top: .85rem; }
-.path h3 { margin: 0 0 .4rem; }
-.path p { margin: 0 0 .5rem; }
-.path__who { font-size: .85rem; color: var(--muted); text-transform: uppercase; letter-spacing: .04em; }
-.paths__note { font-size: .9rem; color: var(--muted); max-width: var(--measure); margin-top: 2rem; }
+.routes__lede { color: var(--muted); max-width: var(--measure); }
+.route {
+  border-top: 2px solid color-mix(in oklab, var(--rule), var(--accent) calc(var(--tb) * 100%));
+  padding-top: .85rem;
+  display: flex;
+  flex-direction: column;
+}
+.route h3 { margin: 0 0 .4rem; }
+.route p { margin: 0 0 .5rem; }
+.route__who { font-size: .85rem; color: var(--muted); text-transform: uppercase; letter-spacing: .04em; margin-top: auto; }
+.routes__note { font-size: .9rem; color: var(--muted); max-width: var(--measure); margin-top: 2rem; }
 
 /* -------------------------------------------------------------------------
    The campus backdrop and the cross-page oversight control.
@@ -882,25 +912,25 @@ html[data-scene="conflict"] { --paper-end: #f1e2d2; --wash-end: #efe1d2; }
 .campus.is-dim { opacity: .28; }
 
 /* Staging. Each element carries its own --at threshold and reads --t. */
-.cx-out  { opacity: clamp(0, calc(1 - (var(--t) - var(--at, 2)) * 6), 1); }
-.cx-in   { opacity: clamp(0, calc((var(--t) - var(--at, 2)) * 6), 1); }
+.cx-out  { opacity: clamp(0, calc(1 - (var(--tb) - var(--at, 2)) * 6), 1); }
+.cx-in   { opacity: clamp(0, calc((var(--tb) - var(--at, 2)) * 6), 1); }
 .cx-rise {
   transform-box: fill-box; transform-origin: 50% 100%;
-  transform: scaleY(clamp(0, calc((var(--t) - var(--at, 2)) * 3.2), 1));
+  transform: scaleY(clamp(0, calc((var(--tb) - var(--at, 2)) * 3.2), 1));
 }
 .cx-amp {
   transform-box: fill-box; transform-origin: 50% 50%;
-  transform: scale(calc(1 + max(0, var(--t) - var(--at, 2)) * var(--amp, 1)));
+  transform: scale(calc(1 + max(0, var(--tb) - var(--at, 2)) * var(--amp, 1)));
 }
 .cx-lit      { fill: #f5e3b0; opacity: var(--l0, 0); }
-.cx-lit--on  { opacity: max(var(--l0, 0), clamp(0, calc((var(--t) - var(--at, 2)) * 5), 1)); }
-.cx-lit--off { opacity: calc(var(--l0, 0) * clamp(0, calc(1 - (var(--t) - var(--at, 2)) * 5), 1)); }
+.cx-lit--on  { opacity: max(var(--l0, 0), clamp(0, calc((var(--tb) - var(--at, 2)) * 5), 1)); }
+.cx-lit--off { opacity: calc(var(--l0, 0) * clamp(0, calc(1 - (var(--tb) - var(--at, 2)) * 5), 1)); }
 .cx-tree           { fill: var(--c); }
-.cx-tree--empty    { fill: color-mix(in oklab, var(--c), #9fcf86 calc(var(--t) * 45%)); }
-.cx-tree--conflict { fill: color-mix(in oklab, var(--c), #cbc3b2 calc(var(--t) * 75%)); }
+.cx-tree--empty    { fill: color-mix(in oklab, var(--c), #9fcf86 calc(var(--tb) * 45%)); }
+.cx-tree--conflict { fill: color-mix(in oklab, var(--c), #cbc3b2 calc(var(--tb) * 75%)); }
 .cx-lawn           { fill: #cfe0bf; }
-.cx-lawn--empty    { fill: color-mix(in oklab, #cfe0bf, #a8d68c calc(var(--t) * 100%)); }
-.cx-lawn--conflict { fill: color-mix(in oklab, #cfe0bf, #d8d2b8 calc(var(--t) * 100%)); }
+.cx-lawn--empty    { fill: color-mix(in oklab, #cfe0bf, #a8d68c calc(var(--tb) * 100%)); }
+.cx-lawn--conflict { fill: color-mix(in oklab, #cfe0bf, #d8d2b8 calc(var(--tb) * 100%)); }
 
 /* Negative delay so the train is already on screen when the page opens. */
 .cx-train { transform: translateX(640px); animation: cxDrive 26s linear -9s infinite; }
@@ -922,7 +952,7 @@ html[data-scene="conflict"] { --paper-end: #f1e2d2; --wash-end: #efe1d2; }
 
 .campus__alert {
   position: absolute; top: .6rem; right: var(--gutter); width: 56vw;
-  translate: 0 calc((1 - clamp(0, calc((var(--t) - .55) * 6), 1)) * -14px);
+  translate: 0 calc((1 - clamp(0, calc((var(--tb) - .55) * 6), 1)) * -14px);
   background: #fbf9f4; border: 2px solid var(--accent); border-radius: 14px;
   padding: .5rem .8rem; font-size: .8125rem; line-height: 1.35; color: var(--ink);
   box-shadow: 0 6px 18px rgba(20, 22, 26, .08);
@@ -934,7 +964,7 @@ html[data-scene="conflict"] { --paper-end: #f1e2d2; --wash-end: #efe1d2; }
 @media (min-width: 46rem) {
   .campus__alert {
     right: auto; left: 50%; width: 25rem;
-    translate: -50% calc((1 - clamp(0, calc((var(--t) - .55) * 6), 1)) * -14px);
+    translate: -50% calc((1 - clamp(0, calc((var(--tb) - .55) * 6), 1)) * -14px);
   }
 }
 
@@ -980,3 +1010,35 @@ body:not(.is-peeking) .campus.is-dim .campus__label { visibility: hidden; }
   .cx-train { animation: none; }
   .campus { transition: none; }
 }
+
+/* Things that only exist in the good ending. */
+.cg-in { opacity: clamp(0, calc((var(--g) - var(--at, 2)) * 6), 1); }
+
+/* The fork: your slider, drawn down into the three problems. The dashed lines
+   are always there as possibilities; the red one grows as much as you hand over. */
+.fork { display: block; width: 100%; height: auto; margin-block: 1.5rem .5rem; overflow: visible; }
+.fork path { fill: none; stroke-width: 2.5; stroke-linecap: round; }
+.fork__ghost path { stroke: var(--muted); opacity: .35; stroke-dasharray: 5 8; }
+.fork__live path { stroke: var(--accent); stroke-dasharray: 1; stroke-dashoffset: calc(1 - var(--tb)); }
+@media (max-width: 45.99rem) { .fork { display: none; } }
+
+/* Shared frame for the small interactives in each problem card. */
+.toy { margin-block: 1rem .75rem; background: var(--wash); border-radius: 10px; padding: .75rem; }
+.toy svg { display: block; width: 100%; height: auto; }
+.toy__row { display: flex; flex-wrap: wrap; gap: .4rem; margin-block-start: .6rem; }
+.toy__btn {
+  font: inherit; font-size: .78rem; line-height: 1.2; cursor: pointer;
+  padding: .32rem .65rem; border-radius: 999px;
+  border: 1px solid var(--rule); background: var(--paper); color: var(--ink);
+}
+.toy__btn[aria-pressed="true"] { border-color: var(--ink); background: var(--ink); color: var(--paper); }
+.toy__btn:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.toy__cap { font-size: .8125rem; color: var(--muted); margin: .65rem 0 0; line-height: 1.45; }
+.toy__src { display: block; font-size: .72rem; margin-block-start: .25rem; }
+.toy__stat { font-size: .78rem; color: var(--muted); margin: .5rem 0 0; font-variant-numeric: tabular-nums; }
+.toy__stat b { color: var(--ink); }
+.toy__stat .is-bad { color: var(--accent); }
+
+/* Where we start: the perceptron, back where it belongs. */
+.inside { display: grid; gap: 2rem; align-items: center; }
+@media (min-width: 62rem) { .inside { grid-template-columns: minmax(0, 1fr) minmax(0, 1.25fr); gap: 3.5rem; } }
