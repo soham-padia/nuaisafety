@@ -1,7 +1,7 @@
 ---
 import '../styles/global.css';
 import { SITE, NAV, SOCIAL, EMAIL, signupHref } from '../config';
-import Campus, { type Scene } from '../components/Campus.astro';
+import Campus from '../components/Campus.astro';
 /* Internal links have to survive being served from a subpath, which is what a
    GitHub project page does. BASE_URL is "/" for the real site, so this is a
    no-op there. */
@@ -19,16 +19,12 @@ const pageTitle = title ? `${title} | ${SITE.name}` : `${SITE.name} | ${SITE.tag
 const path = Astro.url.pathname.replace(/\.html$/, '').replace(/\/$/, '') || '/';
 // The path without any preview base, so it can be compared to NAV hrefs.
 const rel = (base && path.startsWith(base) ? path.slice(base.length) : path) || '/';
-/* Which way the campus goes wrong on this page. Each one is a different
-   pathway, so the same slider tells a different story on every page. */
-const SCENES: Record<string, Scene> = { '/': 'power', '/join': 'bio', '/team': 'empty', '/resources': 'conflict' };
-const scene: Scene = SCENES[rel] ?? 'power';
 const canonical = new URL(Astro.url.pathname, Astro.site);
 // Social scrapers need an absolute URL; a root-relative path is silently ignored.
 const ogImage = new URL('/og.png', Astro.site);
 ---
 <!doctype html>
-<html lang="en" data-scene={scene}>
+<html lang="en">
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -55,7 +51,6 @@ const ogImage = new URL('/og.png', Astro.site);
 
   <body>
     <a class="skip" href="#main">Skip to content</a>
-    <Campus scene={scene} />
 
     <header class="masthead">
       <div class="wrap">
@@ -74,6 +69,7 @@ const ogImage = new URL('/og.png', Astro.site);
       <slot />
     </main>
 
+    <Campus />
     <footer class="foot">
       <div class="wrap">
         <div class="foot__row">

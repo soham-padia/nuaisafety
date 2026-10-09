@@ -34,15 +34,13 @@
 :root {
   --t: 0;
   --g: 0;
-  /* The campus height. The page reserves exactly this much at its end, so the
-     last thing on every page is the scene itself, clear of the footer. */
-  --campus-h: clamp(150px, 24vh, 240px);
   --grain: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='220'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 .3 0 0 0 0 .25 0 0 0 0 .2 0 0 0 .55 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.09'/%3E%3C/svg%3E");
   --tb: calc(var(--t) * (1 - var(--g)));
-  /* Where the paper ends up at full oversight loss. Each page overrides it, so
-     the same slider sours the page towards a different future on each one. */
-  --paper-end: #ece8e2;
-  --wash-end:  #e2ddd5;
+  /* Where the paper drifts at full oversight loss. Deliberately close to where
+     it starts, and the same on every page: a page should feel a little colder,
+     never visibly recoloured. */
+  --paper-end: #f3f0ea;
+  --wash-end:  #ebe7df;
   transition: --t .35s ease, --g .35s ease;
 
   --ink:    #14161a;
@@ -51,7 +49,7 @@
   /* Warm paper rather than pure white, after Harvard AISST. */
   --paper:  color-mix(in oklab,
               color-mix(in oklab, #fbf9f4, var(--paper-end) calc(var(--tb) * 100%)),
-              #fdf3dc calc(var(--g) * 55%));
+              #fdf3dc calc(var(--g) * 18%));
   --wash:   color-mix(in oklab, #f3efe7, var(--wash-end) calc(var(--tb) * 100%));
   --rule:   color-mix(in oklab, #e5dfd5, var(--paper-end) calc(var(--tb) * 70%));
   --shadow: color-mix(in oklab, #b4b8c0, #9aa0a8 calc(var(--tb) * 100%));
@@ -94,7 +92,6 @@ body {
   background-color: var(--paper);
   /* Paper grain, rasterised once and tiled. */
   background-image: var(--grain);
-  padding-block-end: var(--campus-h);
   color: var(--ink);
   font-family: var(--sans);
   font-size: var(--step-0);
@@ -279,9 +276,7 @@ strong { font-weight: 660; }
 }
 .btn:active { transform: translateY(0); box-shadow: none; }
 
-/* Paper rather than transparent: on the home page the campus sits behind the
-   hero, and its roofline would otherwise show through the label. */
-.btn--ghost { background: var(--paper); color: var(--ink); border-color: var(--rule); }
+.btn--ghost { background: transparent; color: var(--ink); border-color: var(--rule); }
 /* Secondary action. Distinct from --ghost so three buttons still read as a
    hierarchy rather than as one primary and two of the same thing. */
 .btn--alt { background: transparent; color: var(--ink); border-color: var(--ink); }
@@ -728,12 +723,7 @@ strong { font-weight: 660; }
 /* --- footer ---------------------------------------------------------------- */
 
 .foot {
-  /* Opaque, with the same grain as the page, so it covers the campus cleanly as
-     it scrolls past rather than printing its links across the buildings. */
-  background-color: var(--paper);
-  background-image: var(--grain);
   border-block-start: 1px solid var(--rule);
-  border-block-end: 1px solid var(--rule);
   padding-block: 2.5rem 3rem;
   color: var(--muted);
   font-size: 0.9375rem;
@@ -899,69 +889,31 @@ strong { font-weight: 660; }
 .routes__note { font-size: .9rem; color: var(--muted); max-width: var(--measure); margin-top: 2rem; }
 
 /* -------------------------------------------------------------------------
-   The campus backdrop and the cross-page oversight control.
-   See src/components/Campus.astro for the scene and what each page shows.
-
-   Every per-scene end colour keeps muted text at 4.5:1 or better, and the
-   accent at 4.5:1 or better on paper, so no point on the slider fails AA.
+   The campus: a still line drawing standing on the footer rule.
+   See src/components/Campus.astro. Only its people respond to the sliders.
    ------------------------------------------------------------------------- */
 
-html[data-scene="empty"]    { --paper-end: #f4f8fa; --wash-end: #e9f0f3; }
-html[data-scene="bio"]      { --paper-end: #ebf0ea; --wash-end: #dfe7df; }
-html[data-scene="power"]    { --paper-end: #e7e9ec; --wash-end: #dcdfe3; }
-html[data-scene="conflict"] { --paper-end: #f1e2d2; --wash-end: #efe1d2; }
-
-.campus {
-  position: fixed;
-  inset: auto 0 0 0;
-  height: var(--campus-h);
-  z-index: -1;
-  pointer-events: none;
-  transition: opacity .5s ease;
+.campus { height: clamp(84px, 12vw, 172px); margin-block-start: clamp(2.5rem, 1.5rem + 4vw, 4.5rem); }
+.campus svg { display: block; width: 100%; height: 100%; overflow: visible; }
+.campus__line {
+  fill: var(--paper);
+  stroke: color-mix(in oklab, var(--muted) 38%, var(--paper));
+  stroke-width: 1.1;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  vector-effect: non-scaling-stroke;
 }
-@media (min-width: 46rem) { :root { --campus-h: clamp(200px, 32vh, 360px); } }
-.campus svg { display: block; width: 100%; height: 100%; }
-.campus.is-dim { opacity: .28; }
+.campus__line :is(rect, path, circle) { vector-effect: non-scaling-stroke; }
+.campus__far { opacity: .6; }
+.campus__wire { fill: none; }
+.campus__person { fill: color-mix(in oklab, var(--muted) 80%, var(--paper)); transition: opacity .6s ease; }
 
-/* Staging. Each element carries its own --at threshold and reads --t. */
-.cx-out  { opacity: clamp(0, calc(1 - (var(--tb) - var(--at, 2)) * 6), 1); }
-.cx-in   { opacity: clamp(0, calc((var(--tb) - var(--at, 2)) * 6), 1); }
-.cx-rise {
-  transform-box: fill-box; transform-origin: 50% 100%;
-  transform: scaleY(clamp(0, calc((var(--tb) - var(--at, 2)) * 3.2), 1));
-}
-.cx-amp {
-  transform-box: fill-box; transform-origin: 50% 50%;
-  transform: scale(calc(1 + max(0, var(--tb) - var(--at, 2)) * var(--amp, 1)));
-}
-.cx-lit      { fill: #f5e3b0; opacity: var(--l0, 0); }
-.cx-lit--on  { opacity: max(var(--l0, 0), clamp(0, calc((var(--tb) - var(--at, 2)) * 5), 1)); }
-.cx-lit--off { opacity: calc(var(--l0, 0) * clamp(0, calc(1 - (var(--tb) - var(--at, 2)) * 5), 1)); }
-.cx-tree           { fill: var(--c); }
-.cx-tree--empty    { fill: color-mix(in oklab, var(--c), #9fcf86 calc(var(--tb) * 45%)); }
-.cx-tree--conflict { fill: color-mix(in oklab, var(--c), #cbc3b2 calc(var(--tb) * 75%)); }
-.cx-lawn           { fill: #cfe0bf; }
-.cx-lawn--empty    { fill: color-mix(in oklab, #cfe0bf, #a8d68c calc(var(--tb) * 100%)); }
-.cx-lawn--conflict { fill: color-mix(in oklab, #cfe0bf, #d8d2b8 calc(var(--tb) * 100%)); }
-
-/* Negative delay so the train is already on screen when the page opens. */
-.cx-train { transform: translateX(640px); animation: cxDrive 26s linear -9s infinite; }
-.cx-train--parked { transform: translateX(560px); animation: none; }
-@keyframes cxDrive { from { transform: translateX(-360px); } to { transform: translateX(1660px); } }
-
-
-/* The hero's controls sit over the campus, so they get a sheet of paper. */
-.ovs {
-  background: color-mix(in oklab, var(--paper) 90%, transparent);
-  border-radius: 14px;
-  padding: .85rem;
-  margin: -.85rem;
-}
+/* People who are there until the work is handed away. */
+.cx-out { opacity: clamp(0, calc(1 - (var(--tb) - var(--at, 2)) * 6), 1); }
 
 @media (prefers-reduced-motion: reduce) {
   :root { transition: none; }
-  .cx-train { animation: none; }
-  .campus { transition: none; }
+  .campus__person { transition: none; }
 }
 
 /* Things that only exist in the good ending. */
