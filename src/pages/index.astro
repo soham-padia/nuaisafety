@@ -2,7 +2,6 @@
 import Base from '../layouts/Base.astro';
 import SlackCTA from '../components/SlackCTA.astro';
 import Oversight from '../components/Oversight.astro';
-import Perceptron from '../components/Perceptron.astro';
 import Goodnews from '../components/Goodnews.astro';
 import RewardHack from '../components/toys/RewardHack.astro';
 import PowerGraph from '../components/toys/PowerGraph.astro';
@@ -32,9 +31,9 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '');
   </section>
 
   {/* The spine. The hero hands the work over; the fork draws that decision down
-      into the three ways it goes wrong, each with a toy that shows it; the
-      perceptron is where this group starts; the slider at the bottom hands it
-      to people instead. */}
+      into the three ways it goes wrong, each with a toy that shows it, and each
+      needing a different kind of person; the slider at the bottom hands it to
+      people instead. Nothing on this page should say one discipline comes first. */}
   <section class="band" aria-labelledby="paths">
     <div class="wrap">
       <h2 id="paths">Three different problems. Three different kinds of people.</h2>
@@ -80,30 +79,6 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '');
         course</a> splits the problem. We are not affiliated with them. Their curriculum is open, and
         it is a good place to start reading.
       </p>
-    </div>
-  </section>
-
-  <section class="band band--wash" aria-labelledby="inside">
-    <div class="wrap inside">
-      <div class="prose">
-        <h2 id="inside">Where we start: looking inside</h2>
-        <p>
-          Every one of those problems is easier to catch if you can see what a system is
-          actually doing, not only what it says it did. That boat looked like it was winning.
-        </p>
-        <p>
-          Interpretability is the work of opening the network up and finding which parts respond
-          to what, and why. It is the oldest question in the field, and the part of the problem
-          this group starts with.
-        </p>
-      </div>
-      <figure class="hero__art">
-        <Perceptron />
-        <figcaption>
-          Organization of a perceptron, after Rosenblatt, 1958. Red marks the cells active for
-          the input, and the response unit that fires as a result.
-        </figcaption>
-      </figure>
     </div>
   </section>
 

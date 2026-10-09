@@ -1049,7 +1049,3 @@ body:not(.is-peeking) .campus.is-dim .campus__label { visibility: hidden; }
 .toy__stat { font-size: .78rem; color: var(--muted); margin: .5rem 0 0; font-variant-numeric: tabular-nums; }
 .toy__stat b { color: var(--ink); }
 .toy__stat .is-bad { color: var(--accent); }
-
-/* Where we start: the perceptron, back where it belongs. */
-.inside { display: grid; gap: 2rem; align-items: center; }
-@media (min-width: 62rem) { .inside { grid-template-columns: minmax(0, 1fr) minmax(0, 1.25fr); gap: 3.5rem; } }
