@@ -163,9 +163,18 @@
       : "Drag to hand it more. Watch what changes, and what doesn't.";
   }
 
+  const KEY = 'nuais-t';
   range.addEventListener('input', () => {
     range.classList.remove('ovs__range--untouched');
     render(+range.value);
+    try { sessionStorage.setItem(KEY, String(+range.value / LAST)); } catch { /* private mode */ }
+    dispatchEvent(new Event('nuais:t'));
   });
-  render(0);
+
+  /* Open at whatever the visitor already set on another page. */
+  let start = 0;
+  try { start = Math.round(Math.min(1, Math.max(0, +(sessionStorage.getItem(KEY) ?? 0))) * LAST); } catch { /* */ }
+  range.value = String(start);
+  if (start > 0) range.classList.remove('ovs__range--untouched');
+  render(start);
 </script>

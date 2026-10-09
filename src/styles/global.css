@@ -19,13 +19,19 @@
 
 :root {
   --t: 0;
+  /* Where the paper ends up at full oversight loss. Each page overrides it, so
+     the same slider sours the page towards a different future on each one. */
+  --paper-end: #ece8e2;
+  --wash-end:  #e2ddd5;
+  transition: --t .35s ease;
 
   --ink:    #14161a;
-  --muted:  color-mix(in oklab, #5b6169, #646a72 calc(var(--t) * 100%));
+  --muted:  #5b6169;
   --accent: #c8102e;
-  --paper:  color-mix(in oklab, #ffffff, #e9e5e1 calc(var(--t) * 100%));
-  --wash:   color-mix(in oklab, #f6f7f8, #ddd7d1 calc(var(--t) * 100%));
-  --rule:   color-mix(in oklab, #e3e6e9, #e6e1dc calc(var(--t) * 100%));
+  /* Warm paper rather than pure white, after Harvard AISST. */
+  --paper:  color-mix(in oklab, #fbf9f4, var(--paper-end) calc(var(--t) * 100%));
+  --wash:   color-mix(in oklab, #f3efe7, var(--wash-end) calc(var(--t) * 100%));
+  --rule:   color-mix(in oklab, #e5dfd5, var(--paper-end) calc(var(--t) * 70%));
   --shadow: color-mix(in oklab, #b4b8c0, #9aa0a8 calc(var(--t) * 100%));
 
   /* #c8102e on white is 5.88:1, which passes AA for body text, not just large.
@@ -63,7 +69,9 @@ html {
 
 body {
   margin: 0;
-  background: var(--paper);
+  background-color: var(--paper);
+  /* Paper grain, rasterised once and tiled. */
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='220'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 .3 0 0 0 0 .25 0 0 0 0 .2 0 0 0 .55 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.09'/%3E%3C/svg%3E");
   color: var(--ink);
   font-family: var(--sans);
   font-size: var(--step-0);
@@ -847,3 +855,128 @@ strong { font-weight: 660; }
 .path p { margin: 0 0 .5rem; }
 .path__who { font-size: .85rem; color: var(--muted); text-transform: uppercase; letter-spacing: .04em; }
 .paths__note { font-size: .9rem; color: var(--muted); max-width: var(--measure); margin-top: 2rem; }
+
+/* -------------------------------------------------------------------------
+   The campus backdrop and the cross-page oversight control.
+   See src/components/Campus.astro for the scene and what each page shows.
+
+   Every per-scene end colour keeps muted text at 4.5:1 or better, and the
+   accent at 4.5:1 or better on paper, so no point on the slider fails AA.
+   ------------------------------------------------------------------------- */
+
+html[data-scene="home"]     { --paper-end: #f4f8fa; --wash-end: #e9f0f3; }
+html[data-scene="bio"]      { --paper-end: #ebf0ea; --wash-end: #dfe7df; }
+html[data-scene="power"]    { --paper-end: #e7e9ec; --wash-end: #dcdfe3; }
+html[data-scene="conflict"] { --paper-end: #f1e2d2; --wash-end: #efe1d2; }
+
+.campus {
+  position: fixed;
+  inset: auto 0 0 0;
+  height: clamp(150px, 24vh, 240px);
+  z-index: -1;
+  pointer-events: none;
+  transition: opacity .5s ease;
+}
+@media (min-width: 46rem) { .campus { height: clamp(200px, 32vh, 360px); } }
+.campus svg { display: block; width: 100%; height: 100%; }
+.campus.is-dim { opacity: .28; }
+
+/* Staging. Each element carries its own --at threshold and reads --t. */
+.cx-out  { opacity: clamp(0, calc(1 - (var(--t) - var(--at, 2)) * 6), 1); }
+.cx-in   { opacity: clamp(0, calc((var(--t) - var(--at, 2)) * 6), 1); }
+.cx-rise {
+  transform-box: fill-box; transform-origin: 50% 100%;
+  transform: scaleY(clamp(0, calc((var(--t) - var(--at, 2)) * 3.2), 1));
+}
+.cx-amp {
+  transform-box: fill-box; transform-origin: 50% 50%;
+  transform: scale(calc(1 + max(0, var(--t) - var(--at, 2)) * var(--amp, 1)));
+}
+.cx-lit      { fill: #f5e3b0; opacity: var(--l0, 0); }
+.cx-lit--on  { opacity: max(var(--l0, 0), clamp(0, calc((var(--t) - var(--at, 2)) * 5), 1)); }
+.cx-lit--off { opacity: calc(var(--l0, 0) * clamp(0, calc(1 - (var(--t) - var(--at, 2)) * 5), 1)); }
+.cx-tree           { fill: var(--c); }
+.cx-tree--home     { fill: color-mix(in oklab, var(--c), #9fcf86 calc(var(--t) * 45%)); }
+.cx-tree--conflict { fill: color-mix(in oklab, var(--c), #cbc3b2 calc(var(--t) * 75%)); }
+.cx-lawn           { fill: #cfe0bf; }
+.cx-lawn--home     { fill: color-mix(in oklab, #cfe0bf, #a8d68c calc(var(--t) * 100%)); }
+.cx-lawn--conflict { fill: color-mix(in oklab, #cfe0bf, #d8d2b8 calc(var(--t) * 100%)); }
+
+/* Negative delay so the train is already on screen when the page opens. */
+.cx-train { transform: translateX(640px); animation: cxDrive 26s linear -9s infinite; }
+.cx-train--parked { transform: translateX(560px); animation: none; }
+@keyframes cxDrive { from { transform: translateX(-360px); } to { transform: translateX(1660px); } }
+
+.campus__label {
+  position: absolute; bottom: .6rem; left: var(--gutter); margin: 0;
+  font-size: .75rem; color: var(--ink);
+  background: color-mix(in oklab, var(--paper) 88%, transparent);
+  padding: .2rem .55rem; border-radius: 4px;
+}
+.campus__label span {
+  color: var(--muted); text-transform: uppercase; letter-spacing: .06em;
+  font-size: .6875rem; margin-inline-end: .35rem;
+}
+/* No room beside the pill on a phone, and the scene says it anyway. */
+@media (max-width: 45.99rem) { .campus__label { display: none; } }
+
+.campus__alert {
+  position: absolute; top: .6rem; right: var(--gutter); width: 56vw;
+  translate: 0 calc((1 - clamp(0, calc((var(--t) - .55) * 6), 1)) * -14px);
+  background: #fbf9f4; border: 2px solid var(--accent); border-radius: 14px;
+  padding: .5rem .8rem; font-size: .8125rem; line-height: 1.35; color: var(--ink);
+  box-shadow: 0 6px 18px rgba(20, 22, 26, .08);
+}
+.campus__alert strong {
+  display: block; color: var(--accent); text-transform: uppercase;
+  letter-spacing: .05em; font-size: .75rem;
+}
+@media (min-width: 46rem) {
+  .campus__alert {
+    right: auto; left: 50%; width: 25rem;
+    translate: -50% calc((1 - clamp(0, calc((var(--t) - .55) * 6), 1)) * -14px);
+  }
+}
+
+/* The hero's controls sit over the campus, so they get a sheet of paper. */
+.ovs {
+  background: color-mix(in oklab, var(--paper) 90%, transparent);
+  border-radius: 14px;
+  padding: .85rem;
+  margin: -.85rem;
+}
+
+.pill {
+  position: fixed; right: 12px; bottom: 12px; z-index: 6;
+  display: flex; align-items: center; gap: .55rem;
+  padding: .4rem .85rem; border-radius: 999px;
+  background: color-mix(in oklab, var(--paper) 94%, transparent);
+  border: 1px solid var(--rule);
+  box-shadow: 0 4px 16px rgba(20, 22, 26, .08);
+  font-size: .8125rem; color: var(--ink);
+}
+.pill__label { color: var(--muted); }
+.pill__out { min-width: 5.6em; font-weight: 600; }
+.pill .pill__range { width: 7rem; height: 24px; }
+@media (min-width: 46rem) {
+  .pill { right: 20px; bottom: 20px; }
+  .pill .pill__range { width: 10rem; }
+}
+body:has(.pill) .foot { padding-block-end: 5.5rem; }
+
+/* Looking through the page while the pill is held. */
+main, .masthead, .foot { transition: opacity .25s ease; }
+body.is-peeking main,
+body.is-peeking .masthead,
+body.is-peeking .foot { opacity: .06; }
+body.is-peeking .campus { opacity: 1; }
+/* At rest the scene is a watermark behind text, and its own words would ghost
+   through the copy above it. They only show when the scene is in front. */
+body:not(.is-peeking) .campus.is-dim .campus__alert,
+body:not(.is-peeking) .campus.is-dim .campus__label { visibility: hidden; }
+
+@media (prefers-reduced-motion: reduce) {
+  :root { transition: none; }
+  .cx-train { animation: none; }
+  .campus { transition: none; }
+}

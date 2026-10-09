@@ -1,6 +1,8 @@
 ---
 import '../styles/global.css';
 import { SITE, NAV, SOCIAL, EMAIL, signupHref } from '../config';
+import Campus, { type Scene } from '../components/Campus.astro';
+import OversightPill from '../components/OversightPill.astro';
 /* Internal links have to survive being served from a subpath, which is what a
    GitHub project page does. BASE_URL is "/" for the real site, so this is a
    no-op there. */
@@ -16,15 +18,24 @@ interface Props {
 const { title, description = SITE.description } = Astro.props;
 const pageTitle = title ? `${title} | ${SITE.name}` : `${SITE.name} | ${SITE.tagline}`;
 const path = Astro.url.pathname.replace(/\.html$/, '').replace(/\/$/, '') || '/';
+// The path without any preview base, so it can be compared to NAV hrefs.
+const rel = (base && path.startsWith(base) ? path.slice(base.length) : path) || '/';
+/* Which way the campus goes wrong on this page. Each one is a different
+   pathway, so the same slider tells a different story on every page. */
+const SCENES: Record<string, Scene> = { '/': 'home', '/join': 'bio', '/team': 'power', '/resources': 'conflict' };
+const scene: Scene = SCENES[rel] ?? 'home';
 const canonical = new URL(Astro.url.pathname, Astro.site);
 // Social scrapers need an absolute URL; a root-relative path is silently ignored.
 const ogImage = new URL('/og.png', Astro.site);
 ---
 <!doctype html>
-<html lang="en">
+<html lang="en" data-scene={scene}>
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
+    {/* Before first paint, so a page opened mid-session never flashes the
+        untouched campus and then snaps to the stored future. */}
+    <script is:inline>try{var t=sessionStorage.getItem('nuais-t');if(t!==null)document.documentElement.style.setProperty('--t',t)}catch(e){}</script>
     <title>{pageTitle}</title>
     <meta name="description" content={description} />
     <link rel="canonical" href={canonical} />
@@ -45,13 +56,14 @@ const ogImage = new URL('/og.png', Astro.site);
 
   <body>
     <a class="skip" href="#main">Skip to content</a>
+    <Campus scene={scene} />
 
     <header class="masthead">
       <div class="wrap">
         <a class="wordmark" href={href("/")}>NU AI Safety</a>
         <nav class="nav" aria-label="Primary">
           {NAV.map((item) => (
-            <a href={href(item.href)} aria-current={path === item.href ? 'page' : undefined}>
+            <a href={href(item.href)} aria-current={rel === item.href ? 'page' : undefined}>
               {item.label}
             </a>
           ))}
@@ -92,6 +104,8 @@ const ogImage = new URL('/og.png', Astro.site);
         </p>
       </div>
     </footer>
+
+    {scene !== 'home' && <OversightPill />}
 
     <script>
       import { animate, inView, stagger } from 'motion';

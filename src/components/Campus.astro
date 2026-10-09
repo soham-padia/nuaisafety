@@ -1,0 +1,283 @@
+---
+/**
+ * The campus behind every page.
+ *
+ * Pinned to the bottom of the viewport, the way Harvard AISST pins Weeks Bridge
+ * to theirs: a local scene rather than stock art. Here it is the quad, the brick,
+ * the Boston skyline and the E train on Huntington.
+ *
+ * Every page draws the same campus and lets it go wrong a different way as the
+ * oversight value `--t` rises. Nothing here runs per frame. Each element reads
+ * `--t` in CSS and its own `--at` threshold, so the scene is a function of one
+ * number. Pages, the hero slider and the floating pill all write that number,
+ * and sessionStorage carries it between pages.
+ *
+ * The register is deliberate: no bodies, no explosions, no hazmat suits. A
+ * familiar memory (an empty quad, a banner, a phone alert) lands harder than
+ * spectacle, and it keeps the page legible to a Khoury administrator.
+ */
+export type Scene = 'home' | 'bio' | 'power' | 'conflict';
+interface Props { scene: Scene }
+const { scene } = Astro.props;
+
+const LABEL: Record<Scene, string> = {
+  home: 'Gradual disempowerment',
+  bio: 'Biological misuse',
+  power: 'Concentration of power',
+  conflict: 'AI-enabled conflict',
+};
+
+const range = (a: number, b: number, step: number) => {
+  const out: number[] = [];
+  for (let v = a; v <= b; v += step) out.push(v);
+  return out;
+};
+
+/* A fixed permutation decides who leaves when, so the quad empties from
+   scattered places rather than left to right, and the build is reproducible. */
+const ORDER = [7, 2, 13, 0, 9, 4, 16, 11, 5, 14, 1, 8, 17, 3, 12, 6, 15, 10];
+const PEOPLE_X = [64, 128, 196, 252, 316, 402, 470, 588, 652, 716, 842, 992, 1058, 1176, 1262, 1404, 1478, 1546];
+const BODY = ['#e2a59c', '#9db6cf', '#e5c88c', '#a7c3a0', '#c6a6c6', '#8ea8bf', '#e0b38f', '#b7b0d6'];
+const HEAD = ['#e8cdb5', '#c99d7e', '#a97b5c', '#e2bc9a', '#8d6248'];
+
+// [when the first person goes, spread until the last one does]
+const LEAVE: Record<Scene, [number, number]> = {
+  home: [.08, .72], bio: [.4, .46], power: [.22, .38], conflict: [.18, .5],
+};
+const people = PEOPLE_X.map((x, i) => {
+  const rank = ORDER[i] / (ORDER.length - 1);
+  // One person stays in the bio scene: a single masked figure on an empty quad.
+  const stays = scene === 'bio' && i === 9;
+  return {
+    x, y: 294 - (i % 3) * 3, s: [1, .9, 1.08][i % 3],
+    body: BODY[i % BODY.length], head: HEAD[i % HEAD.length],
+    out: stays ? 2 : +(LEAVE[scene][0] + rank * LEAVE[scene][1]).toFixed(3),
+    mask: +(.12 + rank * .22).toFixed(3),
+  };
+});
+
+type Win = { x: number; y: number; l0: number; at: number };
+const grid = (xs: number[], ys: number[], skip = (_x: number) => false): Win[] =>
+  ys.flatMap((y, j) => xs.filter((x) => !skip(x)).map((x, i) => ({
+    x, y,
+    l0: (i * 7 + j * 3) % 5 < 2 ? 1 : 0,
+    at: +(.15 + ((i * 37 + j * 11) % 70) / 100).toFixed(2),
+  })));
+const windows = [
+  ...grid(range(168, 505, 32), [166, 194, 222], (x) => x > 276 && x < 392),
+  ...grid(range(888, 1095, 30), [190, 220]),
+  ...grid(range(1356, 1566, 30), [200, 230]),
+];
+const litClass = scene === 'home' ? 'cx-lit cx-lit--on'
+  : scene === 'conflict' ? 'cx-lit cx-lit--off' : 'cx-lit';
+
+const PAX: Record<Scene, [number, number]> = {
+  home: [.48, .2], bio: [.42, .18], power: [.38, .2], conflict: [.3, .2],
+};
+const trains = scene === 'conflict'
+  ? [{ cls: 'cx-train cx-out', style: '--at:.58', pax: true },
+     { cls: 'cx-train cx-train--parked cx-in', style: '--at:.58', pax: false }]
+  : [{ cls: 'cx-train', style: '', pax: true }];
+
+const skyline: [number, number, number][] = [
+  [40, 46, 196], [96, 40, 176], [148, 52, 158], [960, 44, 132], [1012, 36, 150],
+  [1372, 40, 140], [1420, 34, 166], [1500, 50, 178], [1556, 40, 196],
+];
+const newTowers = [
+  { x: 236, w: 40, top: 108, at: .12 }, { x: 742, w: 38, top: 92, at: .28 },
+  { x: 1068, w: 44, top: 86, at: .44 }, { x: 1452, w: 40, top: 100, at: .6 },
+];
+const cameras: [number, number][] = [
+  [300, 140], [150, 148], [868, 170], [520, 148], [1338, 180], [695, 124],
+  [1112, 170], [492, 232], [1582, 180], [900, 232], [1232, 232],
+];
+const trees: [number, number, number, number][] = [
+  [110, 232, 30, 0], [545, 226, 34, 1], [845, 232, 28, 2], [1130, 224, 36, 0],
+  [1320, 238, 24, 1], [1592, 232, 30, 2], [26, 240, 22, 1],
+];
+const TREE = ['#bfd3b0', '#aecaa0', '#e2cf98'];
+---
+<div class="campus" aria-hidden="true" data-scene={scene}>
+  <svg viewBox="0 0 1600 360" preserveAspectRatio="xMidYMax slice">
+    <defs>
+      <radialGradient id="cxGlow" cx="50%" cy="100%" r="60%">
+        <stop offset="0" stop-color="#f2b07e" stop-opacity=".85" />
+        <stop offset="1" stop-color="#f2b07e" stop-opacity="0" />
+      </radialGradient>
+    </defs>
+
+    {/* Sky elements */}
+    <g class={scene === 'conflict' ? 'cx-out' : ''} style="--at:.3">
+      <circle cx="1488" cy="96" r="46" fill="#f7e2a8" opacity=".35" />
+      <circle cx="1488" cy="96" r="28" fill="#f7e2a8" />
+    </g>
+    {scene === 'conflict' && (
+      <ellipse class="cx-in cx-amp" style="--at:.42;--amp:.9;transform-origin:50% 100%"
+               cx="330" cy="266" rx="460" ry="150" fill="url(#cxGlow)" />
+    )}
+    <g class="cx-out" style="--at:.36" fill="none" stroke="#b9b4ab" stroke-width="2" stroke-linecap="round">
+      <path d="M420,70 l8,-6 l8,6" /><path d="M446,84 l6,-5 l6,5" /><path d="M402,92 l6,-5 l6,5" />
+    </g>
+
+    {/* Far skyline: the Pru, Hancock, and the rest of Back Bay */}
+    <g fill="#dbe2e8">
+      {skyline.map(([x, w, top]) => <rect x={x} y={top} width={w} height={270 - top} />)}
+    </g>
+    <g fill="#d3dce4">
+      <rect x="1150" y="56" width="52" height="214" />
+      <rect x="1160" y="40" width="32" height="20" />
+      <rect x="1174" y="14" width="4" height="28" />
+    </g>
+    <path d="M1238,270 L1238,74 L1290,60 L1290,270 Z" fill="#dde6ed" />
+    <path d="M1290,60 L1290,270" stroke="#cfd9e2" stroke-width="2" />
+    {scene === 'home' && newTowers.map((n) => (
+      <g>
+        <rect class="cx-rise" style={`--at:${n.at}`} x={n.x} y={n.top} width={n.w} height={270 - n.top} fill="#d1e2ea" />
+      </g>
+    ))}
+
+    {/* Campus buildings */}
+    <rect x="150" y="150" width="370" height="116" fill="#dfc0ae" />
+    <rect x="144" y="144" width="382" height="8" fill="#e9d3c5" />
+    <path d="M282,150 L335,122 L388,150 Z" fill="#efe6d8" />
+    <g fill="#efe6d8">{range(292, 380, 28).map((x) => <rect x={x} y="156" width="9" height="106" />)}</g>
+
+    <path d="M560,266 L560,172 Q695,118 830,172 L830,266 Z" fill="#d6e6e6" />
+    <path class={litClass} style="--l0:.5;--at:.5" d="M570,262 L570,180 Q695,132 820,180 L820,262 Z" />
+    <g stroke="#c3d6d7" stroke-width="2">{[192, 212, 232, 252].map((y) => <line x1="560" y1={y} x2="830" y2={y} />)}</g>
+
+    <rect x="870" y="172" width="240" height="94" fill="#e2c4b2" />
+    <rect x="864" y="166" width="252" height="8" fill="#ead6c9" />
+    <rect x="1340" y="182" width="240" height="84" fill="#ddbfac" />
+    <rect x="1334" y="176" width="252" height="8" fill="#e8d1c3" />
+
+    <g>{windows.map((w) => (
+      <g>
+        <rect x={w.x} y={w.y} width="14" height="18" fill="#cdb5a7" />
+        <rect class={litClass} style={`--l0:${w.l0};--at:${w.at}`} x={w.x} y={w.y} width="14" height="18" />
+      </g>
+    ))}</g>
+
+    {scene === 'bio' && (
+      <g class="cx-in" style="--at:.48">
+        <rect x="596" y="178" width="198" height="28" rx="2" fill="#fbf9f4" stroke="#c8102e" stroke-width="2" />
+        <text x="695" y="197" font-size="13" font-weight="700" letter-spacing="1" text-anchor="middle" fill="#c8102e">CLASSES MOVED ONLINE</text>
+      </g>
+    )}
+    {scene === 'power' && (
+      <g class="cx-in cx-amp" style="--at:.5;--amp:.4">
+        <rect x="602" y="164" width="186" height="92" rx="4" fill="#a3abb4" />
+        <path d="M640,210 Q695,176 750,210 Q695,244 640,210 Z" fill="#eef0f2" />
+        <circle cx="695" cy="210" r="15" fill="#6f7780" />
+        <circle cx="695" cy="210" r="5" fill="#c8102e" />
+      </g>
+    )}
+
+    {/* Trees and lampposts */}
+    {trees.map(([x, y, r, c]) => (
+      <g>
+        <rect x={x - 3} y={y} width="6" height={268 - y} fill="#b9a38e" />
+        <circle class={`cx-tree cx-tree--${scene}`} style={`--c:${TREE[c]}`} cx={x} cy={y} r={r} />
+      </g>
+    ))}
+    <g stroke="#b9b1a7" stroke-width="3">
+      {[492, 900, 1232].map((x) => <line x1={x} y1="300" x2={x} y2="238" />)}
+    </g>
+    <g fill="#d8cfc2">{[492, 900, 1232].map((x) => <rect x={x - 7} y="232" width="14" height="7" rx="2" />)}</g>
+
+    {/* The quad */}
+    <rect class={`cx-lawn cx-lawn--${scene}`} x="0" y="262" width="1600" height="40" />
+    <path d="M760,262 L840,262 L980,302 L620,302 Z" fill="#ece5d6" />
+
+    {scene === 'home' && (
+      <g class="cx-in" style="--at:.62">
+        <rect x="770" y="262" width="3" height="32" fill="#b9a993" />
+        <rect x="692" y="242" width="160" height="24" rx="3" fill="#fbf9f4" stroke="#c9bba6" />
+        <text x="772" y="259" font-size="12" text-anchor="middle" fill="#5b6169">Please keep off the grass</text>
+      </g>
+    )}
+    {scene === 'bio' && (
+      <g class="cx-in" style="--at:.28">
+        <rect x="1020" y="264" width="3" height="32" fill="#b9a993" />
+        <rect x="950" y="244" width="144" height="24" rx="3" fill="#fbf9f4" stroke="#c9bba6" />
+        <text x="1022" y="261" font-size="12" text-anchor="middle" fill="#5b6169">Please stay 6 ft apart</text>
+      </g>
+    )}
+
+    {people.map((p) => (
+      <g class="cx-out" style={`--at:${p.out}`}>
+        <g transform={`translate(${p.x} ${p.y}) scale(${p.s})`}>
+          <path d="M-8,0 Q-8,-19 0,-19 Q8,-19 8,0 Z" fill={p.body} />
+          <circle cx="0" cy="-26" r="5.5" fill={p.head} />
+          {scene === 'bio' && (
+            <rect class="cx-in" style={`--at:${p.mask}`} x="-4.5" y="-26" width="9" height="4.5" rx="1.5" fill="#e6f0f6" />
+          )}
+        </g>
+      </g>
+    ))}
+    {scene === 'power' && range(0, 7, 1).map((k) => (
+      <g class="cx-in" style={`--at:${(.46 + k * .03).toFixed(2)}`}>
+        <g transform={`translate(${430 + k * 92} 294)`}>
+          <path d="M-8,0 Q-8,-19 0,-19 Q8,-19 8,0 Z" fill="#9ca2a9" />
+          <circle cx="0" cy="-26" r="5.5" fill="#a7adb4" />
+        </g>
+      </g>
+    ))}
+    {scene === 'power' && cameras.map(([x, y], i) => (
+      <g transform={`translate(${x} ${y})`}>
+        <g class="cx-in cx-amp" style={`--at:${(.12 + i * .058).toFixed(3)};--amp:1.1`}>
+          <line x1="0" y1="4" x2="0" y2="12" stroke="#9aa0a7" stroke-width="2" />
+          <rect x="-9" y="-5" width="18" height="10" rx="2" fill="#8e959d" />
+          <circle cx="9" cy="0" r="3.5" fill="#6f767e" />
+          <circle cx="-5" cy="-2" r="1.6" fill="#c8102e" />
+        </g>
+      </g>
+    ))}
+
+    {/* Huntington Ave, with the E train in its grass median */}
+    <rect x="0" y="302" width="1600" height="10" fill="#ebe6dd" />
+    <rect x="0" y="312" width="1600" height="48" fill="#e3dfd8" />
+    <rect x="0" y="322" width="1600" height="26" fill="#cfdcc1" />
+    <g stroke="#bdb5aa" stroke-width="2"><line x1="0" y1="331" x2="1600" y2="331" /><line x1="0" y1="340" x2="1600" y2="340" /></g>
+    <line x1="0" y1="270" x2="1600" y2="270" stroke="#d6cfc5" stroke-width="1.5" />
+    {trains.map((tr) => (
+      <g class={tr.cls} style={tr.style}>
+        <rect x="148" y="276" width="4" height="18" fill="#b9b1a7" />
+        <path d="M136,276 L150,268 L164,276" fill="none" stroke="#b9b1a7" stroke-width="2" />
+        <rect x="0" y="292" width="300" height="44" rx="9" fill="#a6c8ab" />
+        <rect x="0" y="292" width="300" height="9" rx="4" fill="#97bb9d" />
+        {range(0, 6, 1).map((i) => <rect x={18 + i * 38} y="304" width="26" height="16" rx="2" fill="#eef3ec" />)}
+        {tr.pax && range(0, 6, 1).map((i) => (
+          <circle class="cx-out" style={`--at:${(PAX[scene][0] + ((i * 3) % 7) / 6 * PAX[scene][1]).toFixed(3)}`}
+                  cx={31 + i * 38} cy="317" r="5" fill="#8a9e95" />
+        ))}
+        <rect x="0" y="326" width="300" height="4" fill="#fbf9f4" opacity=".6" />
+        <circle cx="284" cy="306" r="8" fill="#fbf9f4" />
+        <text x="284" y="310" font-size="11" font-weight="700" text-anchor="middle" fill="#3f7a4f">E</text>
+        {[46, 84, 216, 254].map((x) => <circle cx={x} cy="338" r="6" fill="#b3aaa1" />)}
+      </g>
+    ))}
+  </svg>
+
+  {scene === 'conflict' && (
+    <div class="campus__alert cx-in" style="--at:.55">
+      <strong>Emergency alert</strong>
+      <span>Seek shelter immediately. This is not a drill.</span>
+    </div>
+  )}
+  <p class="campus__label cx-in" style="--at:.5"><span>Possible future</span> {LABEL[scene]}</p>
+</div>
+
+<script>
+  /* On the home page the hero slider is the control, so the campus stays bright
+     while the hero is on screen and fades to a watermark once you scroll past.
+     On every other page the content sits over the scene, so it rests as a
+     watermark and only comes forward while the pill is held (see the pill). */
+  const campus = document.querySelector<HTMLElement>('.campus');
+  const fig = document.querySelector('.ovs');
+  if (campus && fig) {
+    new IntersectionObserver(([e]) => campus.classList.toggle('is-dim', !e.isIntersecting)).observe(fig);
+  } else if (campus) {
+    campus.classList.add('is-dim');
+  }
+</script>
