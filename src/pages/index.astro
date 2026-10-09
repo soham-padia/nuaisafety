@@ -3,9 +3,6 @@ import Base from '../layouts/Base.astro';
 import SlackCTA from '../components/SlackCTA.astro';
 import Oversight from '../components/Oversight.astro';
 import Goodnews from '../components/Goodnews.astro';
-import RewardHack from '../components/toys/RewardHack.astro';
-import PowerGraph from '../components/toys/PowerGraph.astro';
-import Layers from '../components/toys/Layers.astro';
 import { LUMA_CALENDAR_ID, LUMA_CALENDAR_URL } from '../config';
 
 const base = import.meta.env.BASE_URL.replace(/\/$/, '');
@@ -30,47 +27,32 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '');
     </div>
   </section>
 
-  {/* The spine. The hero hands the work over; the fork draws that decision down
-      into the three ways it goes wrong, each with a toy that shows it, and each
-      needing a different kind of person; the slider at the bottom hands it to
-      people instead. Nothing on this page should say one discipline comes first. */}
+  {/* Two moments and plain type between them. The hero hands the work to the
+      machine and the slider at the bottom hands it to people; everything in the
+      middle is set as text, so neither moment has to compete. The column rules
+      are the only thing here that reacts, and only by a shade. Nothing on this
+      page should say one discipline comes first. */}
   <section class="band" aria-labelledby="paths">
     <div class="wrap">
       <h2 id="paths">Three different problems. Three different kinds of people.</h2>
       <p class="routes__lede">
-        Hand it enough, and the road splits. AI safety is not one problem with one kind of
-        answer, and the three routes people worry about most need different training,
-        different rooms, and different arguments.
+        AI safety is not one problem with one kind of answer. The three routes people worry
+        about most need different training, different rooms, and different arguments.
       </p>
-      <svg class="fork" viewBox="0 0 1000 120" aria-hidden="true">
-        <g class="fork__ghost">
-          <path d="M500,0 L500,34 C500,82 168,66 168,120" />
-          <path d="M500,0 L500,120" />
-          <path d="M500,34 C500,82 832,66 832,120" />
-        </g>
-        <g class="fork__live">
-          <path pathLength="1" d="M500,0 L500,34 C500,82 168,66 168,120" />
-          <path pathLength="1" d="M500,0 L500,120" />
-          <path pathLength="1" d="M500,0 L500,34 C500,82 832,66 832,120" />
-        </g>
-      </svg>
       <div class="grid grid--3 routes">
         <article class="route">
           <h3>Loss of control</h3>
           <p>Systems that pursue something other than what we asked for, and that we cannot reliably stop.</p>
-          <RewardHack />
           <p class="route__who">Interpretability, evaluations</p>
         </article>
         <article class="route">
           <h3>Concentration of power</h3>
           <p>AI that lets a small group hold power nobody else can meaningfully challenge.</p>
-          <PowerGraph />
           <p class="route__who">Governance, law, policy</p>
         </article>
         <article class="route">
           <h3>Biological misuse</h3>
           <p>Models that lower the barrier to designing a pathogen, and the defences against that.</p>
-          <Layers />
           <p class="route__who">Security, biology, public health</p>
         </article>
       </div>

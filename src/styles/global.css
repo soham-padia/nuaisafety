@@ -949,36 +949,6 @@ html[data-scene="conflict"] { --paper-end: #f1e2d2; --wash-end: #efe1d2; }
 .cx-train--parked { transform: translateX(560px); animation: none; }
 @keyframes cxDrive { from { transform: translateX(-360px); } to { transform: translateX(1660px); } }
 
-.campus__label {
-  position: absolute; bottom: .6rem; left: var(--gutter); margin: 0;
-  font-size: .75rem; color: var(--ink);
-  background: color-mix(in oklab, var(--paper) 88%, transparent);
-  padding: .2rem .55rem; border-radius: 4px;
-}
-.campus__label span {
-  color: var(--muted); text-transform: uppercase; letter-spacing: .06em;
-  font-size: .6875rem; margin-inline-end: .35rem;
-}
-/* No room beside the pill on a phone, and the scene says it anyway. */
-@media (max-width: 45.99rem) { .campus__label { display: none; } }
-
-.campus__alert {
-  position: absolute; top: .6rem; right: var(--gutter); width: 56vw;
-  translate: 0 calc((1 - clamp(0, calc((var(--tb) - .55) * 6), 1)) * -14px);
-  background: #fbf9f4; border: 2px solid var(--accent); border-radius: 14px;
-  padding: .5rem .8rem; font-size: .8125rem; line-height: 1.35; color: var(--ink);
-  box-shadow: 0 6px 18px rgba(20, 22, 26, .08);
-}
-.campus__alert strong {
-  display: block; color: var(--accent); text-transform: uppercase;
-  letter-spacing: .05em; font-size: .75rem;
-}
-@media (min-width: 46rem) {
-  .campus__alert {
-    right: auto; left: 50%; width: 25rem;
-    translate: -50% calc((1 - clamp(0, calc((var(--tb) - .55) * 6), 1)) * -14px);
-  }
-}
 
 /* The hero's controls sit over the campus, so they get a sheet of paper. */
 .ovs {
@@ -987,34 +957,6 @@ html[data-scene="conflict"] { --paper-end: #f1e2d2; --wash-end: #efe1d2; }
   padding: .85rem;
   margin: -.85rem;
 }
-
-.pill {
-  position: fixed; right: 12px; bottom: 12px; z-index: 6;
-  display: flex; align-items: center; gap: .55rem;
-  padding: .4rem .85rem; border-radius: 999px;
-  background: color-mix(in oklab, var(--paper) 94%, transparent);
-  border: 1px solid var(--rule);
-  box-shadow: 0 4px 16px rgba(20, 22, 26, .08);
-  font-size: .8125rem; color: var(--ink);
-}
-.pill__label { color: var(--muted); }
-.pill__out { min-width: 5.6em; font-weight: 600; }
-.pill .pill__range { width: 7rem; height: 24px; }
-@media (min-width: 46rem) {
-  .pill { right: 20px; bottom: 20px; }
-  .pill .pill__range { width: 10rem; }
-}
-
-/* Looking through the page while the pill is held. */
-main, .masthead, .foot { transition: opacity .25s ease; }
-body.is-peeking main,
-body.is-peeking .masthead,
-body.is-peeking .foot { opacity: .06; }
-body.is-peeking .campus { opacity: 1; }
-/* At rest the scene is a watermark behind text, and its own words would ghost
-   through the copy above it. They only show when the scene is in front. */
-body:not(.is-peeking) .campus.is-dim .campus__alert,
-body:not(.is-peeking) .campus.is-dim .campus__label { visibility: hidden; }
 
 @media (prefers-reduced-motion: reduce) {
   :root { transition: none; }
@@ -1025,27 +967,4 @@ body:not(.is-peeking) .campus.is-dim .campus__label { visibility: hidden; }
 /* Things that only exist in the good ending. */
 .cg-in { opacity: clamp(0, calc((var(--g) - var(--at, 2)) * 6), 1); }
 
-/* The fork: your slider, drawn down into the three problems. The dashed lines
-   are always there as possibilities; the red one grows as much as you hand over. */
-.fork { display: block; width: 100%; height: auto; margin-block: 1.5rem .5rem; overflow: visible; }
-.fork path { fill: none; stroke-width: 2.5; stroke-linecap: round; }
-.fork__ghost path { stroke: var(--muted); opacity: .35; stroke-dasharray: 5 8; }
-.fork__live path { stroke: var(--accent); stroke-dasharray: 1; stroke-dashoffset: calc(1 - var(--tb)); }
-@media (max-width: 45.99rem) { .fork { display: none; } }
 
-/* Shared frame for the small interactives in each problem card. */
-.toy { margin-block: 1rem .75rem; background: var(--wash); border-radius: 10px; padding: .75rem; }
-.toy svg { display: block; width: 100%; height: auto; }
-.toy__row { display: flex; flex-wrap: wrap; gap: .4rem; margin-block-start: .6rem; }
-.toy__btn {
-  font: inherit; font-size: .78rem; line-height: 1.2; cursor: pointer;
-  padding: .32rem .65rem; border-radius: 999px;
-  border: 1px solid var(--rule); background: var(--paper); color: var(--ink);
-}
-.toy__btn[aria-pressed="true"] { border-color: var(--ink); background: var(--ink); color: var(--paper); }
-.toy__btn:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
-.toy__cap { font-size: .8125rem; color: var(--muted); margin: .65rem 0 0; line-height: 1.45; }
-.toy__src { display: block; font-size: .72rem; margin-block-start: .25rem; }
-.toy__stat { font-size: .78rem; color: var(--muted); margin: .5rem 0 0; font-variant-numeric: tabular-nums; }
-.toy__stat b { color: var(--ink); }
-.toy__stat .is-bad { color: var(--accent); }

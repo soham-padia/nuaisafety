@@ -7,14 +7,15 @@
  * the Boston skyline and the E train on Huntington.
  *
  * Every page draws the same campus and lets it go wrong a different way as the
- * oversight value `--t` rises. Nothing here runs per frame. Each element reads
- * `--t` in CSS and its own `--at` threshold, so the scene is a function of one
- * number. Pages, the hero slider and the floating pill all write that number,
- * and sessionStorage carries it between pages.
+ * damage rises. Nothing here runs per frame. Each element reads `--tb` in CSS
+ * against its own `--at` threshold, so the scene is a function of one number.
+ * Only the two sliders on the home page change it; every other page just opens
+ * in whatever state the visitor left, carried by sessionStorage.
  *
- * The register is deliberate: no bodies, no explosions, no hazmat suits. A
- * familiar memory (an empty quad, a banner, a phone alert) lands harder than
- * spectacle, and it keeps the page legible to a Khoury administrator.
+ * The register is deliberate: no bodies, no explosions, no hazmat suits, and
+ * no words. Nothing in the scene asks to be noticed. It changes the way a room
+ * changes while you are out of it, so the best reaction is a visitor coming
+ * back to a page and thinking: wasn't there someone sitting there before?
  */
 /* Named for the future each one shows, not the page it is on, so scenes can
    be moved between pages without renaming. */
@@ -22,12 +23,6 @@ export type Scene = 'empty' | 'bio' | 'power' | 'conflict';
 interface Props { scene: Scene }
 const { scene } = Astro.props;
 
-const LABEL: Record<Scene, string> = {
-  empty: 'Gradual disempowerment',
-  bio: 'Biological misuse',
-  power: 'Concentration of power',
-  conflict: 'AI-enabled conflict',
-};
 
 const range = (a: number, b: number, step: number) => {
   const out: number[] = [];
@@ -178,24 +173,7 @@ const extra = [96, 160, 228, 286, 360, 436, 524, 618, 688, 762, 884, 952, 1030, 
       </g>
     ))}</g>
 
-    <g class="cg-in" style="--at:.72">
-      <rect x="882" y="176" width="216" height="24" rx="2" fill="#fbf9f4" stroke="#c8102e" stroke-width="2" />
-      <text x="990" y="192" font-size="10.5" font-weight="700" letter-spacing=".6" text-anchor="middle" fill="#c8102e">FELLOWSHIPS START JANUARY 2027</text>
-    </g>
-    {scene === 'bio' && (
-      <g class="cx-in" style="--at:.48">
-        <rect x="596" y="178" width="198" height="28" rx="2" fill="#fbf9f4" stroke="#c8102e" stroke-width="2" />
-        <text x="695" y="197" font-size="13" font-weight="700" letter-spacing="1" text-anchor="middle" fill="#c8102e">CLASSES MOVED ONLINE</text>
-      </g>
-    )}
-    {scene === 'power' && (
-      <g class="cx-in cx-amp" style="--at:.5;--amp:.4">
-        <rect x="602" y="164" width="186" height="92" rx="4" fill="#a3abb4" />
-        <path d="M640,210 Q695,176 750,210 Q695,244 640,210 Z" fill="#eef0f2" />
-        <circle cx="695" cy="210" r="15" fill="#6f7780" />
-        <circle cx="695" cy="210" r="5" fill="#c8102e" />
-      </g>
-    )}
+
 
     {/* Trees and lampposts */}
     {trees.map(([x, y, r, c]) => (
@@ -213,20 +191,6 @@ const extra = [96, 160, 228, 286, 360, 436, 524, 618, 688, 762, 884, 952, 1030, 
     <rect class={`cx-lawn cx-lawn--${scene}`} x="0" y="262" width="1600" height="40" />
     <path d="M760,262 L840,262 L980,302 L620,302 Z" fill="#ece5d6" />
 
-    {scene === 'empty' && (
-      <g class="cx-in" style="--at:.62">
-        <rect x="770" y="262" width="3" height="32" fill="#b9a993" />
-        <rect x="692" y="242" width="160" height="24" rx="3" fill="#fbf9f4" stroke="#c9bba6" />
-        <text x="772" y="259" font-size="12" text-anchor="middle" fill="#5b6169">Please keep off the grass</text>
-      </g>
-    )}
-    {scene === 'bio' && (
-      <g class="cx-in" style="--at:.28">
-        <rect x="1020" y="264" width="3" height="32" fill="#b9a993" />
-        <rect x="950" y="244" width="144" height="24" rx="3" fill="#fbf9f4" stroke="#c9bba6" />
-        <text x="1022" y="261" font-size="12" text-anchor="middle" fill="#5b6169">Please stay 6 ft apart</text>
-      </g>
-    )}
 
     {people.map((p) => (
       <g class="cx-out" style={`--at:${p.out}`}>
@@ -291,20 +255,12 @@ const extra = [96, 160, 228, 286, 360, 436, 524, 618, 688, 762, 884, 952, 1030, 
     ))}
   </svg>
 
-  {scene === 'conflict' && (
-    <div class="campus__alert cx-in" style="--at:.55">
-      <strong>Emergency alert</strong>
-      <span>Seek shelter immediately. This is not a drill.</span>
-    </div>
-  )}
-  <p class="campus__label cx-in" style="--at:.5"><span>Possible future</span> {LABEL[scene]}</p>
 </div>
 
 <script>
   /* Bright while a control that drives it is on screen, or once you reach the
      end of the page, where the space below the footer is reserved for it. A
-     watermark otherwise, because content sits over it. On content pages the
-     pill also brings it forward while held (see OversightPill). */
+     watermark otherwise, because content sits over it. */
   const campus = document.querySelector<HTMLElement>('.campus');
   if (campus) {
     const seen = new Set<Element>();

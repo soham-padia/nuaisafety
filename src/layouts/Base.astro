@@ -2,7 +2,6 @@
 import '../styles/global.css';
 import { SITE, NAV, SOCIAL, EMAIL, signupHref } from '../config';
 import Campus, { type Scene } from '../components/Campus.astro';
-import OversightPill from '../components/OversightPill.astro';
 /* Internal links have to survive being served from a subpath, which is what a
    GitHub project page does. BASE_URL is "/" for the real site, so this is a
    no-op there. */
@@ -104,8 +103,6 @@ const ogImage = new URL('/og.png', Astro.site);
         </p>
       </div>
     </footer>
-
-    {rel !== '/' && <OversightPill />}
 
     <script>
       import { animate, inView, stagger } from 'motion';

@@ -1,9 +1,8 @@
 /**
  * One world, shared by every control on the site.
  *
- *   t  how much of its work we have stopped checking, 0 to 1. Written by the
- *      hero slider, the pill on other pages, and the capability slider in the
- *      power card.
+ *   t  how much of its work we have stopped checking, 0 to 1. Written only by
+ *      the hero slider.
  *   g  how many people have come to work on it, 0 to 1. Written only by the
  *      slider at the bottom of the home page.
  *
