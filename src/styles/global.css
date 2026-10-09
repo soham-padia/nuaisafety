@@ -864,7 +864,7 @@ strong { font-weight: 660; }
    accent at 4.5:1 or better on paper, so no point on the slider fails AA.
    ------------------------------------------------------------------------- */
 
-html[data-scene="home"]     { --paper-end: #f4f8fa; --wash-end: #e9f0f3; }
+html[data-scene="empty"]    { --paper-end: #f4f8fa; --wash-end: #e9f0f3; }
 html[data-scene="bio"]      { --paper-end: #ebf0ea; --wash-end: #dfe7df; }
 html[data-scene="power"]    { --paper-end: #e7e9ec; --wash-end: #dcdfe3; }
 html[data-scene="conflict"] { --paper-end: #f1e2d2; --wash-end: #efe1d2; }
@@ -896,10 +896,10 @@ html[data-scene="conflict"] { --paper-end: #f1e2d2; --wash-end: #efe1d2; }
 .cx-lit--on  { opacity: max(var(--l0, 0), clamp(0, calc((var(--t) - var(--at, 2)) * 5), 1)); }
 .cx-lit--off { opacity: calc(var(--l0, 0) * clamp(0, calc(1 - (var(--t) - var(--at, 2)) * 5), 1)); }
 .cx-tree           { fill: var(--c); }
-.cx-tree--home     { fill: color-mix(in oklab, var(--c), #9fcf86 calc(var(--t) * 45%)); }
+.cx-tree--empty    { fill: color-mix(in oklab, var(--c), #9fcf86 calc(var(--t) * 45%)); }
 .cx-tree--conflict { fill: color-mix(in oklab, var(--c), #cbc3b2 calc(var(--t) * 75%)); }
 .cx-lawn           { fill: #cfe0bf; }
-.cx-lawn--home     { fill: color-mix(in oklab, #cfe0bf, #a8d68c calc(var(--t) * 100%)); }
+.cx-lawn--empty    { fill: color-mix(in oklab, #cfe0bf, #a8d68c calc(var(--t) * 100%)); }
 .cx-lawn--conflict { fill: color-mix(in oklab, #cfe0bf, #d8d2b8 calc(var(--t) * 100%)); }
 
 /* Negative delay so the train is already on screen when the page opens. */

@@ -16,12 +16,14 @@
  * familiar memory (an empty quad, a banner, a phone alert) lands harder than
  * spectacle, and it keeps the page legible to a Khoury administrator.
  */
-export type Scene = 'home' | 'bio' | 'power' | 'conflict';
+/* Named for the future each one shows, not the page it is on, so scenes can
+   be moved between pages without renaming. */
+export type Scene = 'empty' | 'bio' | 'power' | 'conflict';
 interface Props { scene: Scene }
 const { scene } = Astro.props;
 
 const LABEL: Record<Scene, string> = {
-  home: 'Gradual disempowerment',
+  empty: 'Gradual disempowerment',
   bio: 'Biological misuse',
   power: 'Concentration of power',
   conflict: 'AI-enabled conflict',
@@ -42,7 +44,7 @@ const HEAD = ['#e8cdb5', '#c99d7e', '#a97b5c', '#e2bc9a', '#8d6248'];
 
 // [when the first person goes, spread until the last one does]
 const LEAVE: Record<Scene, [number, number]> = {
-  home: [.08, .72], bio: [.4, .46], power: [.22, .38], conflict: [.18, .5],
+  empty: [.08, .72], bio: [.4, .46], power: [.22, .38], conflict: [.18, .5],
 };
 const people = PEOPLE_X.map((x, i) => {
   const rank = ORDER[i] / (ORDER.length - 1);
@@ -68,11 +70,11 @@ const windows = [
   ...grid(range(888, 1095, 30), [190, 220]),
   ...grid(range(1356, 1566, 30), [200, 230]),
 ];
-const litClass = scene === 'home' ? 'cx-lit cx-lit--on'
+const litClass = scene === 'empty' ? 'cx-lit cx-lit--on'
   : scene === 'conflict' ? 'cx-lit cx-lit--off' : 'cx-lit';
 
 const PAX: Record<Scene, [number, number]> = {
-  home: [.48, .2], bio: [.42, .18], power: [.38, .2], conflict: [.3, .2],
+  empty: [.48, .2], bio: [.42, .18], power: [.38, .2], conflict: [.3, .2],
 };
 const trains = scene === 'conflict'
   ? [{ cls: 'cx-train cx-out', style: '--at:.58', pax: true },
@@ -130,7 +132,7 @@ const TREE = ['#bfd3b0', '#aecaa0', '#e2cf98'];
     </g>
     <path d="M1238,270 L1238,74 L1290,60 L1290,270 Z" fill="#dde6ed" />
     <path d="M1290,60 L1290,270" stroke="#cfd9e2" stroke-width="2" />
-    {scene === 'home' && newTowers.map((n) => (
+    {scene === 'empty' && newTowers.map((n) => (
       <g>
         <rect class="cx-rise" style={`--at:${n.at}`} x={n.x} y={n.top} width={n.w} height={270 - n.top} fill="#d1e2ea" />
       </g>
@@ -189,7 +191,7 @@ const TREE = ['#bfd3b0', '#aecaa0', '#e2cf98'];
     <rect class={`cx-lawn cx-lawn--${scene}`} x="0" y="262" width="1600" height="40" />
     <path d="M760,262 L840,262 L980,302 L620,302 Z" fill="#ece5d6" />
 
-    {scene === 'home' && (
+    {scene === 'empty' && (
       <g class="cx-in" style="--at:.62">
         <rect x="770" y="262" width="3" height="32" fill="#b9a993" />
         <rect x="692" y="242" width="160" height="24" rx="3" fill="#fbf9f4" stroke="#c9bba6" />
