@@ -3,13 +3,56 @@
    One accent, system type, no framework. See DESIGN.md for the reasoning.
    --------------------------------------------------------------------------- */
 
+/* The oversight slider in the hero writes a number from 0 to 1 here, and every
+   surface colour below is mixed against it. Dragging it does not recolour one
+   figure, it drains definition out of the whole page: the paper dirties, the
+   wash deepens, and the rules dissolve towards the background so the structure
+   you could see at the start stops being visible.
+
+   Ink and accent are deliberately held fixed. Text contrast has to pass AA at
+   every point on the scale, not only at zero, and the accent is the brand. */
+@property --t {
+  syntax: '<number>';
+  inherits: true;
+  initial-value: 0;
+}
+/* How many people have come to help, from the slider at the bottom of the home
+   page. See src/scripts/oversight.ts. */
+@property --g {
+  syntax: '<number>';
+  inherits: true;
+  initial-value: 0;
+}
+/* The damage actually visible: what was handed away, less what people fixed.
+   Everything that degrades reads this rather than --t. */
+@property --tb {
+  syntax: '<number>';
+  inherits: true;
+  initial-value: 0;
+}
+
 :root {
+  --t: 0;
+  --g: 0;
+  --grain: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='220'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 .3 0 0 0 0 .25 0 0 0 0 .2 0 0 0 .55 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.09'/%3E%3C/svg%3E");
+  --tb: calc(var(--t) * (1 - var(--g)));
+  /* Where the paper drifts at full oversight loss. Deliberately close to where
+     it starts, and the same on every page: a page should feel a little colder,
+     never visibly recoloured. */
+  --paper-end: #f3f0ea;
+  --wash-end:  #ebe7df;
+  transition: --t .35s ease, --g .35s ease;
+
   --ink:    #14161a;
   --muted:  #5b6169;
   --accent: #c8102e;
-  --paper:  #ffffff;
-  --wash:   #f6f7f8;
-  --rule:   #e3e6e9;
+  /* Warm paper rather than pure white, after Harvard AISST. */
+  --paper:  color-mix(in oklab,
+              color-mix(in oklab, #fbf9f4, var(--paper-end) calc(var(--tb) * 100%)),
+              #fdf3dc calc(var(--g) * 18%));
+  --wash:   color-mix(in oklab, #f3efe7, var(--wash-end) calc(var(--tb) * 100%));
+  --rule:   color-mix(in oklab, #e5dfd5, var(--paper-end) calc(var(--tb) * 70%));
+  --shadow: color-mix(in oklab, #b4b8c0, #9aa0a8 calc(var(--tb) * 100%));
 
   /* #c8102e on white is 5.88:1, which passes AA for body text, not just large.
      Darkened for the visited/hover state so it stays distinguishable. */
@@ -46,7 +89,9 @@ html {
 
 body {
   margin: 0;
-  background: var(--paper);
+  background-color: var(--paper);
+  /* Paper grain, rasterised once and tiled. */
+  background-image: var(--grain);
   color: var(--ink);
   font-family: var(--sans);
   font-size: var(--step-0);
@@ -727,3 +772,151 @@ strong { font-weight: 660; }
   *, *::before, *::after { animation: none !important; transition: none !important; }
   html { scroll-behavior: auto; }
 }
+
+
+/* -------------------------------------------------------------------------
+   Hero figure: the oversight slider. See src/components/Oversight.astro for
+   what the steps mean and why the devil retracts at the end.
+   ------------------------------------------------------------------------- */
+
+.ovs { margin: 0; }
+
+.ovs__stage {
+  position: relative;
+  background: var(--wash);
+  border-radius: 10px;
+  overflow: hidden;
+}
+.ovs__stage svg { display: block; width: 100%; height: auto; }
+
+.ovs__shadow {
+  transform-box: view-box;
+  transform-origin: 295px 135px;
+  fill: var(--shadow);
+  /* --hs and --ho are this step's size and darkness, set by the hero. As people
+     arrive (--g) the shadow slides back behind the face at ordinary size, the
+     same place the bottom slider's shadow ends up. */
+  transform: translate(calc(var(--g) * -114px), calc(var(--g) * 61px))
+             scale(calc(var(--hs, 1) * (1 - var(--g)) + .725 * var(--g)));
+  opacity: calc(var(--ho, .3) * (1 - var(--g)) + .42 * var(--g));
+  transition: transform .45s ease, opacity .45s ease;
+}
+.ovs__devilish { opacity: calc(1 - var(--g)); }
+.ovs__shadow .ovs__tail { stroke: var(--shadow); }
+.ovs__horn {
+  transform-box: fill-box;
+  transform-origin: 50% 100%;
+  transform: scaleY(0);
+  transition: transform .45s cubic-bezier(.3, 1.5, .5, 1);
+}
+.ovs__tail { stroke-dasharray: 1; stroke-dashoffset: 1; transition: stroke-dashoffset .6s ease; }
+.ovs__tip, .ovs__devil { opacity: 0; transition: opacity .4s ease; }
+.ovs__devil, .ovs__tip { fill: var(--accent); }
+/* Shown only at the final step, so it has to read against the shadow, not the page. */
+.ovs__calm { opacity: 0; stroke: var(--paper); transition: opacity .5s ease .15s; }
+
+.ovs__head  { fill: var(--paper); stroke: var(--ink); stroke-width: 3.5; }
+.ovs__pupil { fill: var(--ink); }
+.ovs__mouth { stroke: var(--ink); }
+.ovs__blush { fill: var(--accent); opacity: .22; }
+#ovsPupils { transition: transform .35s ease; }
+.ovs__blink { transform-box: fill-box; transform-origin: center; animation: ovsBlink 5.5s infinite; }
+@keyframes ovsBlink { 0%, 95%, 100% { transform: scaleY(1); } 97% { transform: scaleY(.1); } }
+
+.ovs__bubble {
+  position: absolute; left: 3.5%; top: 10%; max-width: 46%; margin: 0;
+  background: var(--paper); border: 1.5px solid var(--ink); border-radius: 14px;
+  padding: .45rem .75rem; font-size: clamp(.8rem, 1.6vw, .95rem); font-weight: 600; line-height: 1.3;
+}
+.ovs__bubble::after {
+  content: ""; position: absolute; right: 18%; bottom: -9px; width: 14px; height: 14px;
+  background: var(--paper); border-right: 1.5px solid var(--ink); border-bottom: 1.5px solid var(--ink);
+  transform: rotate(40deg) skewX(10deg);
+}
+.ovs__bubble.is-pop { animation: ovsPop .25s ease; }
+@keyframes ovsPop { from { transform: scale(.92); } to { transform: scale(1); } }
+
+.ovs__desk { position: relative; display: flex; align-items: center; gap: 1rem; margin-top: 1rem; }
+.ovs__desk svg { width: 150px; flex: none; }
+.ovs__person { fill: var(--ink); transition: opacity .4s ease; }
+.ovs__person.is-gone { opacity: calc(.14 + var(--g) * .86); }
+.ovs__deskline { fill: var(--muted); }
+.ovs__deskLabel { font-size: .9rem; color: var(--muted); }
+.ovs__stamp {
+  position: absolute; left: 22px; top: -4px; border: 2.5px solid var(--accent); color: var(--accent);
+  font-weight: 700; font-size: 1.15rem; padding: .05rem .6rem; border-radius: 6px;
+  transform: rotate(-9deg) scale(1.6); opacity: 0; pointer-events: none;
+  transition: opacity .2s ease, transform .3s cubic-bezier(.3, 1.6, .5, 1);
+}
+.ovs__stamp.is-on { opacity: calc(1 - var(--g)); transform: rotate(-9deg) scale(1); }
+
+.ovs__event { font-size: var(--step-1); line-height: 1.3; margin: 1.25rem 0 .35rem; min-height: 2.6em; }
+.ovs__source { font-size: .85rem; color: var(--muted); min-height: 1.4em; margin: 0 0 1.25rem; }
+.ovs__source b { color: var(--accent); }
+
+.ovs__range { -webkit-appearance: none; appearance: none; width: 100%; height: 28px; background: transparent; margin: 0; cursor: pointer; }
+.ovs__range::-webkit-slider-runnable-track { height: 4px; border-radius: 2px; background: linear-gradient(to right, var(--accent) var(--p, 0%), var(--rule) var(--p, 0%)); }
+.ovs__range::-moz-range-track { height: 4px; border-radius: 2px; background: var(--rule); }
+.ovs__range::-moz-range-progress { height: 4px; border-radius: 2px; background: var(--accent); }
+.ovs__range::-webkit-slider-thumb { -webkit-appearance: none; width: 24px; height: 24px; margin-top: -10px; border-radius: 50%; background: var(--paper); border: 2px solid var(--ink); }
+.ovs__range::-moz-range-thumb { width: 22px; height: 22px; border-radius: 50%; background: var(--paper); border: 2px solid var(--ink); }
+.ovs__range:focus-visible { outline: none; }
+.ovs__range:focus-visible::-webkit-slider-thumb { box-shadow: 0 0 0 4px var(--paper), 0 0 0 6px var(--accent); }
+.ovs__range:focus-visible::-moz-range-thumb { box-shadow: 0 0 0 4px var(--paper), 0 0 0 6px var(--accent); }
+.ovs__range--untouched::-webkit-slider-thumb { animation: ovsNudge 1.6s ease-in-out infinite; }
+.ovs__range--untouched::-moz-range-thumb { animation: ovsNudge 1.6s ease-in-out infinite; }
+@keyframes ovsNudge { 0%, 100% { box-shadow: 0 0 0 0 rgba(200, 16, 46, .45); } 50% { box-shadow: 0 0 0 9px rgba(200, 16, 46, 0); } }
+
+.ovs__ends { display: flex; justify-content: space-between; font-size: .85rem; color: var(--muted); margin-top: .2rem; }
+
+.ovs figcaption { margin-top: 1.25rem; font-size: .95rem; color: var(--muted); min-height: 4.5em; }
+.ovs figcaption strong { color: var(--ink); }
+
+@media (prefers-reduced-motion: reduce) {
+  .ovs *, .ovs *::before, .ovs *::after { animation: none !important; transition: none !important; }
+}
+
+.routes__lede { color: var(--muted); max-width: var(--measure); }
+.route {
+  border-top: 2px solid color-mix(in oklab, var(--rule), var(--accent) calc(var(--tb) * 100%));
+  padding-top: .85rem;
+  display: flex;
+  flex-direction: column;
+}
+.route h3 { margin: 0 0 .4rem; }
+.route p { margin: 0 0 .5rem; }
+.route__who { font-size: .85rem; color: var(--muted); text-transform: uppercase; letter-spacing: .04em; margin-top: auto; }
+.routes__note { font-size: .9rem; color: var(--muted); max-width: var(--measure); margin-top: 2rem; }
+
+/* -------------------------------------------------------------------------
+   The campus: a still line drawing standing on the footer rule.
+   See src/components/Campus.astro. Only its people respond to the sliders.
+   ------------------------------------------------------------------------- */
+
+.campus { height: clamp(84px, 12vw, 172px); margin-block-start: clamp(2.5rem, 1.5rem + 4vw, 4.5rem); }
+.campus svg { display: block; width: 100%; height: 100%; overflow: visible; }
+.campus__line {
+  fill: var(--paper);
+  stroke: color-mix(in oklab, var(--muted) 38%, var(--paper));
+  stroke-width: 1.1;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  vector-effect: non-scaling-stroke;
+}
+.campus__line :is(rect, path, circle) { vector-effect: non-scaling-stroke; }
+.campus__far { opacity: .6; }
+.campus__wire { fill: none; }
+.campus__person { fill: color-mix(in oklab, var(--muted) 80%, var(--paper)); transition: opacity .6s ease; }
+
+/* People who are there until the work is handed away. */
+.cx-out { opacity: clamp(0, calc(1 - (var(--tb) - var(--at, 2)) * 6), 1); }
+
+@media (prefers-reduced-motion: reduce) {
+  :root { transition: none; }
+  .campus__person { transition: none; }
+}
+
+/* Things that only exist in the good ending. */
+.cg-in { opacity: clamp(0, calc((var(--g) - var(--at, 2)) * 6), 1); }
+
+
