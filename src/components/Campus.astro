@@ -301,20 +301,35 @@ const extra = [96, 160, 228, 286, 360, 436, 524, 618, 688, 762, 884, 952, 1030, 
 </div>
 
 <script>
-  /* Bright while a control that drives it is on screen, a watermark otherwise.
-     On the home page that is the hero slider or the slider at the bottom. On
-     every other page the content sits over the scene, so it rests faint and
-     comes forward only while the pill is held (see OversightPill). */
+  /* Bright while a control that drives it is on screen, or once you reach the
+     end of the page, where the space below the footer is reserved for it. A
+     watermark otherwise, because content sits over it. On content pages the
+     pill also brings it forward while held (see OversightPill). */
   const campus = document.querySelector<HTMLElement>('.campus');
-  const drivers = document.querySelectorAll('.ovs, .good__stage');
-  if (campus && drivers.length) {
+  if (campus) {
     const seen = new Set<Element>();
-    const io = new IntersectionObserver((entries) => {
-      for (const e of entries) e.isIntersecting ? seen.add(e.target) : seen.delete(e.target);
-      campus.classList.toggle('is-dim', seen.size === 0);
-    });
-    drivers.forEach((d) => io.observe(d));
-  } else if (campus) {
-    campus.classList.add('is-dim');
+    let atEnd = false;
+    const apply = () => campus.classList.toggle('is-dim', seen.size === 0 && !atEnd);
+
+    const drivers = document.querySelectorAll('.ovs, .good__stage');
+    if (drivers.length) {
+      const io = new IntersectionObserver((entries) => {
+        for (const e of entries) e.isIntersecting ? seen.add(e.target) : seen.delete(e.target);
+        apply();
+      });
+      drivers.forEach((d) => io.observe(d));
+    }
+
+    const checkEnd = () => {
+      const doc = document.documentElement;
+      atEnd = scrollY + innerHeight >= doc.scrollHeight - campus.offsetHeight * .5;
+      apply();
+    };
+    addEventListener('scroll', checkEnd, { passive: true });
+    addEventListener('resize', checkEnd);
+    // The page can change height with no scroll at all, as when the tabs on
+    // /resources collapse after load, so watch the body as well.
+    new ResizeObserver(checkEnd).observe(document.body);
+    checkEnd();
   }
 </script>

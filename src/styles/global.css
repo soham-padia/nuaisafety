@@ -34,6 +34,10 @@
 :root {
   --t: 0;
   --g: 0;
+  /* The campus height. The page reserves exactly this much at its end, so the
+     last thing on every page is the scene itself, clear of the footer. */
+  --campus-h: clamp(150px, 24vh, 240px);
+  --grain: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='220'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 .3 0 0 0 0 .25 0 0 0 0 .2 0 0 0 .55 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.09'/%3E%3C/svg%3E");
   --tb: calc(var(--t) * (1 - var(--g)));
   /* Where the paper ends up at full oversight loss. Each page overrides it, so
      the same slider sours the page towards a different future on each one. */
@@ -89,7 +93,8 @@ body {
   margin: 0;
   background-color: var(--paper);
   /* Paper grain, rasterised once and tiled. */
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='220'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 .3 0 0 0 0 .25 0 0 0 0 .2 0 0 0 .55 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.09'/%3E%3C/svg%3E");
+  background-image: var(--grain);
+  padding-block-end: var(--campus-h);
   color: var(--ink);
   font-family: var(--sans);
   font-size: var(--step-0);
@@ -723,7 +728,12 @@ strong { font-weight: 660; }
 /* --- footer ---------------------------------------------------------------- */
 
 .foot {
+  /* Opaque, with the same grain as the page, so it covers the campus cleanly as
+     it scrolls past rather than printing its links across the buildings. */
+  background-color: var(--paper);
+  background-image: var(--grain);
   border-block-start: 1px solid var(--rule);
+  border-block-end: 1px solid var(--rule);
   padding-block: 2.5rem 3rem;
   color: var(--muted);
   font-size: 0.9375rem;
@@ -904,12 +914,12 @@ html[data-scene="conflict"] { --paper-end: #f1e2d2; --wash-end: #efe1d2; }
 .campus {
   position: fixed;
   inset: auto 0 0 0;
-  height: clamp(150px, 24vh, 240px);
+  height: var(--campus-h);
   z-index: -1;
   pointer-events: none;
   transition: opacity .5s ease;
 }
-@media (min-width: 46rem) { .campus { height: clamp(200px, 32vh, 360px); } }
+@media (min-width: 46rem) { :root { --campus-h: clamp(200px, 32vh, 360px); } }
 .campus svg { display: block; width: 100%; height: 100%; }
 .campus.is-dim { opacity: .28; }
 
@@ -994,7 +1004,6 @@ html[data-scene="conflict"] { --paper-end: #f1e2d2; --wash-end: #efe1d2; }
   .pill { right: 20px; bottom: 20px; }
   .pill .pill__range { width: 10rem; }
 }
-body:has(.pill) .foot { padding-block-end: 5.5rem; }
 
 /* Looking through the page while the pill is held. */
 main, .masthead, .foot { transition: opacity .25s ease; }
