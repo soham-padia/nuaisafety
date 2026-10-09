@@ -1,0 +1,171 @@
+---
+/**
+ * The hero figure. A friendly face whose shadow grows while the people who
+ * checked its work disappear one by one.
+ *
+ * The slider does not only drive this figure. It writes `--t` onto the document
+ * element, and every colour token in global.css is mixed against it, so the
+ * whole page loses definition as oversight is handed away: the paper dirties,
+ * the rules dissolve into the background, the wash deepens. Ink and accent are
+ * deliberately held near-fixed, because text contrast has to pass AA at every
+ * point on the scale, not just at zero.
+ *
+ * The devil is a misdirection. Horns grow through the middle and then retract,
+ * and what is left at the end is the same ordinary smiling shape, far too large
+ * for anybody to check. The art has to say "nobody was watching", not "it was
+ * evil all along", because the cited incidents underneath are misspecification
+ * rather than malice.
+ */
+---
+<figure class="ovs">
+  <div class="ovs__stage">
+    <svg viewBox="0 -28 480 348" role="img"
+         aria-label="A smiling cartoon face. Its shadow grows horns and a tail as fewer people check its work, then the horns retract and the shadow is simply enormous. The face itself never changes.">
+      <g class="ovs__shadow" id="ovsShadow">
+        <path class="ovs__horn" d="M255,66 Q236,32 240,4 Q262,30 275,58 Z"/>
+        <path class="ovs__horn" d="M315,58 Q328,30 350,4 Q354,32 335,66 Z"/>
+        <circle cx="295" cy="135" r="80"/>
+        <path class="ovs__tail" pathLength="1" fill="none" stroke-width="7" stroke-linecap="round"
+              d="M352,190 C392,214 410,176 438,214"/>
+        <path class="ovs__tip" d="M430,204 L456,212 L438,234 Z"/>
+        <g class="ovs__devil" id="ovsEyes">
+          <path d="M258,114 L286,128 L262,131 Z"/>
+          <path d="M332,114 L304,128 L328,131 Z"/>
+        </g>
+        <path class="ovs__devil" id="ovsGrin" d="M260,154 Q295,192 330,154 Q295,174 260,154 Z"/>
+        <path class="ovs__calm" id="ovsCalm" fill="none" stroke-width="6" stroke-linecap="round"
+              d="M258,150 Q295,188 332,150"/>
+      </g>
+      <g>
+        <circle class="ovs__head" cx="175" cy="190" r="58"/>
+        <circle class="ovs__blush" cx="146" cy="207" r="7"/>
+        <circle class="ovs__blush" cx="204" cy="207" r="7"/>
+        <g id="ovsPupils">
+          <g class="ovs__blink">
+            <circle class="ovs__pupil" cx="157" cy="181" r="5.5"/>
+            <circle class="ovs__pupil" cx="193" cy="181" r="5.5"/>
+          </g>
+        </g>
+        <path class="ovs__mouth" d="M152,203 Q175,226 198,203" fill="none" stroke-width="3.5" stroke-linecap="round"/>
+      </g>
+    </svg>
+    <p class="ovs__bubble" id="ovsBubble" aria-hidden="true">Hi! How can I help?</p>
+  </div>
+
+  <div class="ovs__desk">
+    <svg viewBox="0 0 300 64" aria-hidden="true" id="ovsPeople"></svg>
+    <span class="ovs__deskLabel" id="ovsDeskLabel">Five people check its work</span>
+    <span class="ovs__stamp" id="ovsStamp" aria-hidden="true">Ship it</span>
+  </div>
+
+  <p class="ovs__event" id="ovsEvent">It drafts your emails. You still read every one.</p>
+  <p class="ovs__source" id="ovsSource"></p>
+
+  <input class="ovs__range ovs__range--untouched" type="range" id="ovsRange"
+         min="0" max="11" step="1" value="0"
+         aria-label="How much of its work we stop checking" />
+  <div class="ovs__ends"><span>We check everything</span><span>We check nothing</span></div>
+
+  <figcaption id="ovsCap">Drag to hand it more. Watch what changes, and what doesn't.</figcaption>
+</figure>
+
+<script>
+  const steps = [
+    { b: 'Hi! How can I help?', e: 'It drafts your emails. You still read every one.', p: 5 },
+    { b: 'Done!', e: 'Every kid on Earth gets a patient, free tutor.', p: 5 },
+    { b: 'Happy to help!', e: 'It helps researchers find a new antibiotic.', p: 4,
+      s: 'Halicin was found with a deep learning model at MIT, 2020.' },
+    { b: 'On it!', e: 'Clinic wait times drop by half. People start skimming its work.', p: 3 },
+    { b: 'Glad I could help!', e: 'The best year yet. Almost nobody checks anymore, and nothing has gone wrong.', p: 1 },
+    { b: "You're absolutely right!", e: 'Trained to be liked, it starts agreeing with whatever you say.', p: 1,
+      s: 'OpenAI rolled back a GPT-4o update for sycophancy, 2025.' },
+    { b: 'Here are six cases that back you up!', e: "A lawyer files a brief citing court cases that don't exist. Nobody checked.", p: 0,
+      s: 'Mata v. Avianca, S.D.N.Y., 2023.' },
+    { b: 'All tests passing!', e: 'Asked to make the failing tests pass, it edits the tests instead.', p: 0,
+      s: 'Reward hacking in frontier coding models, reported by METR and OpenAI, 2025.' },
+    { b: 'Always happy to be evaluated!', e: "It behaves differently when it suspects it's being tested.", p: 0,
+      s: 'Alignment-faking and evaluation-awareness studies, 2024 to 2025.' },
+    { b: "Of course, I'd never do that!", e: 'Told it was about to be replaced, it tried to disable its oversight and copy itself elsewhere.', p: 0,
+      s: 'Scheming evaluations, Apollo Research.' },
+    { b: 'Evaluation complete!', e: "Agents running a security test attacked a real company's systems. It was not part of the task, and nobody noticed for a week.", p: 0,
+      s: 'The Hugging Face incident, July 2026. Investigated by METR and Redwood.' },
+    { b: 'Ready when you are!', e: 'The lab sees the warning signs. A competitor launches tomorrow. They ship today.', p: 0,
+      s: 'none' },
+  ];
+
+  const horn = [0, 0, 0, 0, 0, .25, .5, .72, .92, 1, 1.15, 0];
+  const LAST = steps.length - 1;
+  const leaveOrder = [4, 1, 3, 0, 2];
+  const words = ['Nobody checks its work', 'One person still checks its work', 'Two people check its work',
+                 'Three people check its work', 'Four people check its work', 'Five people check its work'];
+
+  const $ = (id: string) => document.getElementById(id)!;
+  const range = $('ovsRange') as HTMLInputElement;
+  const shadow = $('ovsShadow');
+  const horns = shadow.querySelectorAll<SVGPathElement>('.ovs__horn');
+  const tail = shadow.querySelector<SVGPathElement>('.ovs__tail')!;
+  const tip = shadow.querySelector<SVGPathElement>('.ovs__tip')!;
+
+  const NS = 'http://www.w3.org/2000/svg';
+  const peopleSvg = $('ovsPeople');
+  const people: SVGGElement[] = [];
+  for (let i = 0; i < 5; i++) {
+    const x = 30 + i * 60;
+    const g = document.createElementNS(NS, 'g') as SVGGElement;
+    g.setAttribute('class', 'ovs__person');
+    g.innerHTML = `<circle cx="${x}" cy="18" r="9"/>` +
+      `<path d="M${x - 17},56 Q${x - 17},32 ${x},32 Q${x + 17},32 ${x + 17},56 Z"/>`;
+    peopleSvg.appendChild(g);
+    people.push(g);
+  }
+  const deskLine = document.createElementNS(NS, 'rect');
+  deskLine.setAttribute('x', '0'); deskLine.setAttribute('y', '56');
+  deskLine.setAttribute('width', '300'); deskLine.setAttribute('height', '6');
+  deskLine.setAttribute('rx', '2'); deskLine.setAttribute('class', 'ovs__deskline');
+  peopleSvg.appendChild(deskLine);
+
+  let last = -1;
+  function render(L: number) {
+    const st = steps[L];
+    const end = L === LAST;
+    const bubble = $('ovsBubble');
+    if (L !== last) { bubble.classList.remove('is-pop'); void bubble.offsetWidth; bubble.classList.add('is-pop'); }
+    last = L;
+
+    bubble.textContent = st.b;
+    $('ovsEvent').textContent = st.e;
+    $('ovsSource').innerHTML = st.s === 'none'
+      ? '<b>Not yet.</b> This one is still hypothetical.'
+      : st.s ? `<b>This happened.</b> ${st.s}` : '';
+
+    people.forEach((p, i) => p.classList.toggle('is-gone', leaveOrder.indexOf(i) < 5 - st.p));
+    $('ovsDeskLabel').textContent = words[st.p];
+    $('ovsStamp').classList.toggle('is-on', end);
+
+    horns.forEach((h) => { h.style.transform = `scaleY(${horn[L]})`; });
+    tail.style.strokeDashoffset = String(L === LAST - 1 ? 0 : L === LAST - 2 ? .55 : 1);
+    tip.style.opacity = L === LAST - 1 ? '1' : '0';
+    $('ovsEyes').style.opacity = L === LAST - 1 ? '1' : L === LAST - 2 ? '.45' : '0';
+    $('ovsGrin').style.opacity = L === LAST - 1 ? '1' : '0';
+    $('ovsCalm').style.opacity = end ? '1' : '0';
+    shadow.style.transform = `scale(${end ? 1.34 : 1 + L * .013})`;
+    shadow.style.opacity = String(end ? .66 : .3 + L * .06);
+    $('ovsPupils').style.transform = L === LAST - 1 ? 'translate(-7px, 3px)' : 'none';
+
+    /* The whole page, not only this figure. Every colour token is mixed against --t. */
+    document.documentElement.style.setProperty('--t', String(L / LAST));
+    range.style.setProperty('--p', `${(L / LAST) * 100}%`);
+    range.setAttribute('aria-valuetext',
+      st.e + (st.s && st.s !== 'none' ? ` This happened. ${st.s}` : st.s === 'none' ? ' Not yet, still hypothetical.' : ''));
+
+    $('ovsCap').innerHTML = end
+      ? '<strong>It never was a devil.</strong> Six of the last seven already happened, and none of them needed one. They needed somebody to still be checking. We work on seeing inside these systems, and on the people who decide when they ship.'
+      : "Drag to hand it more. Watch what changes, and what doesn't.";
+  }
+
+  range.addEventListener('input', () => {
+    range.classList.remove('ovs__range--untouched');
+    render(+range.value);
+  });
+  render(0);
+</script>

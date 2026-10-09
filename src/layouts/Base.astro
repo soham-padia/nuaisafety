@@ -1,6 +1,12 @@
 ---
 import '../styles/global.css';
 import { SITE, NAV, SOCIAL, EMAIL, signupHref } from '../config';
+/* Internal links have to survive being served from a subpath, which is what a
+   GitHub project page does. BASE_URL is "/" for the real site, so this is a
+   no-op there. */
+const base = import.meta.env.BASE_URL.replace(/\/$/, '');
+const href = (p: string) => `${base}${p}`;
+
 
 interface Props {
   title?: string;
@@ -22,7 +28,7 @@ const ogImage = new URL('/og.png', Astro.site);
     <title>{pageTitle}</title>
     <meta name="description" content={description} />
     <link rel="canonical" href={canonical} />
-    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="icon" href={href("/favicon.svg")} type="image/svg+xml" />
 
     <meta property="og:type" content="website" />
     <meta property="og:site_name" content={SITE.name} />
@@ -42,10 +48,10 @@ const ogImage = new URL('/og.png', Astro.site);
 
     <header class="masthead">
       <div class="wrap">
-        <a class="wordmark" href="/">NU AI Safety</a>
+        <a class="wordmark" href={href("/")}>NU AI Safety</a>
         <nav class="nav" aria-label="Primary">
           {NAV.map((item) => (
-            <a href={item.href} aria-current={path === item.href ? 'page' : undefined}>
+            <a href={href(item.href)} aria-current={path === item.href ? 'page' : undefined}>
               {item.label}
             </a>
           ))}
@@ -63,7 +69,7 @@ const ogImage = new URL('/og.png', Astro.site);
           <div>
             <p class="foot__name">Northeastern's Student Led AI Safety Group</p>
             <nav class="foot__nav" aria-label="Footer">
-              {NAV.map((item) => <a href={item.href}>{item.label}</a>)}
+              {NAV.map((item) => <a href={href(item.href)}>{item.label}</a>)}
             </nav>
           </div>
           <div class="foot__contact">
