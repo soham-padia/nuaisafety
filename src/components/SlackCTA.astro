@@ -1,0 +1,25 @@
+---
+/**
+ * The primary call to action: joining the Slack, which is how someone becomes a
+ * member. Same pattern as Signup and ExecCTA: if SLACK_URL is ever cleared it
+ * falls back to emailing the group, then to /join, so the button is never dead.
+ *
+ * A Slack invite link can expire or run out of uses without anything here
+ * noticing. Open it in a private window before any big flyer push.
+ */
+import { SLACK_URL, mailtoHref } from '../config';
+
+interface Props {
+  variant?: 'button' | 'inline';
+  label?: string;
+}
+
+const { variant = 'button', label = 'Join our Slack' } = Astro.props;
+const base = import.meta.env.BASE_URL.replace(/\/$/, '');
+const href = SLACK_URL ?? mailtoHref('Joining the Slack') ?? `${base}/join`;
+---
+{variant === 'button' ? (
+  <a class="btn" href={href}>{label} →</a>
+) : (
+  <a class="arrow" href={href}><span>{label}</span></a>
+)}

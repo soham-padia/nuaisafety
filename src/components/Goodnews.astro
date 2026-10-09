@@ -11,8 +11,7 @@
  * Copy is framed as what it would look like, never as what has happened. The
  * one fact in here, the fellowship date, is true.
  */
-import Signup from './Signup.astro';
-import ExecCTA from './ExecCTA.astro';
+import SlackCTA from './SlackCTA.astro';
 
 const base = import.meta.env.BASE_URL.replace(/\/$/, '');
 const CROWD = 30;
@@ -43,12 +42,10 @@ const crowd = Array.from({ length: CROWD }, (_, i) => {
         <strong>This is the version we are working toward.</strong> It needs people from every
         discipline, and it starts with a few more of them this year.
       </p>
-      <p class="good__fact">
-        Fellowships start in January 2027. <a href={`${base}/join`}>See every way to join</a>.
-      </p>
+      <p class="good__fact">Fellowships start in January 2027.</p>
       <div class="actions">
-        <Signup />
-        <ExecCTA variant="inline" />
+        <SlackCTA />
+        <a class="btn btn--ghost" href={`${base}/join`}>Other ways to join</a>
       </div>
     </div>
 

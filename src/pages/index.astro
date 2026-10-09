@@ -1,6 +1,6 @@
 ---
 import Base from '../layouts/Base.astro';
-import Signup from '../components/Signup.astro';
+import SlackCTA from '../components/SlackCTA.astro';
 import Oversight from '../components/Oversight.astro';
 import Perceptron from '../components/Perceptron.astro';
 import Goodnews from '../components/Goodnews.astro';
@@ -8,6 +8,8 @@ import RewardHack from '../components/toys/RewardHack.astro';
 import PowerGraph from '../components/toys/PowerGraph.astro';
 import Layers from '../components/toys/Layers.astro';
 import { LUMA_CALENDAR_ID, LUMA_CALENDAR_URL } from '../config';
+
+const base = import.meta.env.BASE_URL.replace(/\/$/, '');
 ---
 <Base>
   <section class="hero">
@@ -21,8 +23,8 @@ import { LUMA_CALENDAR_ID, LUMA_CALENDAR_URL } from '../config';
           researchers, and support student research.
         </p>
         <div class="actions">
-          <Signup />
-          <a class="btn btn--ghost" href={import.meta.env.BASE_URL.replace(/\/$/, "") + "/resources"}>What we do</a>
+          <SlackCTA />
+          <a class="btn btn--ghost" href={`${base}/join`}>Other ways to join</a>
         </div>
       </div>
       <Oversight />

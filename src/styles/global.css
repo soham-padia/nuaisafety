@@ -274,7 +274,9 @@ strong { font-weight: 660; }
 }
 .btn:active { transform: translateY(0); box-shadow: none; }
 
-.btn--ghost { background: transparent; color: var(--ink); border-color: var(--rule); }
+/* Paper rather than transparent: on the home page the campus sits behind the
+   hero, and its roofline would otherwise show through the label. */
+.btn--ghost { background: var(--paper); color: var(--ink); border-color: var(--rule); }
 /* Secondary action. Distinct from --ghost so three buttons still read as a
    hierarchy rather than as one primary and two of the same thing. */
 .btn--alt { background: transparent; color: var(--ink); border-color: var(--ink); }
