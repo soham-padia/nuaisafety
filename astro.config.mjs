@@ -6,8 +6,12 @@ import { defineConfig } from 'astro/config';
 export default defineConfig({
   site: 'https://nuaisafety.com',
   trailingSlash: 'never',
-  // About became Resources. Keep old links and shares working.
+  // Join, Team and Resources are now sections of the home page, and About became
+  // Resources before that. Keep old links and shares working.
   redirects: {
-    '/about': '/resources',
+    '/join': '/#join',
+    '/team': '/#team',
+    '/resources': '/#resources',
+    '/about': '/#resources',
   },
 });

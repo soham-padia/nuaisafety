@@ -77,10 +77,12 @@ export const SOCIAL = [
   { href: 'https://www.linkedin.com/company/nu-ai-safety/', label: 'LinkedIn' },
 ];
 
+/* Sections of the one long home page. The header highlights whichever one is
+   on screen. */
 export const NAV = [
-  { href: '/join', label: 'Join' },
-  { href: '/team', label: 'Team' },
-  { href: '/resources', label: 'Resources' },
+  { href: '/#join', label: 'Join' },
+  { href: '/#team', label: 'Team' },
+  { href: '/#resources', label: 'Resources' },
 ];
 
 /* -------------------------------------------------------------------------

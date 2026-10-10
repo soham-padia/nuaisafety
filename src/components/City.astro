@@ -1,0 +1,160 @@
+---
+/**
+ * The city on the home page. It changes as you scroll.
+ *
+ * Everything here is drawn once, at build time, as plain SVG. The page then
+ * sets one number on the hero section, --p, from 0 at the top to 1 at the end
+ * of the pinned stretch (see the script in index.astro). Every piece of the
+ * city reads --p in CSS (see "city" in global.css) and decides for itself how
+ * far along it is:
+ *
+ *   - the dark tower in the skyline is the AI lab. Its antenna grows and its
+ *     light swells as --p rises
+ *   - a red network line draws out from the tower to each roof
+ *   - each building's windows turn red, nearest the tower first, so the
+ *     change visibly spreads outward
+ *   - drones arrive and drift across the sky
+ *   - the sun swells into a red disc, the background turns red and the city
+ *     dims at the end
+ *
+ * Each piece carries its own threshold, --t: the point in the scroll where it
+ * starts to change. A seeded random generator makes the skyline the same on
+ * every build. Change SEED for a different city.
+ *
+ * With no JavaScript --p stays 0 and the city is simply a calm skyline.
+ */
+
+const SEED = 11;
+
+/* mulberry32: small, fast, deterministic. */
+function prng(a: number) {
+  return () => {
+    a |= 0;
+    a = (a + 0x6d2b79f5) | 0;
+    let t = Math.imul(a ^ (a >>> 15), 1 | a);
+    t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+  };
+}
+const rand = prng(SEED);
+const r = (n: number) => Math.round(n * 10) / 10;
+const f = (n: number) => n.toFixed(3);
+
+const W = 800;
+const H = 640;
+const GROUND = 560;
+
+/* Lay buildings along the ground, left to right. */
+type B = { x: number; w: number; h: number };
+const buildings: B[] = [];
+for (let x = 14; x < W - 40; ) {
+  const w = 46 + rand() * 58;
+  const h = 120 + rand() * 230;
+  buildings.push({ x, w: Math.min(w, W - 14 - x), h });
+  x += w + 6 + rand() * 10;
+}
+
+/* The AI lab: a tall, narrow, dark tower a little right of centre. */
+const ti = Math.floor(buildings.length * 0.58);
+const tower = buildings[ti];
+tower.w = 54;
+tower.h = 400;
+const towerX = tower.x + tower.w / 2;
+const towerTop = GROUND - tower.h;
+
+/* How soon a building is taken over: nearer the tower, sooner. */
+const reach = (b: B) => Math.abs(b.x + b.w / 2 - towerX) / (W * 0.6);
+
+let skyline = '';
+let windows = '';
+let network = '';
+
+buildings.forEach((b, i) => {
+  if (i === ti) return;
+  const top = GROUND - b.h;
+  const base = 0.14 + 0.55 * reach(b);
+
+  skyline += `<rect class="bldg" x="${r(b.x)}" y="${r(top)}" width="${r(b.w)}" height="${r(b.h)}"/>`;
+
+  /* A grid of windows, a few left dark for good. */
+  const cols = Math.max(1, Math.floor((b.w - 10) / 15));
+  const rows = Math.floor((b.h - 18) / 19);
+  const pad = (b.w - cols * 15 + 6) / 2;
+  for (let row = 0; row < rows; row++) {
+    for (let col = 0; col < cols; col++) {
+      if (rand() < 0.12) continue;
+      const t = base + rand() * 0.16;
+      windows +=
+        `<rect class="win" x="${r(b.x + pad + col * 15)}" y="${r(top + 10 + row * 19)}" ` +
+        `width="9" height="11" style="--t:${f(t)}"/>`;
+    }
+  }
+
+  /* A line from the tower's antenna to this roof, arcing over the gap. */
+  const rx = b.x + b.w / 2;
+  const cx = (towerX + rx) / 2;
+  const cy = Math.min(towerTop, top) - 50 - rand() * 50;
+  network +=
+    `<path class="net" pathLength="1" d="M${r(towerX)} ${r(towerTop - 40)}Q${r(cx)} ${r(cy)} ${r(rx)} ${r(top)}" ` +
+    `style="--t:${f(base - 0.06)}"/>`;
+});
+
+/* The tower: dark, with server stripes that light one by one. */
+let core = '';
+const stripes = Math.floor((tower.h - 30) / 22);
+for (let s = 0; s < stripes; s++) {
+  const t = 0.04 + (s / stripes) * 0.5;
+  core +=
+    `<rect class="core" x="${r(tower.x + 8)}" y="${r(GROUND - 18 - s * 22)}" ` +
+    `width="${r(tower.w - 16)}" height="3" style="--t:${f(t)}"/>`;
+}
+
+/* Drones. Each has a place in the sky, a drift, and a moment it shows up. */
+let drones = '';
+for (let d = 0; d < 18; d++) {
+  const x = 30 + rand() * (W - 60);
+  const y = 50 + rand() * 230;
+  const dx = (rand() < 0.5 ? -1 : 1) * (40 + rand() * 140);
+  const t = 0.32 + rand() * 0.5;
+  drones +=
+    `<g class="drone" style="--t:${f(t)};--dx:${Math.round(dx)}">` +
+    `<g transform="translate(${r(x)} ${r(y)})">` +
+    `<path d="M-5 -5L5 5M5 -5L-5 5"/>` +
+    `<circle cx="-5.5" cy="-5.5" r="3"/><circle cx="5.5" cy="-5.5" r="3"/>` +
+    `<circle cx="-5.5" cy="5.5" r="3"/><circle cx="5.5" cy="5.5" r="3"/>` +
+    `<rect x="-2.2" y="-2.2" width="4.4" height="4.4" rx="1"/></g></g>`;
+}
+
+/* A few cars on the road. They drive while you scroll. */
+let cars = '';
+for (let c = 0; c < 5; c++) {
+  const lane = c % 2;
+  const x = 40 + rand() * (W - 120);
+  const dx = (lane ? -1 : 1) * (120 + rand() * 160);
+  cars +=
+    `<g class="car" style="--dx:${Math.round(dx)}">` +
+    `<rect x="${r(x)}" y="${GROUND + 22 + lane * 26}" width="34" height="11" rx="4"/></g>`;
+}
+
+const svg =
+  `<circle class="sun" cx="${W - 150}" cy="140" r="46"/>` +
+  `<g class="nets">${network}</g>` +
+  `<g class="drones">${drones}</g>` +
+  `<g class="skyline">${skyline}</g>` +
+  `<g class="windows">${windows}</g>` +
+  `<rect class="tower" x="${r(tower.x)}" y="${r(towerTop)}" width="${tower.w}" height="${tower.h}"/>` +
+  `<line class="antenna" x1="${r(towerX)}" y1="${r(towerTop)}" x2="${r(towerX)}" y2="${r(towerTop - 40)}"/>` +
+  `<circle class="beacon" cx="${r(towerX)}" cy="${r(towerTop - 40)}" r="4"/>` +
+  `<g class="cores">${core}</g>` +
+  `<line class="ground" x1="0" y1="${GROUND}" x2="${W}" y2="${GROUND}"/>` +
+  `<line class="lane" x1="0" y1="${GROUND + 46}" x2="${W}" y2="${GROUND + 46}"/>` +
+  `<g class="cars">${cars}</g>`;
+---
+<svg
+  class="city"
+  viewBox={`0 0 ${W} ${H}`}
+  preserveAspectRatio="xMidYMax meet"
+  role="img"
+  aria-label="A drawn city skyline. As you scroll, a dark AI tower switches on, a red network spreads from it to every roof, windows turn red building by building, drones fill the sky and the light goes red."
+  set:html={svg}
+/>
