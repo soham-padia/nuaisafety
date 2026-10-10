@@ -1,0 +1,197 @@
+---
+import Base from '../layouts/Base.astro';
+import {
+  split, longDate, dateParts, timeRange, agendaTime,
+  googleUrl, outlookUrl, icsPath, feedPath, pageUrl,
+} from '../lib/events';
+
+const { upcoming, past } = split();
+const site = Astro.site!;
+
+/* Subscribing, rather than adding one event: webcal:// opens Apple Calendar
+   (and Outlook on a desktop) on a subscribe prompt, Google takes the same
+   address through its cid parameter, and anyone else can paste the https URL. */
+const feed = new URL(feedPath, site).href;
+const webcal = feed.replace(/^https?:/, 'webcal:');
+const googleSubscribe = `https://calendar.google.com/calendar/r?cid=${encodeURIComponent(webcal)}`;
+---
+<Base
+  title="Events"
+  description="Upcoming NU AI Safety events. RSVP, and add them to your calendar in one click."
+>
+  <section class="band">
+    <div class="wrap">
+      <h1>Events</h1>
+      <p class="lede events__lede">Open to every year and major. No AI background needed.</p>
+
+      {upcoming.length > 0 ? (
+        <ol class="events">
+          {upcoming.map((e) => {
+            const d = dateParts(e.begins);
+            const url = pageUrl(e, site);
+            return (
+              <li class="event" id={e.slug}>
+                {/* Visual only: the line under the title says the same thing in words. */}
+                <p class="event__date" aria-hidden="true">
+                  <span class="event__small">{d.weekday}</span>
+                  <span class="event__day">{d.day}</span>
+                  <span class="event__small">{d.month}</span>
+                </p>
+                <div class="event__body">
+                  <h2>{e.title}</h2>
+                  <p class="event__when">
+                    <time datetime={e.begins.toISOString()}>{longDate(e.begins)}</time>
+                    <span aria-hidden="true"> · </span>
+                    <span>{timeRange(e)}</span>
+                    <span aria-hidden="true"> · </span>
+                    <span>{e.place}</span>
+                  </p>
+                  <p class="event__summary">{e.summary}</p>
+                  {e.agenda && e.agenda.length > 0 && (
+                    <dl class="event__agenda">
+                      {e.agenda.map((a) => (
+                        <div>
+                          <dt>{agendaTime(a.time)}</dt>
+                          <dd>{a.item}</dd>
+                        </div>
+                      ))}
+                    </dl>
+                  )}
+                  <div class="actions event__actions">
+                    {e.rsvp && <a class="btn" href={e.rsvp}>RSVP →</a>}
+                    <a class={e.rsvp ? 'btn btn--ghost' : 'btn'} href={icsPath(e)}>
+                      Add to calendar
+                    </a>
+                  </div>
+                  <p class="event__alt">
+                    Or add it in <a href={googleUrl(e, url)}>Google Calendar</a> or{' '}
+                    <a href={outlookUrl(e, url)}>Outlook</a>.
+                  </p>
+                </div>
+              </li>
+            );
+          })}
+        </ol>
+      ) : (
+        <p class="events__none">
+          Nothing is scheduled right now. Subscribe below and the next event will show up in your
+          calendar on its own.
+        </p>
+      )}
+
+      <p class="events__sub">
+        Get every event in your calendar automatically: subscribe in{' '}
+        <a href={googleSubscribe}>Google Calendar</a> or <a href={webcal}>Apple Calendar</a>,
+        or add <code>{feed}</code> by URL in Outlook.
+      </p>
+
+      {past.length > 0 && (
+        <section class="past" aria-labelledby="past">
+          <h2 id="past">Past events</h2>
+          <ul>
+            {past.map((e) => (
+              <li>
+                <time datetime={e.begins.toISOString()}>{longDate(e.begins)}</time>
+                <span>{e.title}</span>
+              </li>
+            ))}
+          </ul>
+        </section>
+      )}
+    </div>
+  </section>
+</Base>
+
+<style>
+  .events__lede { margin-block: 0.75rem 0; }
+
+  .events {
+    list-style: none;
+    padding: 0;
+    margin: clamp(2rem, 1.5rem + 2vw, 3rem) 0 0;
+    display: grid;
+    gap: 2.75rem;
+  }
+
+  /* Date column, then everything else. The rule on top matches the home page
+     blocks, so an event reads as one of the site's own sections. */
+  .event {
+    display: grid;
+    grid-template-columns: 3.75rem minmax(0, 1fr);
+    gap: 0 clamp(1rem, 0.4rem + 2.4vw, 2.25rem);
+    border-block-start: 2px solid var(--ink);
+    padding-block-start: 1.1rem;
+    scroll-margin-block-start: 1.5rem;
+  }
+  .event__date { display: flex; flex-direction: column; line-height: 1.1; margin: 0; }
+  /* On a phone the column costs a quarter of the width, and the line under the
+     title already gives the date, so the column goes. */
+  @media (max-width: 36rem) {
+    .event { grid-template-columns: minmax(0, 1fr); }
+    .event__date { display: none; }
+  }
+  .event__small {
+    font-size: 0.8125rem;
+    font-weight: 620;
+    letter-spacing: 0.055em;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+  .event__day {
+    font-size: var(--step-4);
+    font-weight: 680;
+    letter-spacing: -0.03em;
+    line-height: 1;
+    margin-block: 0.12em 0.1em;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .event h2 { margin: 0; font-size: var(--step-3); }
+  .event__when { margin-block: 0.4rem 0; font-weight: 620; }
+  /* Each part stays whole, so a narrow screen breaks the line between them. */
+  .event__when > :not([aria-hidden]) { white-space: nowrap; }
+  .event__summary { color: var(--muted); max-width: 40rem; margin-block: 0.9rem 0; }
+
+  .event__agenda { margin: 1.1rem 0 0; max-width: 34rem; }
+  .event__agenda div {
+    display: grid;
+    grid-template-columns: 4.25rem minmax(0, 1fr);
+    gap: 1rem;
+    padding-block: 0.45rem;
+    border-block-start: 1px solid var(--rule);
+  }
+  .event__agenda div:last-child { border-block-end: 1px solid var(--rule); }
+  .event__agenda dt { color: var(--muted); font-variant-numeric: tabular-nums; }
+  .event__agenda dd { margin: 0; }
+
+  .event__actions { margin-block-start: 1.5rem; }
+  .event__alt { margin-block: 0.8rem 0; font-size: 0.9375rem; color: var(--muted); }
+  .event__alt a { color: inherit; }
+
+  .events__none { margin-block-start: 2rem; max-width: 40rem; }
+
+  .events__sub {
+    margin-block: clamp(2.5rem, 2rem + 2vw, 3.5rem) 0;
+    padding-block-start: 1.25rem;
+    border-block-start: 1px solid var(--rule);
+    max-width: 46rem;
+    font-size: 0.9375rem;
+    color: var(--muted);
+  }
+  .events__sub a { color: inherit; }
+  .events__sub code { font-size: 0.875rem; overflow-wrap: anywhere; color: var(--ink); }
+
+  .past { margin-block-start: 3rem; }
+  .past h2 { font-size: var(--step-1); margin: 0 0 0.75rem; }
+  .past ul { list-style: none; padding: 0; margin: 0; max-width: 46rem; }
+  .past li {
+    display: grid;
+    grid-template-columns: 13rem minmax(0, 1fr);
+    gap: 0.25rem 1rem;
+    padding-block: 0.6rem;
+    border-block-start: 1px solid var(--rule);
+  }
+  .past li:last-child { border-block-end: 1px solid var(--rule); }
+  .past time { color: var(--muted); }
+  @media (max-width: 32rem) { .past li { grid-template-columns: 1fr; } }
+</style>
