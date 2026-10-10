@@ -333,12 +333,12 @@ strong { font-weight: 660; }
 }
 
 /* --- home ---------------------------------------------------------------------
-   The home section is two columns. The painting is pinned on the right while
+   The home section is two columns. The picture is pinned on the right while
    the text scrolls past it on the left, one short step at a time: the intro,
    the three things we do, who this is for. The page script sets --p on the
-   section, 0 to 1 from its top to its bottom, and the painting reads it.
+   section, 0 to 1 from its top to its bottom, and the picture reads it.
 
-   On a phone the painting pins to the top of the screen instead and the
+   On a phone the picture pins to the top of the screen instead and the
    steps scroll up underneath it. */
 
 .home { --p: 0; position: relative; display: grid; }
@@ -352,7 +352,6 @@ strong { font-weight: 660; }
   justify-content: center;
   padding-block: 0.75rem;
   background: var(--paper);
-  container-type: size;
 }
 .home__text { padding-inline: var(--gutter); }
 .home__step {
@@ -391,61 +390,11 @@ strong { font-weight: 660; }
   .home__step--intro { min-height: calc(100svh - var(--head)); padding-block-start: 0; }
 }
 
-/* --- painting -----------------------------------------------------------------
-   Layers made by scripts/make-painting.mjs, stacked by components/Painting.
-   Each layer only fades, slides or dims, all from --p, so the brushwork is
-   painted once and then just composited.
+/* --- halftone -----------------------------------------------------------------
+   Drawn by components/Halftone.astro onto a canvas that fills the pinned box.
+   It has no frame; the dots fade out toward the edges into the page. */
 
-   Each ramp below is 0 until its start, then rises to 1 over its length:
-   clamp(0, (p - start) / length, 1). */
-
-.painting {
-  position: relative;
-  aspect-ratio: 900 / 1100;
-  /* As large as fits the pinned box, keeping the painting's shape. */
-  width: min(100cqw, 100cqh * 900 / 1100);
-  -webkit-mask: url("/art/deckle.svg") center / 100% 100% no-repeat;
-          mask: url("/art/deckle.svg") center / 100% 100% no-repeat;
-
-  --rise:  clamp(0, calc((var(--p) - 0.06) / 0.30), 1);
-  --sail:  clamp(0, calc((var(--p) - 0.26) / 0.24), 1);
-  --drone: clamp(0, calc((var(--p) - 0.30) / 0.30), 1);
-  --red:   clamp(0, calc((var(--p) - 0.34) / 0.56), 1);
-  --dusk:  clamp(0, calc((var(--p) - 0.44) / 0.40), 1);
-  --leave: clamp(0, calc((var(--p) - 0.50) / 0.20), 1);
-  --smoke: clamp(0, calc((var(--p) - 0.58) / 0.32), 1);
-  --night: clamp(0, calc((var(--p) - 0.64) / 0.36), 1);
-}
-.painting .pl { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
-
-.pl--dusk { opacity: var(--dusk); }
-
-/* The tower rises from behind the far bank. The clip stops it showing below
-   the waterline (y 600 of 1100) on its way up. */
-.pl--tower-clip { clip-path: inset(0 0 45.45% 0); }
-.pl--tower { transform: translateY(calc((1 - var(--rise)) * 46%)); }
-.pl--tower-reflect { opacity: var(--rise); }
-
-.pl--smoke {
-  opacity: var(--smoke);
-  transform: translate(calc(var(--smoke) * -3%), calc((1 - var(--smoke)) * 5%));
-}
-.pl--night { opacity: calc(var(--night) * 0.88); mix-blend-mode: multiply; }
-
-/* Red spreads outward from the tower, as a growing circle. */
-.pl--red {
-  opacity: min(1, calc(var(--red) * 4));
-  -webkit-mask-image: radial-gradient(circle at 74% 40%, #000 calc(var(--red) * 95%), transparent calc(var(--red) * 95% + 14%));
-          mask-image: radial-gradient(circle at 74% 40%, #000 calc(var(--red) * 95%), transparent calc(var(--red) * 95% + 14%));
-}
-
-.pl--boats { opacity: calc(1 - var(--sail)); transform: translateX(calc(var(--sail) * -7%)); }
-.pl--drones {
-  opacity: var(--drone);
-  transform: translate(calc((1 - var(--p)) * 9%), calc((1 - var(--drone)) * -5%));
-}
-.pl--bank { filter: brightness(calc(1 - var(--night) * 0.62)); }
-.pl--people { opacity: calc(1 - var(--leave)); transform: translateX(calc(var(--leave) * 4%)); }
+.halftone { display: block; width: 100%; height: 100%; }
 
 /* --- perceptron diagram -----------------------------------------------------
    Geometry comes from scripts/perceptron.py. Everything visual is here, so the

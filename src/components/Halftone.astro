@@ -1,0 +1,283 @@
+---
+/**
+ * The home page picture: Boston's Back Bay across the Charles, printed in
+ * red halftone dots on a regular grid.
+ *
+ * The idea is in the grid. At the top of the page every dot sits exactly on
+ * it: the city is aligned. As you scroll (--p, 0 to 1, read from the scroll
+ * position of the home section):
+ *
+ *   - a new tower rises out of the skyline, taller than everything else
+ *   - the sailboats leave the river
+ *   - drones gather over the water
+ *   - dots near the tower start to slip off the grid, and the slip spreads
+ *     outward across the city: the picture comes out of alignment
+ *   - the sky fills with ink, and at the very end the city's dots drift up
+ *     and scatter
+ *
+ * The scene is a handful of flat shapes, sampled at each grid point into a
+ * tone from 0 (paper) to 1 (solid). A dot's area follows its tone, as in a
+ * printed halftone. The static part is sampled once per resize; scrolling
+ * only adds the moving parts and redraws. Nothing runs while the page is
+ * still.
+ *
+ * With no JavaScript the canvas is empty and the text column stands alone.
+ */
+---
+<canvas
+  class="halftone"
+  role="img"
+  aria-label="Boston's skyline across the Charles River, printed in red dots on a grid. As you scroll, a new tower rises, the sailboats leave, drones gather, and the dots slip out of alignment, spreading outward from the tower until the city scatters."
+  data-halftone
+></canvas>
+
+<script>
+  const canvas = document.querySelector<HTMLCanvasElement>('[data-halftone]');
+  const story = canvas?.closest<HTMLElement>('[data-story]');
+
+  if (canvas && story) {
+    const ctx = canvas.getContext('2d')!;
+    const INK = '#c8102e';
+
+    const clamp = (v: number, lo = 0, hi = 1) => Math.min(hi, Math.max(lo, v));
+    const ramp = (p: number, a: number, b: number) => {
+      const t = clamp((p - a) / (b - a));
+      return t * t * (3 - 2 * t);
+    };
+    /* A stable 0..1 value for any pair of integers. */
+    const hash = (a: number, b: number) => {
+      let h = Math.imul(a * 374761393 + b * 668265263, 1274126177);
+      h = Math.imul(h ^ (h >>> 13), 1274126177);
+      return ((h ^ (h >>> 16)) >>> 0) / 4294967296;
+    };
+
+    /* --- the scene, in fractions of the picture's width and height -------- */
+    const HORIZON = 0.6;
+
+    /* Towers along the far bank: left edge, width, top. */
+    type Tower = { x: number; w: number; top: number; kind?: 'pru' | 'hancock' | 'crown' };
+    const towers: Tower[] = [
+      { x: 0.05, w: 0.06, top: 0.43 },
+      { x: 0.12, w: 0.05, top: 0.38, kind: 'crown' },
+      { x: 0.18, w: 0.065, top: 0.45 },
+      { x: 0.26, w: 0.075, top: 0.26, kind: 'pru' },
+      { x: 0.345, w: 0.055, top: 0.41 },
+      { x: 0.41, w: 0.065, top: 0.24, kind: 'hancock' },
+      { x: 0.485, w: 0.05, top: 0.39 },
+      { x: 0.66, w: 0.055, top: 0.4 },
+      { x: 0.725, w: 0.065, top: 0.33, kind: 'crown' },
+      { x: 0.8, w: 0.055, top: 0.42 },
+      { x: 0.865, w: 0.06, top: 0.37 },
+    ];
+    const RISE = { x: 0.565, w: 0.07, top: 0.1 }; // the new tower, at full height
+
+    function towerTone(t: Tower, u: number, v: number): number {
+      if (u < t.x || u > t.x + t.w || v > HORIZON) return 0;
+      const k = (u - t.x) / t.w; // 0 at the left edge, 1 at the right
+      let top = t.top;
+      if (t.kind === 'pru') {
+        if (k < 0.15 || k > 0.85) top += 0.025;
+        if (Math.abs(k - 0.5) < 0.06 && v > t.top - 0.07) return 0.85; // the mast
+      } else if (t.kind === 'hancock') {
+        top += 0.02 * k; // a slanted top
+      } else if (t.kind === 'crown') {
+        top += 0.04 * Math.abs(k - 0.5) * 2;
+      }
+      if (v < top) return 0;
+      // lit on the left, shaded on the right, heavier toward the ground
+      const fall = clamp((v - top) / (HORIZON - top));
+      return (k > 0.64 ? 0.62 : 0.34) + 0.3 * fall;
+    }
+
+    /* Everything that does not move, sampled at one point. */
+    function staticTone(u: number, v: number): number {
+      if (v <= HORIZON) {
+        let tone = 0;
+        // the far city, low and pale
+        const farTop = HORIZON - 0.07 - 0.06 * (0.5 + 0.5 * Math.sin(u * 37) * Math.sin(u * 11));
+        if (v > farTop) tone = 0.12 + 0.12 * clamp((v - farTop) / 0.1);
+        for (const t of towers) tone = Math.max(tone, towerTone(t, u, v));
+        // brownstones and trees along the water
+        const rowTop = HORIZON - 0.035 - 0.012 * Math.abs(Math.sin(u * 60));
+        if (v > rowTop) tone = 0.88;
+        // a faint haze just above the horizon; the rest of the sky is paper
+        if (tone === 0) tone = 0.07 * ramp(v, HORIZON - 0.25, HORIZON);
+        // the sun, solid at the middle and thinning out at its edge
+        const sd = Math.hypot((u - 0.8) * (W / H), v - 0.2) / 0.085;
+        if (sd < 1) tone = Math.max(tone, 0.75 * Math.pow(1 - sd, 0.55));
+        return tone;
+      }
+      // the river: the city reflected, broken into bands by the ripples
+      const depth = v - HORIZON;
+      const mirror = HORIZON - depth * 1.6;
+      const wob = Math.sin(v * 140) * 0.008;
+      let r = 0;
+      for (const t of towers) r = Math.max(r, towerTone(t, u + wob, mirror));
+      if (depth < 0.03) r = Math.max(r, 0.7);
+      const band = 0.55 + 0.45 * Math.sin(v * 210);
+      const haze = 0.08 * (1 - clamp(depth / 0.05));
+      return Math.max(haze, r * 0.5 * band * (1 - depth * 1.6));
+    }
+
+    /* Sailboats, which leave as the story goes on. */
+    function boatTone(u: number, v: number): number {
+      const boat = (bx: number, by: number, s: number) => {
+        const du = (u - bx) / s, dv = (by - v) / s;
+        if (dv > 0 && dv < 0.11 && du > 0 && du < 0.06 * (1 - dv / 0.11)) return 0.95; // mainsail
+        if (dv > 0 && dv < 0.09 && du < 0 && du > -0.03 * (1 - dv / 0.09)) return 0.75; // jib
+        if (dv <= 0 && dv > -0.012 && du > -0.035 && du < 0.06) return 0.95; // hull
+        return 0;
+      };
+      return Math.max(boat(0.2, 0.74, 1), boat(0.78, 0.8, 0.8));
+    }
+
+    /* --- the screen ---------------------------------------------------------
+       Dots sit on a square grid turned 45 degrees, the angle a printer screens
+       a single ink at. Points are kept with their grid indices, which seed
+       each dot's own direction when it slips. */
+    let W = 0, H = 0, dpr = 1, cell = 5;
+    let xs = new Float32Array(0), ys = new Float32Array(0);
+    let gi = new Int32Array(0), gj = new Int32Array(0);
+    let base = new Float32Array(0);
+    let boats = new Float32Array(0);
+    let edges = new Float32Array(0);
+
+    function resize() {
+      const r = canvas!.getBoundingClientRect();
+      W = r.width;
+      H = r.height;
+      dpr = Math.min(2, devicePixelRatio || 1);
+      canvas!.width = Math.round(W * dpr);
+      canvas!.height = Math.round(H * dpr);
+      cell = clamp(Math.min(W, H) / 105, 3.6, 6.2);
+
+      const c = Math.SQRT1_2;
+      const pts: number[][] = [];
+      const reach = Math.ceil((W + H) / cell);
+      for (let j = -reach; j <= reach; j++) {
+        for (let i = -reach; i <= reach; i++) {
+          const x = (i - j) * c * cell + W / 2;
+          const y = (i + j) * c * cell + H / 2;
+          if (x < -cell || x > W + cell || y < -cell || y > H + cell) continue;
+          pts.push([x, y, i, j]);
+        }
+      }
+      const n = pts.length;
+      xs = new Float32Array(n); ys = new Float32Array(n);
+      gi = new Int32Array(n); gj = new Int32Array(n);
+      base = new Float32Array(n); boats = new Float32Array(n); edges = new Float32Array(n);
+      for (let k = 0; k < n; k++) {
+        const [x, y, i, j] = pts[k];
+        xs[k] = x; ys[k] = y; gi[k] = i; gj[k] = j;
+        const u = x / W, v = y / H;
+        edges[k] = edge(u, v);
+        base[k] = staticTone(u, v) * edges[k];
+        boats[k] = boatTone(u, v) * edges[k];
+      }
+    }
+
+    /* The picture has no frame: it fades out toward its edges. */
+    function edge(u: number, v: number) {
+      return ramp(u, 0, 0.1) * ramp(1 - u, 0, 0.08) * ramp(v, 0.02, 0.14) * ramp(1 - v, 0, 0.14);
+    }
+
+    function progress() {
+      const total = story!.offsetHeight - innerHeight;
+      return clamp(-story!.getBoundingClientRect().top / Math.max(1, total));
+    }
+
+    function draw() {
+      if (!W || !H) return;
+      const p = progress();
+
+      const rise = ramp(p, 0.05, 0.4);
+      const towerTop = HORIZON - (HORIZON - RISE.top) * rise;
+      const sail = 1 - ramp(p, 0.25, 0.5);
+      const drones = ramp(p, 0.3, 0.6);
+      const ink = ramp(p, 0.62, 1);
+      const scatter = ramp(p, 0.9, 1);
+      // how far the misalignment has spread from the tower, as a radius
+      const reach = ramp(p, 0.38, 1) * 0.85;
+      const tx = (RISE.x + RISE.w / 2) * W, ty = RISE.top * H;
+      const span = Math.hypot(W, H);
+
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      ctx.clearRect(0, 0, W, H);
+      ctx.fillStyle = INK;
+      ctx.beginPath();
+
+      for (let k = 0; k < xs.length; k++) {
+        let x = xs[k], y = ys[k];
+        const i = gi[k], j = gj[k];
+        const u = x / W, v = y / H;
+        const e = edges[k];
+        if (e <= 0) continue;
+
+        let tone = base[k] + boats[k] * sail;
+
+        // the new tower and its reflection
+        if (u > RISE.x && u < RISE.x + RISE.w) {
+          const kk = (u - RISE.x) / RISE.w;
+          if (v <= HORIZON && v >= towerTop) {
+            tone = Math.max(tone, ((kk > 0.6 ? 0.85 : 0.62) + 0.15 * clamp((v - towerTop) / 0.4)) * e);
+          }
+          const mirror = HORIZON - (v - HORIZON) * 1.6;
+          if (v > HORIZON && mirror >= towerTop) {
+            tone = Math.max(tone, 0.5 * (0.55 + 0.45 * Math.sin(v * 210)) * (1 - (v - HORIZON) * 1.6) * e);
+          }
+          // a spire once it is up
+          if (rise > 0.95 && Math.abs(kk - 0.5) < 0.08 && v < towerTop && v > towerTop - 0.07) {
+            tone = Math.max(tone, 0.9 * e);
+          }
+        }
+
+        // drones: small dense specks gathering over the city
+        if (drones > 0 && v < HORIZON - 0.06 && v > 0.08) {
+          const h = hash(i >> 3, j >> 3);
+          const ci = i & 7, cj = j & 7;
+          if (h > 0.955 && ci >= 2 && ci <= 4 && cj >= 2 && cj <= 4) {
+            tone = Math.max(tone, 0.95 * clamp((drones - (1 - h) * 18) * 3) * e);
+          }
+        }
+
+        // ink spreading out from the tower late on, like a stain
+        if (ink > 0 && v < HORIZON) {
+          const dd = Math.hypot((u - (RISE.x + RISE.w / 2)) * (W / H), v - RISE.top);
+          const stain = ink * 0.42 * Math.pow(clamp(1 - dd / (0.1 + ink * 0.24)), 1.4);
+          tone = Math.max(tone, stain * e);
+        }
+
+        if (tone < 0.02) continue;
+
+        // out of alignment: dots near the tower slip first, then further out
+        const d = Math.hypot(x - tx, y - ty) / span;
+        const slip = clamp((reach - d) * 2.2);
+        if (slip > 0) {
+          const a = hash(i, j) * Math.PI * 2;
+          const m = cell * (0.2 + 0.9 * slip) * slip;
+          x += Math.cos(a) * m;
+          y += Math.sin(a) * m - scatter * cell * 4 * hash(j, i) * slip;
+          tone *= 1 - scatter * 0.4 * hash(i + 7, j);
+        }
+
+        const r = cell * 0.56 * Math.sqrt(clamp(tone));
+        if (r < 0.3) continue;
+        ctx.moveTo(x + r, y);
+        ctx.arc(x, y, r, 0, Math.PI * 2);
+      }
+      ctx.fill();
+    }
+
+    let queued = false;
+    function redraw() {
+      if (queued) return;
+      queued = true;
+      requestAnimationFrame(() => { queued = false; draw(); });
+    }
+
+    resize();
+    draw();
+    addEventListener('scroll', redraw, { passive: true });
+    addEventListener('resize', () => { resize(); redraw(); });
+  }
+</script>
