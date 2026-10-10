@@ -4,6 +4,10 @@ on:
   push:
     branches: [main]
   workflow_dispatch:
+  # Every morning, about 4am Boston time. /events decides what is upcoming at
+  # build time, so this is what moves an event to "Past" the day after it ends.
+  schedule:
+    - cron: '0 8 * * *'
 
 permissions:
   contents: read
