@@ -334,41 +334,51 @@ strong { font-weight: 660; }
 
 /* --- scroll story -----------------------------------------------------------
    The home hero is a tall section with a pinned frame inside it. While you
-   scroll through the section the frame stays put, text on the left and the
-   city on the right, and a script sets --p from 0 to 1 on the section. The
-   city reads --p and changes. When the section ends, the frame scrolls away
+   scroll through the section the frame stays put: the scene (components/
+   City.astro) fills it edge to edge, and the text sits over open sky on the
+   left. A script sets --p from 0 to 1 on the section; the canvas reads the
+   same scroll position itself. When the section ends, the frame scrolls away
    with it and the rest of the page follows.
 
-   On a phone the frame stacks: the text on top, the city filling what is left
-   of the screen below it. */
+   As the sky darkens the text turns white, so it always sits on the right
+   contrast. On a phone the text sits at the top and the city below it. */
 
-.story { --p: 0; position: relative; height: 340vh; }
-/* The whole screen takes on the red as the story goes on, not just the
-   drawing, so the change reads as the world changing rather than a picture. */
-.story { background: color-mix(in srgb, var(--accent) calc(var(--p) * var(--p) * 16%), var(--paper)); }
+.story { --p: 0; position: relative; height: 360vh; background: var(--paper); }
 .story__frame {
   position: sticky;
   top: var(--head);
   height: calc(100vh - var(--head));
   height: calc(100svh - var(--head));
-  display: grid;
-  grid-template-rows: auto minmax(0, 1fr);
-  gap: 1rem;
-  padding-block: clamp(1.25rem, 0.5rem + 3vw, 3rem) 0;
   overflow: hidden;
 }
-@media (min-width: 58rem) {
-  .story__frame {
-    grid-template-columns: minmax(0, 1fr) minmax(0, 1.15fr);
-    grid-template-rows: none;
-    align-items: center;
-    gap: 3rem;
-    padding-block: 0;
-  }
+.story .city { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
+
+.story__content {
+  position: relative;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  padding-block-start: clamp(1.5rem, 1rem + 3vw, 3rem);
+  pointer-events: none;
+  --light: clamp(0, calc((var(--p) - 0.63) * 11), 1);
+  color: color-mix(in srgb, #ffffff calc(var(--light) * 100%), var(--ink));
 }
+.story__content a { pointer-events: auto; }
+@media (min-width: 900px) {
+  .story__content { justify-content: center; padding-block: 0 8vh; }
+  .story .hero__text { max-width: 34%; min-width: 22rem; }
+}
+
+.story h1 { letter-spacing: -0.035em; }
+.story .tagline { color: inherit; opacity: 0.85; margin-block-end: 1rem; }
 .story .hero__text p { max-width: 34em; }
-.story .tagline { margin-block-end: 1rem; }
-@media (max-width: 57.999rem) {
+.story .btn--ghost {
+  color: inherit;
+  background: color-mix(in srgb, transparent, var(--paper) calc((1 - var(--light)) * 70%));
+  border-color: color-mix(in srgb, #ffffff calc(var(--light) * 60%), var(--rule));
+}
+@media (max-width: 899px) {
   .story h1 { font-size: clamp(2.25rem, 1.5rem + 4vw, 3rem); }
   .story .tagline { font-size: var(--step-1); margin-block-end: 0.6rem; }
   .story .hero__text p { font-size: var(--step-0); line-height: 1.5; }
@@ -386,75 +396,6 @@ strong { font-weight: 660; }
   transform-origin: left;
   transform: scaleX(var(--p));
 }
-
-/* --- city ---------------------------------------------------------------------
-   Drawn by components/City.astro. Each piece has its own threshold, --t, and
-   turns on as --p passes it. clamp((p - t) * k, 0, 1) is the recurring shape:
-   0 before the threshold, ramping to 1 shortly after it. */
-
-.city {
-  display: block;
-  width: 100%;
-  height: 100%;
-  min-height: 0;
-  /* The lights go down at the end. */
-  filter: brightness(calc(1 - clamp(0, (var(--p) - 0.75) * 1.2, 0.3)));
-}
-.city .sun   {
-  fill: var(--accent);
-  opacity: calc(0.14 + var(--p) * 0.6);
-  transform-box: fill-box;
-  transform-origin: center;
-  transform: scale(calc(1 + var(--p) * 1.5));
-}
-
-.city .bldg  { fill: var(--paper); stroke: var(--ink); stroke-width: 1.6; }
-.city .win   {
-  fill: color-mix(in srgb, var(--accent) calc(clamp(0, (var(--p) - var(--t)) * 10, 1) * 100%), #e4e6e9);
-}
-
-.city .tower   { fill: var(--ink); }
-.city .core    { fill: var(--accent); opacity: clamp(0.08, calc((var(--p) - var(--t)) * 6), 1); }
-.city .antenna {
-  stroke: var(--ink);
-  stroke-width: 3;
-  stroke-linecap: round;
-  transform-box: fill-box;
-  transform-origin: bottom;
-  transform: scaleY(calc(0.2 + var(--p) * 0.8));
-}
-.city .beacon {
-  fill: var(--accent);
-  transform-box: fill-box;
-  transform-origin: center;
-  transform: scale(calc(0.6 + var(--p) * 2.4));
-}
-@media (prefers-reduced-motion: no-preference) {
-  .city .beacon { animation: city-pulse 1.6s ease-in-out infinite; }
-}
-@keyframes city-pulse { 50% { opacity: 0.45; } }
-
-.city .net {
-  fill: none;
-  stroke: var(--accent);
-  stroke-width: 1.4;
-  stroke-dasharray: 1;
-  stroke-dashoffset: clamp(0, calc(1 - (var(--p) - var(--t)) * 5), 1);
-  opacity: 0.75;
-}
-
-.city .drone {
-  opacity: clamp(0, calc((var(--p) - var(--t)) * 8), 1);
-  transform: translateX(calc(var(--p) * var(--dx) * 1px));
-}
-.city .drone rect { fill: var(--ink); }
-.city .drone path { fill: none; stroke: var(--ink); stroke-width: 1.6; stroke-linecap: round; }
-.city .drone circle { fill: none; stroke: var(--ink); stroke-width: 1.2; }
-
-.city .ground { stroke: var(--ink); stroke-width: 2; }
-.city .lane   { stroke: var(--rule); stroke-width: 2; stroke-dasharray: 14 12; }
-.city .car    { transform: translateX(calc(var(--p) * var(--dx) * 1px)); }
-.city .car rect { fill: var(--muted); }
 
 /* --- perceptron diagram -----------------------------------------------------
    Geometry comes from scripts/perceptron.py. Everything visual is here, so the
