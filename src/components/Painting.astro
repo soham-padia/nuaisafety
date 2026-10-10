@@ -1,0 +1,35 @@
+---
+/**
+ * The home page painting: Boston's Back Bay across the Charles, in ink and
+ * watercolour. The layers are painted SVG files in public/art/, made by
+ * scripts/make-painting.mjs. Stacked here in order, bottom to top.
+ *
+ * The page sets --p on an ancestor, 0 to 1 through the home section, and the
+ * CSS ("painting" in global.css) fades, slides and dims whole layers from it.
+ * The browser paints each file once and only composites after that, so
+ * scrolling costs almost nothing and nothing runs while the page is still.
+ *
+ * Without JavaScript --p stays 0 and the painting is the quiet daytime scene.
+ */
+const layers = [
+  'sky', 'dusk', 'skyline',
+];
+---
+<div
+  class="painting"
+  role="img"
+  aria-label="An ink and watercolour painting of Boston across the Charles River: sailboats, people on the riverside path, willows. As you scroll, a dark tower rises with cranes beside it, drones replace the birds, the boats and people leave, red windows spread from the tower, smoke rises and the sky turns crimson."
+>
+  {layers.map((l) => <img class={`pl pl--${l}`} src={`/art/${l}.svg`} alt="" decoding="async" />)}
+  <div class="pl pl--tower-clip">
+    <img class="pl pl--tower" src="/art/tower.svg" alt="" decoding="async" />
+  </div>
+  <img class="pl pl--tower-reflect" src="/art/tower-reflect.svg" alt="" decoding="async" />
+  <img class="pl pl--night" src="/art/night.svg" alt="" decoding="async" />
+  <img class="pl pl--smoke" src="/art/smoke.svg" alt="" decoding="async" />
+  <img class="pl pl--red" src="/art/red.svg" alt="" decoding="async" />
+  <img class="pl pl--boats" src="/art/boats.svg" alt="" decoding="async" />
+  <img class="pl pl--drones" src="/art/drones.svg" alt="" decoding="async" />
+  <img class="pl pl--bank" src="/art/bank.svg" alt="" decoding="async" />
+  <img class="pl pl--people" src="/art/people.svg" alt="" decoding="async" />
+</div>

@@ -332,70 +332,120 @@ strong { font-weight: 660; }
   color: var(--muted);
 }
 
-/* --- scroll story -----------------------------------------------------------
-   The home hero is a tall section with a pinned frame inside it. While you
-   scroll through the section the frame stays put: the scene (components/
-   City.astro) fills it edge to edge, and the text sits over open sky on the
-   left. A script sets --p from 0 to 1 on the section; the canvas reads the
-   same scroll position itself. When the section ends, the frame scrolls away
-   with it and the rest of the page follows.
+/* --- home ---------------------------------------------------------------------
+   The home section is two columns. The painting is pinned on the right while
+   the text scrolls past it on the left, one short step at a time: the intro,
+   the three things we do, who this is for. The page script sets --p on the
+   section, 0 to 1 from its top to its bottom, and the painting reads it.
 
-   As the sky darkens the text turns white, so it always sits on the right
-   contrast. On a phone the text sits at the top and the city below it. */
+   On a phone the painting pins to the top of the screen instead and the
+   steps scroll up underneath it. */
 
-.story { --p: 0; position: relative; height: 360vh; background: var(--paper); }
-.story__frame {
+.home { --p: 0; position: relative; display: grid; }
+.home__art {
   position: sticky;
   top: var(--head);
-  height: calc(100vh - var(--head));
-  height: calc(100svh - var(--head));
-  overflow: hidden;
+  z-index: 2;
+  height: 46svh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding-block: 0.75rem;
+  background: var(--paper);
+  container-type: size;
 }
-.story .city { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
-
-.story__content {
-  position: relative;
-  height: 100%;
+.home__text { padding-inline: var(--gutter); }
+.home__step {
+  min-height: 42svh;
   display: flex;
   flex-direction: column;
-  justify-content: flex-start;
-  padding-block-start: clamp(1.5rem, 1rem + 3vw, 3rem);
-  pointer-events: none;
-  --light: clamp(0, calc((var(--p) - 0.63) * 11), 1);
-  color: color-mix(in srgb, #ffffff calc(var(--light) * 100%), var(--ink));
+  justify-content: center;
+  padding-block: 2.5rem;
+  max-width: 34rem;
 }
-.story__content a { pointer-events: auto; }
+.home__step--intro { min-height: calc(54svh - var(--head)); padding-block-start: 1.5rem; }
+.home__step > :first-child { margin-block-start: 0; }
+.home__step h2 { font-size: var(--step-3); margin-block-end: 1.25rem; }
+.home__step h3 { margin-block-end: 0.5rem; }
+.home__step p { font-size: var(--step-1); line-height: 1.55; color: var(--muted); }
+.home__step strong { color: var(--ink); }
+.home__step .home__lede { color: var(--ink); }
+.home .tagline { font-size: var(--step-2); margin-block: 0.4rem 1.25rem; }
+.home .actions { margin-block-start: 1.75rem; }
+
 @media (min-width: 900px) {
-  .story__content { justify-content: center; padding-block: 0 8vh; }
-  .story .hero__text { max-width: 34%; min-width: 22rem; }
+  .home {
+    grid-template-columns: minmax(0, 0.95fr) minmax(0, 1.05fr);
+    max-width: var(--page);
+    margin-inline: auto;
+  }
+  .home__art {
+    grid-column: 2;
+    grid-row: 1;
+    align-self: start;
+    height: calc(100svh - var(--head));
+    padding: 1.5rem var(--gutter) 1.5rem 0;
+  }
+  .home__text { grid-column: 1; grid-row: 1; }
+  .home__step { min-height: 78svh; }
+  .home__step--intro { min-height: calc(100svh - var(--head)); padding-block-start: 0; }
 }
 
-.story h1 { letter-spacing: -0.035em; }
-.story .tagline { color: inherit; opacity: 0.85; margin-block-end: 1rem; }
-.story .hero__text p { max-width: 34em; }
-.story .btn--ghost {
-  color: inherit;
-  background: color-mix(in srgb, transparent, var(--paper) calc((1 - var(--light)) * 70%));
-  border-color: color-mix(in srgb, #ffffff calc(var(--light) * 60%), var(--rule));
+/* --- painting -----------------------------------------------------------------
+   Layers made by scripts/make-painting.mjs, stacked by components/Painting.
+   Each layer only fades, slides or dims, all from --p, so the brushwork is
+   painted once and then just composited.
+
+   Each ramp below is 0 until its start, then rises to 1 over its length:
+   clamp(0, (p - start) / length, 1). */
+
+.painting {
+  position: relative;
+  aspect-ratio: 900 / 1100;
+  /* As large as fits the pinned box, keeping the painting's shape. */
+  width: min(100cqw, 100cqh * 900 / 1100);
+  -webkit-mask: url("/art/deckle.svg") center / 100% 100% no-repeat;
+          mask: url("/art/deckle.svg") center / 100% 100% no-repeat;
+
+  --rise:  clamp(0, calc((var(--p) - 0.06) / 0.30), 1);
+  --sail:  clamp(0, calc((var(--p) - 0.26) / 0.24), 1);
+  --drone: clamp(0, calc((var(--p) - 0.30) / 0.30), 1);
+  --red:   clamp(0, calc((var(--p) - 0.34) / 0.56), 1);
+  --dusk:  clamp(0, calc((var(--p) - 0.44) / 0.40), 1);
+  --leave: clamp(0, calc((var(--p) - 0.50) / 0.20), 1);
+  --smoke: clamp(0, calc((var(--p) - 0.58) / 0.32), 1);
+  --night: clamp(0, calc((var(--p) - 0.64) / 0.36), 1);
 }
-@media (max-width: 899px) {
-  .story h1 { font-size: clamp(2.25rem, 1.5rem + 4vw, 3rem); }
-  .story .tagline { font-size: var(--step-1); margin-block-end: 0.6rem; }
-  .story .hero__text p { font-size: var(--step-0); line-height: 1.5; }
-  .story .actions { margin-block-start: 1.1rem; }
-  .story .btn { padding: 0.6em 1.05em; }
+.painting .pl { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
+
+.pl--dusk { opacity: var(--dusk); }
+
+/* The tower rises from behind the far bank. The clip stops it showing below
+   the waterline (y 600 of 1100) on its way up. */
+.pl--tower-clip { clip-path: inset(0 0 45.45% 0); }
+.pl--tower { transform: translateY(calc((1 - var(--rise)) * 46%)); }
+.pl--tower-reflect { opacity: var(--rise); }
+
+.pl--smoke {
+  opacity: var(--smoke);
+  transform: translate(calc(var(--smoke) * -3%), calc((1 - var(--smoke)) * 5%));
+}
+.pl--night { opacity: calc(var(--night) * 0.88); mix-blend-mode: multiply; }
+
+/* Red spreads outward from the tower, as a growing circle. */
+.pl--red {
+  opacity: min(1, calc(var(--red) * 4));
+  -webkit-mask-image: radial-gradient(circle at 74% 40%, #000 calc(var(--red) * 95%), transparent calc(var(--red) * 95% + 14%));
+          mask-image: radial-gradient(circle at 74% 40%, #000 calc(var(--red) * 95%), transparent calc(var(--red) * 95% + 14%));
 }
 
-/* A thin bar along the bottom of the frame shows how far through you are. */
-.story__progress {
-  position: absolute;
-  inset-inline: 0;
-  bottom: 0;
-  height: 3px;
-  background: var(--accent);
-  transform-origin: left;
-  transform: scaleX(var(--p));
+.pl--boats { opacity: calc(1 - var(--sail)); transform: translateX(calc(var(--sail) * -7%)); }
+.pl--drones {
+  opacity: var(--drone);
+  transform: translate(calc((1 - var(--p)) * 9%), calc((1 - var(--drone)) * -5%));
 }
+.pl--bank { filter: brightness(calc(1 - var(--night) * 0.62)); }
+.pl--people { opacity: calc(1 - var(--leave)); transform: translateX(calc(var(--leave) * 4%)); }
 
 /* --- perceptron diagram -----------------------------------------------------
    Geometry comes from scripts/perceptron.py. Everything visual is here, so the

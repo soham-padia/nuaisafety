@@ -1,0 +1,32 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 1100" width="900" height="1100"><defs><linearGradient id="dsky" x1="0" y1="0" x2="0" y2="1">
+<stop offset="0" stop-color="#2a070e"/><stop offset="0.45" stop-color="#7a1426"/>
+<stop offset="0.85" stop-color="#c22d44"/><stop offset="1" stop-color="#e05a6c"/></linearGradient><filter id="dwash" x="-15%" y="-15%" width="130%" height="130%" color-interpolation-filters="sRGB">
+<feTurbulence type="fractalNoise" baseFrequency="0.01" numOctaves="3" seed="6" result="warp"/>
+<feDisplacementMap in="SourceGraphic" in2="warp" scale="30" xChannelSelector="R" yChannelSelector="G" result="shape"/>
+<feMorphology in="shape" operator="erode" radius="3" result="inner"/>
+<feComposite in="shape" in2="inner" operator="out" result="edge"/>
+<feGaussianBlur in="edge" stdDeviation="0.9" result="edgeSoft"/>
+<feColorMatrix in="edgeSoft" type="matrix" values="0.72 0 0 0 0  0 0.72 0 0 0  0 0 0.72 0 0  0 0 0 0.6 0" result="pool"/>
+<feTurbulence type="fractalNoise" baseFrequency="0.85" numOctaves="2" seed="13" result="grain"/>
+<feColorMatrix in="grain" type="matrix" values="0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 -0.6 1.25" result="grainMask"/>
+<feComposite in="shape" in2="grainMask" operator="in" result="grainy"/>
+<feMerge><feMergeNode in="grainy"/><feMergeNode in="pool"/></feMerge>
+</filter><filter id="dsun" x="-15%" y="-15%" width="130%" height="130%" color-interpolation-filters="sRGB">
+<feTurbulence type="fractalNoise" baseFrequency="0.025" numOctaves="3" seed="8" result="warp"/>
+<feDisplacementMap in="SourceGraphic" in2="warp" scale="12" xChannelSelector="R" yChannelSelector="G" result="shape"/>
+<feMorphology in="shape" operator="erode" radius="1.6" result="inner"/>
+<feComposite in="shape" in2="inner" operator="out" result="edge"/>
+<feGaussianBlur in="edge" stdDeviation="0.9" result="edgeSoft"/>
+<feColorMatrix in="edgeSoft" type="matrix" values="0.72 0 0 0 0  0 0.72 0 0 0  0 0 0.72 0 0  0 0 0 0.6 0" result="pool"/>
+<feTurbulence type="fractalNoise" baseFrequency="0.85" numOctaves="2" seed="15" result="grain"/>
+<feColorMatrix in="grain" type="matrix" values="0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 -0.8 1.25" result="grainMask"/>
+<feComposite in="shape" in2="grainMask" operator="in" result="grainy"/>
+<feMerge><feMergeNode in="grainy"/><feMergeNode in="pool"/></feMerge>
+</filter><filter id="halo" x="-40%" y="-40%" width="180%" height="180%">
+<feTurbulence type="fractalNoise" baseFrequency="0.012" numOctaves="3" seed="3" result="n"/>
+<feDisplacementMap in="SourceGraphic" in2="n" scale="30" xChannelSelector="R" yChannelSelector="G" result="d"/>
+<feGaussianBlur in="d" stdDeviation="28"/>
+</filter><filter id="paper" x="0" y="0" width="100%" height="100%">
+<feTurbulence type="fractalNoise" baseFrequency="0.75" numOctaves="3" seed="12"/>
+<feColorMatrix type="matrix" values="0 0 0 0 0.42  0 0 0 0 0.38  0 0 0 0 0.39  0 0 0 0.09 0"/>
+</filter></defs><g filter="url(#dwash)"><rect x="-30" y="-30" width="960" height="640" fill="url(#dsky)"/></g><g filter="url(#halo)"><circle cx="700" cy="500" r="180" fill="#e5223e" opacity="0.35"/></g><g filter="url(#dsun)"><circle cx="700" cy="500" r="92" fill="#e5223e"/></g><g filter="url(#dwash)"><ellipse cx="761.7" cy="157.4" rx="175.2" ry="11.5" fill="#4d0c18" opacity="0.5"/><ellipse cx="265.5" cy="266.2" rx="166" ry="5.6" fill="#4d0c18" opacity="0.4"/><ellipse cx="887.2" cy="317.4" rx="211.6" ry="9.3" fill="#4d0c18" opacity="0.5"/><ellipse cx="394.8" cy="237.6" rx="196.5" ry="6.7" fill="#4d0c18" opacity="0.5"/><ellipse cx="888.5" cy="236.8" rx="103.7" ry="9.8" fill="#4d0c18" opacity="0.4"/><ellipse cx="744.1" cy="123.9" rx="186.2" ry="6.3" fill="#4d0c18" opacity="0.5"/><ellipse cx="399.1" cy="414.5" rx="119" ry="10.6" fill="#4d0c18" opacity="0.3"/><ellipse cx="541.2" cy="236.2" rx="194" ry="9.1" fill="#4d0c18" opacity="0.5"/><ellipse cx="209.7" cy="357.6" rx="208.7" ry="11.5" fill="#4d0c18" opacity="0.3"/></g><rect width="900" height="610" filter="url(#paper)"/></svg>
