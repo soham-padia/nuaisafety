@@ -66,6 +66,10 @@ export const agendaTime = (time: string) => clock(time);
 export const longDate = (d: Date) =>
   d.toLocaleDateString('en-US', { timeZone: TZ, weekday: 'long', month: 'long', day: 'numeric' });
 
+/** 'October 1, 2026', for the past list, where the year starts to matter. */
+export const pastDate = (d: Date) =>
+  d.toLocaleDateString('en-US', { timeZone: TZ, month: 'long', day: 'numeric', year: 'numeric' });
+
 /** The pieces of the date column: 'Mon', '2', 'Nov'. */
 export const dateParts = (d: Date) => ({
   weekday: d.toLocaleDateString('en-US', { timeZone: TZ, weekday: 'short' }),

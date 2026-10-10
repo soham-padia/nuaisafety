@@ -1,7 +1,7 @@
 ---
 import Base from '../layouts/Base.astro';
 import {
-  split, longDate, dateParts, timeRange, agendaTime,
+  split, longDate, pastDate, dateParts, timeRange, agendaTime,
   googleUrl, outlookUrl, icsPath, feedPath, pageUrl,
 } from '../lib/events';
 
@@ -91,7 +91,7 @@ const googleSubscribe = `https://calendar.google.com/calendar/r?cid=${encodeURIC
           <ul>
             {past.map((e) => (
               <li>
-                <time datetime={e.begins.toISOString()}>{longDate(e.begins)}</time>
+                <time datetime={e.begins.toISOString()}>{pastDate(e.begins)}</time>
                 <span>{e.title}</span>
               </li>
             ))}
