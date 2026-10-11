@@ -920,7 +920,7 @@ export async function mountStreet(fig: HTMLElement, reduce: boolean): Promise<St
     }
     const R = m.radius * e;
     stage.style.clipPath =
-      `inset(${m.fy * e}px ${(m.SW - m.fx - m.fw) * e}px ${(m.SH - m.fy - m.fh) * e}px ${m.fx * e}px round 0 ${R}px ${R}px 0)`;
+      `inset(${m.fy * e}px ${(m.SW - m.fx - m.fw) * e}px ${(m.SH - m.fy - m.fh) * e}px ${m.fx * e}px round ${R}px)`;
   }
 
   const coverage = (i: number) => (covs[i] ??= press(drawPlate(i, pw, ph), sc));

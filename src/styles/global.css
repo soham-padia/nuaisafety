@@ -569,7 +569,10 @@ strong { font-weight: 660; }
    screen instead, caption and print side by side. */
 
 :root { --q: 1; }
-.home { position: relative; display: grid; overflow-x: clip; }
+/* the opening's full-screen print is wider than the page box; keep it from
+   widening the page (clip, unlike hidden, leaves sticky alone) */
+main { overflow-x: clip; }
+.home { position: relative; display: grid; }
 .home__text { padding-inline: var(--gutter); }
 
 .home__art {
@@ -642,16 +645,20 @@ strong { font-weight: 660; }
 }
 
 @media (min-width: 900px) {
-  .home { grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr); }
-  /* the text lines up with the page; the print runs to the right edge */
-  .home__text { padding-inline: max(var(--gutter), calc((100vw - var(--page)) / 2 + var(--gutter))) 2.5rem; }
+  /* text on the left, the print framed on the centre-right, both inside the page */
+  .home {
+    grid-template-columns: minmax(0, 0.92fr) minmax(0, 1.08fr);
+    max-width: var(--page);
+    margin-inline: auto;
+  }
+  .home__text { padding-inline: var(--gutter) 2.5rem; }
   .home__art {
     grid-column: 2;
     grid-row: 1;
     align-self: start;
-    top: var(--head);
-    height: calc(100svh - var(--head));
-    margin: 0;
+    top: calc(var(--head) + 1.25rem);
+    height: calc(100svh - var(--head) - 1.25rem);
+    margin: 0 var(--gutter) 0 0;
     border-radius: 0;
     background: none;
     box-shadow: none;
@@ -689,9 +696,9 @@ strong { font-weight: 660; }
 
 /* --- the print ------------------------------------------------------------------
    The risograph street (components/RisoStreet, scripts/street.ts). The frame
-   (.riso__plate) only marks where the print settles; the stage inside it is
-   sized to the screen by the script, and clipped down to the frame as the
-   opening ends. The caption sits under the print, as plain text. On a phone
+   (.riso__plate) only marks where the print settles, with --radius for its
+   corners; the stage inside it is sized to the screen by the script, and
+   clipped down to the frame as the opening ends. The caption sits under the print, as plain text. On a phone
    the frame is the right-hand end of the bar, the caption the rest. */
 
 .riso { margin: 0; height: 100%; display: grid; grid-template-columns: minmax(0, 1fr) 5.75rem; }
@@ -731,8 +738,8 @@ strong { font-weight: 660; }
 
 @media (min-width: 900px) {
   .riso { grid-template-columns: 1fr; grid-template-rows: minmax(0, 1fr) auto; }
-  .riso__plate { --radius: 0px; grid-column: 1; grid-row: 1; }
-  .riso__caption { grid-column: 1; grid-row: 2; padding: 0.9rem 1.5rem 1.1rem; min-height: 5.2rem; justify-content: start; gap: 0.3rem; }
+  .riso__plate { --radius: 20px; grid-column: 1; grid-row: 1; }
+  .riso__caption { grid-column: 1; grid-row: 2; padding: 0.9rem 0.25rem 1.1rem; min-height: 5.2rem; justify-content: start; gap: 0.3rem; }
   .riso__term { font-size: 0.75rem; }
   .riso__line { font-size: 1.08rem; }
 }
