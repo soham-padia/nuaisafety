@@ -127,17 +127,10 @@ import { LUMA_CALENDAR_ID, LUMA_CALENDAR_URL } from '../config';
   <FaqSection />
 
   <script>
-    /* Two jobs, both on scroll, both cheap.
-
-       1. The scroll story: how far through the pinned hero you are, 0 to 1,
-          written to --p on the section. The city reads it in CSS.
-       2. The menu: mark whichever section is on screen as the current one.
-
-       Without this script the city stays a calm skyline and the menu still
-       jumps to each section; nothing is hidden behind it. */
+    /* The menu: mark whichever section is on screen as the current one, on
+       scroll. Without this script the menu still jumps to each section. */
     const root = document.documentElement;
     const head = document.querySelector('.masthead');
-    const story = document.querySelector('[data-story]');
     const links = [...document.querySelectorAll('.nav a[href^="/#"]:not(.btn)')];
     const sections = links
       .map((a) => document.getElementById(a.getAttribute('href').slice(2)))
@@ -148,11 +141,6 @@ import { LUMA_CALENDAR_ID, LUMA_CALENDAR_URL } from '../config';
     }
 
     function update() {
-      if (story) {
-        const total = story.offsetHeight - innerHeight;
-        const p = Math.min(1, Math.max(0, -story.getBoundingClientRect().top / total));
-        story.style.setProperty('--p', p.toFixed(4));
-      }
       const line = (head ? head.offsetHeight : 0) + innerHeight * 0.25;
       let current = null;
       for (const sec of sections) if (sec.getBoundingClientRect().top <= line) current = sec;

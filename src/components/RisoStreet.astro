@@ -29,7 +29,7 @@ import { STORY } from '../data/story';
 <script>
   import { gsap } from 'gsap';
   import { ScrollTrigger } from 'gsap/ScrollTrigger';
-  import { mountStreet } from '../scripts/street';
+  import { mountStreet } from '../scripts/street-view';
   import { STORY } from '../data/story';
 
   gsap.registerPlugin(ScrollTrigger);
@@ -65,38 +65,42 @@ import { STORY } from '../data/story';
       hug();
     }
 
-    mountStreet(fig, reduce).then((view) => {
-      // Both numbers follow the scroll position directly, eased with a short
-      // tween each time it moves, so a re-measure of the page can never leave
-      // them stale.
-      const intro = { q: reduce || opening() === 0 ? 1 : 0 };
-      const setOpen = () => {
-        view.open(intro.q);
-        // on the root, so the header can fade with it
-        document.documentElement.style.setProperty('--q', intro.q.toFixed(3));
-        document.documentElement.classList.toggle('opened', intro.q >= 0.999);
-      };
-      setOpen();
-      if (intro.q < 1) {
-        const follow = (self: ScrollTrigger) =>
-          gsap.to(intro, { q: self.progress, duration: 0.5, ease: 'power2.out', overwrite: true, onUpdate: setOpen });
-        ScrollTrigger.create({ trigger, start: 'top top', end: () => `+=${opening()}`, onUpdate: follow, onRefresh: follow });
-      }
+    const view = mountStreet(fig, reduce, STORY.length);
 
-      const state = { pos: 0 };
-      const last = STORY.length - 0.6; // a little past the last plate, so it holds before the section ends
-      const show = () => view.show(state.pos);
-      const follow = (self: ScrollTrigger) =>
-        reduce
-          ? ((state.pos = self.progress * last), show())
-          : gsap.to(state, { pos: self.progress * last, duration: 0.6, ease: 'power2.out', overwrite: true, onUpdate: show });
-      ScrollTrigger.create({
-        trigger,
-        start: () => `top+=${opening()} top`,
-        end: 'bottom bottom',
-        onUpdate: follow,
-        onRefresh: follow,
-      });
+    // Both numbers follow the scroll position directly, eased by gsap's
+    // quickTo, so a re-measure of the page can never leave them stale.
+    // --q goes only on the elements that use it, not the root: changing a
+    // variable on the root restyles the whole page every frame.
+    const head = document.querySelector<HTMLElement>('.masthead');
+    const root = document.documentElement;
+    const intro = { q: reduce || opening() === 0 ? 1 : 0 };
+    let opened: boolean | null = null;
+    const setOpen = () => {
+      view.open(intro.q);
+      const v = intro.q.toFixed(3);
+      trigger.style.setProperty('--q', v);
+      head?.style.setProperty('--q', v);
+      if (opened !== intro.q >= 0.999) root.classList.toggle('opened', (opened = intro.q >= 0.999));
+    };
+    setOpen();
+    if (intro.q < 1) {
+      const toQ = gsap.quickTo(intro, 'q', { duration: 0.5, ease: 'power2.out', onUpdate: setOpen });
+      const follow = (self: ScrollTrigger) => toQ(self.progress);
+      ScrollTrigger.create({ trigger, start: 'top top', end: () => `+=${opening()}`, onUpdate: follow, onRefresh: follow });
+    }
+
+    const state = { pos: 0 };
+    const last = STORY.length - 0.6; // a little past the last plate, so it holds before the section ends
+    const show = () => view.show(state.pos);
+    const toPos = gsap.quickTo(state, 'pos', { duration: 0.6, ease: 'power2.out', onUpdate: show });
+    const follow = (self: ScrollTrigger) =>
+      reduce ? ((state.pos = self.progress * last), show()) : toPos(self.progress * last);
+    ScrollTrigger.create({
+      trigger,
+      start: () => `top+=${opening()} top`,
+      end: 'bottom bottom',
+      onUpdate: follow,
+      onRefresh: follow,
     });
   }
 </script>

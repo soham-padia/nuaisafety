@@ -10,13 +10,10 @@
  * gives off its own light (screens, lamps, lit windows, torches), so that a
  * lit window stays bright at night.
  *
- * mountStreet() at the bottom runs it on the page. It draws a plate only when
- * it is first needed, keeps the inks, and on scroll only stacks inks that are
- * already made, so scrolling costs a few image draws and nothing runs while
- * the page is still.
+ * Nothing here touches the page: street.worker.ts prints the plates off the
+ * main thread, and street-view.ts shows them.
  */
-import { Plate, PAPER, INKS, WORLD, type Ink, type Spec, type Tone, type Coverage, type Screens, screens, press, inkLayer, seeded } from './riso';
-import { STORY } from '../data/story';
+import { Plate, type Ink, type Spec, type Tone, seeded } from './riso';
 
 type P = [number, number];
 type R = () => number;
@@ -620,10 +617,17 @@ const WASH: Record<Mood, Partial<Record<Ink, number>>> = {
   grey: { b: 0.1, r: 0.06 },
 };
 
-function drawPlate(i: number, pw: number, ph: number): Plate {
+export const PLATE_COUNT = SCENES.length;
+
+export function drawPlate(i: number, pw: number, ph: number): Plate {
   const S = (street ??= buildStreet());
   const sc = SCENES[i];
-  const pl = new Plate(pw, ph);
+  // each plate a little out of register, as real prints are
+  const reg = (k: number): [number, number] => {
+    const r = seeded(500 + i * 7 + k);
+    return [jit(r, 2), jit(r, 2)];
+  };
+  const pl = new Plate(pw, ph, { r: reg(1), b: reg(2) });
   const r = seeded(100 + i * 31);
   pl.wash = WASH[sc.mood];
 
@@ -822,222 +826,4 @@ function silhouette(pl: Plate, w: Win) {
   p.closePath();
   p.addPath(circle(x, y - 26, 9));
   pl.fill({ b: 0.88, r: 0.5 }, p);
-}
-
-/* --- on the page -------------------------------------------------------------
-   The canvas always holds the whole world. Where it sits is two things,
-   blended by the opening's progress (0 to 1):
-
-     full screen  the world covers the screen below the header
-     column       the middle of the world (x 0 to 1000) covers the frame
-
-   Moving between them only changes a CSS transform and a clip, so the
-   opening costs no drawing at all. */
-
-export interface StreetView {
-  /** Where the story is, 0 to the last plate; fractions are transitions. */
-  show(pos: number): void;
-  /** The opening: 0 full screen, 1 settled in its column. */
-  open(q: number): void;
-}
-
-export async function mountStreet(fig: HTMLElement, reduce: boolean): Promise<StreetView> {
-  const frame = fig.querySelector<HTMLElement>('.riso__plate')!;
-  const stage = fig.querySelector<HTMLElement>('.riso__stage')!;
-  // two canvases: the plate you are on, and over it the next one, shown
-  // through a grid of halftone dots that grow as you scroll
-  const [canvas, upper] = [...stage.querySelectorAll('canvas')];
-  const shown = [-1, -1]; // which plate each canvas holds
-  const capTerm = fig.querySelector<HTMLElement>('[data-riso-term]');
-  const capLine = fig.querySelector<HTMLElement>('[data-riso-line]');
-  const N = SCENES.length;
-
-  try {
-    await document.fonts?.load('800 40px "Bricolage Grotesque Variable"');
-  } catch { /* fall back to the system face */ }
-
-  let pw = 0, ph = 0, ppu = 1; // canvas pixels, and canvas pixels per world unit
-  let sc: Screens;
-  let covs: (Coverage | undefined)[] = [];
-  const live = new Map<number, Record<Ink, HTMLCanvasElement>>();
-  let pos = 0, q = reduce ? 1 : 0, caption = 0;
-
-  /** Where the screen and the frame are, in the stage's coordinates. The
-   *  stage is the whole screen, under the header too: the header starts
-   *  see-through, over the print. */
-  function measure() {
-    const top = 0;
-    const SW = document.documentElement.clientWidth, SH = window.innerHeight;
-    const f = frame.getBoundingClientRect();
-    const uF = Math.max(SW / WORLD.w, SH / WORLD.h); // CSS px per world unit, full screen
-    const uC = Math.max(f.width / 1000, f.height / WORLD.h); // and in the column
-    const radius = parseFloat(getComputedStyle(frame).getPropertyValue('--radius')) || 0;
-    return { SW, SH, fx: f.left, fy: f.top - top, fw: f.width, fh: f.height, uF, uC, radius };
-  }
-
-  /** Size the canvas: sharp enough in the column, and never too many pixels. */
-  function setup(m = measure()) {
-    const T = Math.min(window.devicePixelRatio || 1, 1.5);
-    let D = T * Math.min(1, Math.max(m.uC / m.uF, 0.75)); // canvas px per CSS px, full screen
-    const max = 1.5e6;
-    const area = WORLD.w * WORLD.h * (m.uF * D) ** 2;
-    if (area > max) D *= Math.sqrt(max / area);
-    const w = Math.max(1, Math.round(WORLD.w * m.uF * D));
-    // a small change in size (a phone's address bar) does not redraw the plates
-    if (pw && Math.abs(w - pw) / pw < 0.15) return;
-    pw = w;
-    ph = Math.round((w * WORLD.h) / WORLD.w);
-    ppu = pw / WORLD.w;
-    for (const c of [canvas, upper]) {
-      c.width = pw;
-      c.height = ph;
-    }
-    sc = screens(pw, ph, Math.max(3, 3.2 * Math.min(1.5, ppu / m.uC)));
-    covs = [];
-    live.clear();
-    shown[0] = shown[1] = -1;
-  }
-
-  /** Put the canvas where the opening says, and clip it to match. */
-  function place(m = measure()) {
-    const e = q * q * (3 - 2 * q);
-    const mix = (a: number, b: number) => a + (b - a) * e;
-    // full screen: the world centred across, a little more street than sky
-    const fxF = (m.SW - WORLD.w * m.uF) / 2;
-    const fyF = (m.SH - WORLD.h * m.uF) * 0.6;
-    // column: world x 0 to 1000 across the frame
-    const fxC = m.fx + (m.fw - 1000 * m.uC) / 2 + WORLD.x0 * m.uC;
-    const fyC = m.fy + (m.fh - WORLD.h * m.uC) * 0.6;
-    const u = mix(m.uF, m.uC);
-    stage.style.left = `${-m.fx}px`;
-    stage.style.top = `${-m.fy}px`;
-    stage.style.width = `${m.SW}px`;
-    stage.style.height = `${m.SH}px`;
-    for (const c of [canvas, upper]) {
-      c.style.width = `${WORLD.w * m.uF}px`;
-      c.style.height = `${WORLD.h * m.uF}px`;
-      c.style.transform = `translate(${mix(fxF, fxC)}px, ${mix(fyF, fyC)}px) scale(${u / m.uF})`;
-    }
-    const R = m.radius * e;
-    stage.style.clipPath =
-      `inset(${m.fy * e}px ${(m.SW - m.fx - m.fw) * e}px ${(m.SH - m.fy - m.fh) * e}px ${m.fx * e}px round ${R}px)`;
-  }
-
-  const coverage = (i: number) => (covs[i] ??= press(drawPlate(i, pw, ph), sc));
-
-  function layers(i: number) {
-    let l = live.get(i);
-    if (l) {
-      live.delete(i);
-      live.set(i, l);
-      return l;
-    }
-    const c = coverage(i);
-    l = { y: inkLayer(c.y, 'y', pw, ph), r: inkLayer(c.r, 'r', pw, ph), b: inkLayer(c.b, 'b', pw, ph) };
-    live.set(i, l);
-    if (live.size > 2) live.delete(live.keys().next().value!);
-    return l;
-  }
-
-  // each plate is a little out of register, as real prints are
-  const reg = (i: number, k: Ink): P => {
-    if (k === 'y') return [0, 0];
-    const r = seeded(500 + i * 7 + (k === 'r' ? 1 : 2));
-    return [jit(r, 2) * ppu, jit(r, 2) * ppu];
-  };
-  /** Print plate i onto a canvas: paper, then the three inks multiplied. */
-  function paint(which: 0 | 1, i: number) {
-    if (shown[which] === i) return;
-    shown[which] = i;
-    const out = (which ? upper : canvas).getContext('2d')!;
-    const L = layers(i);
-    out.globalCompositeOperation = 'source-over';
-    out.fillStyle = PAPER;
-    out.fillRect(0, 0, pw, ph);
-    out.globalCompositeOperation = 'multiply';
-    for (const k of INKS) {
-      const [x, y] = reg(i, k);
-      out.drawImage(L[k], x, y);
-    }
-    out.globalCompositeOperation = 'source-over';
-  }
-
-  /** Between plates, the next one comes through halftone dots that grow
-   *  until they cover the last. Only the dot size changes as you scroll. */
-  function render() {
-    const p = Math.min(Math.max(pos, 0), N - 1);
-    const i = Math.min(Math.floor(p), N - 2);
-    let t = Math.min(1, Math.max(0, (p - i - 0.4) / 0.6));
-    if (reduce) t = t < 0.5 ? 0 : 1;
-    // once a change is done, the finished plate becomes the base
-    const base = t >= 1 ? i + 1 : i;
-    paint(0, base);
-    if (t > 0 && t < 1) {
-      paint(1, i + 1);
-      upper.style.setProperty('--dot', `${(t * t * (3 - 2 * t) * 0.75).toFixed(4)}`);
-      upper.style.visibility = 'visible';
-    } else upper.style.visibility = 'hidden';
-
-    const now = t < 0.5 ? i : i + 1;
-    if (now !== caption) setCaption(now);
-  }
-
-  function setCaption(n: number) {
-    caption = n;
-    if (capTerm) capTerm.textContent = STORY[n].term;
-    if (capLine) capLine.textContent = STORY[n].line;
-    if (!reduce) {
-      fig.querySelector('.riso__caption')?.animate(
-        [{ opacity: 0, transform: 'translateY(6px)' }, { opacity: 1, transform: 'none' }],
-        { duration: 420, easing: 'cubic-bezier(.2,.7,.2,1)' },
-      );
-    }
-  }
-
-  const m0 = measure();
-  setup(m0);
-  place(m0);
-  render();
-  fig.classList.add('is-ready');
-
-  // make the other plates while the page is idle, one at a time
-  const idle = (fn: () => void) =>
-    'requestIdleCallback' in window ? requestIdleCallback(fn, { timeout: 1500 }) : setTimeout(fn, 120);
-  let next = 1;
-  const warm = () => {
-    if (next >= N) return;
-    const size = pw;
-    coverage(next++);
-    if (size === pw) idle(warm);
-  };
-  idle(warm);
-
-  let timer = 0;
-  const resized = () => {
-    clearTimeout(timer);
-    timer = window.setTimeout(() => {
-      const m = measure();
-      const before = pw;
-      setup(m);
-      place(m);
-      render();
-      if (pw !== before) {
-        next = 1;
-        idle(warm);
-      }
-    }, 200);
-  };
-  new ResizeObserver(resized).observe(frame);
-  window.addEventListener('resize', resized);
-
-  return {
-    show(p: number) {
-      pos = p;
-      render();
-    },
-    open(v: number) {
-      q = reduce ? 1 : Math.min(1, Math.max(0, v));
-      place();
-    },
-  };
 }

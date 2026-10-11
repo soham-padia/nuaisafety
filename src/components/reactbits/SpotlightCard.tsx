@@ -229,6 +229,9 @@ const SpotlightCard = ({
     wakeRef.current = wake;
 
     const onMove = (event: PointerEvent) => {
+      // NU AI Safety: ignore the pointer while the card is off screen, so a
+      // mouse move anywhere on the page does not cost a layout read per card
+      if (!state.visible && state.presence === 0) return;
       pointer.x = event.clientX;
       pointer.y = event.clientY;
       pointer.active = true;
@@ -263,6 +266,7 @@ const SpotlightCard = ({
       wake();
     };
     const onScroll = () => {
+      if (!state.visible && state.presence === 0) return;
       if (pointer.active || state.presence > 0) wake();
     };
 

@@ -8,10 +8,13 @@
  *      Drawing on a plate means saying how much of each ink a shape gets,
  *      0 to 1. By default a shape knocks out the inks it does not name, as a
  *      real print would; `over` prints on top of what is there instead.
- *   2. press() turns each greyscale canvas into ink coverage, through a
- *      halftone screen at its own angle plus grain and a little uneven ink.
- *   3. inkLayer() makes a coverage map into a canvas of that ink's colour,
- *      and the page multiplies the three over paper, slightly out of register.
+ *   2. print() turns each greyscale canvas into ink coverage, through a
+ *      halftone screen at its own angle plus grain and a little uneven ink,
+ *      and multiplies the three inks over paper, in one pass, into the
+ *      finished picture. Each ink is drawn slightly out of register.
+ *
+ * None of this touches the page, so it runs in a worker (street.worker.ts)
+ * on OffscreenCanvas, off the main thread.
  *
  * Overprinting is where the colour comes from: red and yellow make orange,
  * blue and yellow make green, red and blue make the near-black used for
@@ -45,19 +48,16 @@ export class Plate {
   wash: Partial<Record<Ink, number>> = {};
   private lit = false;
 
-  constructor(readonly pw: number, readonly ph: number) {
+  /** reg: how far each ink is out of register, in world units */
+  constructor(readonly pw: number, readonly ph: number, reg: Partial<Record<Ink, [number, number]>> = {}) {
     // the canvas is the whole world, so this is only a scale and a shift
     const s = pw / WORLD.w;
-    const ox = -WORLD.x0 * s;
-    const oy = 0;
     for (const k of INKS) {
-      const cv = document.createElement('canvas');
-      cv.width = pw;
-      cv.height = ph;
-      const g = cv.getContext('2d', { willReadFrequently: true })!;
+      const [dx, dy] = reg[k] ?? [0, 0];
+      const g = canvas2d(pw, ph);
       g.fillStyle = '#fff';
       g.fillRect(0, 0, pw, ph);
-      g.setTransform(s, 0, 0, s, ox, oy);
+      g.setTransform(s, 0, 0, s, (dx - WORLD.x0) * s, dy * s);
       g.lineCap = 'round';
       g.lineJoin = 'round';
       this.c[k] = g;
@@ -120,16 +120,6 @@ export class Plate {
     draw();
     for (const k of INKS) this.c[k].restore();
   }
-
-  text(spec: Spec, str: string, x: number, y: number, size: number, weight = 800) {
-    this.each(spec, false, (g, s) => {
-      g.fillStyle = s;
-      g.font = `${weight} ${size}px "Bricolage Grotesque Variable", ui-sans-serif, system-ui, sans-serif`;
-      g.textAlign = 'center';
-      g.textBaseline = 'middle';
-      g.fillText(str, x, y);
-    });
-  }
 }
 
 /** The halftone screens for one canvas size, shared by every plate. */
@@ -176,39 +166,49 @@ export function screens(pw: number, ph: number, dot: number): Screens {
   return { th, gain };
 }
 
-export type Coverage = Record<Ink, Uint8Array>;
-
-/** Run a plate through the screens: greyscale in, ink coverage out. */
-export function press(plate: Plate, sc: Screens): Coverage {
-  const out = {} as Coverage;
-  for (const k of INKS) {
-    const src = plate.c[k].getImageData(0, 0, plate.pw, plate.ph).data;
-    const n = plate.pw * plate.ph;
-    const cov = (out[k] = new Uint8Array(n));
-    const th = sc.th[k], gain = sc.gain[k];
-    for (let i = 0; i < n; i++) {
-      const d = 1 - src[i * 4] / 255;
+/** Run a plate through the screens and onto paper: the finished picture. */
+export function print(plate: Plate, sc: Screens): ImageData {
+  const { pw, ph } = plate;
+  const n = pw * ph;
+  const out = new ImageData(pw, ph);
+  const px = out.data;
+  const src = INKS.map((k) => plate.c[k].getImageData(0, 0, pw, ph).data);
+  const th = INKS.map((k) => sc.th[k]);
+  const gain = INKS.map((k) => sc.gain[k]);
+  // how much of each colour channel an ink takes away, at full coverage
+  const take = INKS.map((k) => INK_RGB[k].map((c) => 1 - c / 255));
+  const paper = [parseInt(PAPER.slice(1, 3), 16), parseInt(PAPER.slice(3, 5), 16), parseInt(PAPER.slice(5, 7), 16)];
+  for (let i = 0; i < n; i++) {
+    let r = paper[0], g = paper[1], b = paper[2];
+    for (let k = 0; k < 3; k++) {
+      const d = 1 - src[k][i * 4] / 255;
       if (d < 0.01) continue;
-      const v = (d * gain[i] - th[i]) * 7 + 0.5;
-      cov[i] = v <= 0 ? 0 : v >= 1 ? 255 : (v * 255) | 0;
+      let a = (d * gain[k][i] - th[k][i]) * 7 + 0.5;
+      if (a <= 0) continue;
+      if (a > 1) a = 1;
+      const t = take[k];
+      r *= 1 - a * t[0];
+      g *= 1 - a * t[1];
+      b *= 1 - a * t[2];
     }
+    const j = i * 4;
+    px[j] = r;
+    px[j + 1] = g;
+    px[j + 2] = b;
+    px[j + 3] = 255;
   }
   return out;
 }
 
-/** One ink's coverage as a canvas of that ink, ready to multiply over paper. */
-export function inkLayer(cov: Uint8Array, k: Ink, pw: number, ph: number): HTMLCanvasElement {
+/** A 2D canvas that works in a worker as well as on the page. */
+function canvas2d(w: number, h: number): CanvasRenderingContext2D {
+  if (typeof OffscreenCanvas !== 'undefined') {
+    return new OffscreenCanvas(w, h).getContext('2d', { willReadFrequently: true }) as unknown as CanvasRenderingContext2D;
+  }
   const cv = document.createElement('canvas');
-  cv.width = pw;
-  cv.height = ph;
-  const g = cv.getContext('2d')!;
-  const img = g.createImageData(pw, ph);
-  const px = new Uint32Array(img.data.buffer);
-  const [r, gg, b] = INK_RGB[k];
-  const rgb = (b << 16) | (gg << 8) | r; // little-endian RGBA
-  for (let i = 0; i < cov.length; i++) px[i] = ((cov[i] << 24) | rgb) >>> 0;
-  g.putImageData(img, 0, 0);
-  return cv;
+  cv.width = w;
+  cv.height = h;
+  return cv.getContext('2d', { willReadFrequently: true })!;
 }
 
 export function seeded(seed: number): () => number {
