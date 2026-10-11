@@ -149,8 +149,10 @@ export const EVENTS: GroupEvent[] = [
           change, no code change, no image import. Without one the tile falls
           back to an initials plate, which reserves exactly the same space, so
           adding a photo shifts nothing on the page.
-   level  'Undergraduate', 'Master’s' or 'PhD'.
-   title  Overrides the default title, e.g. 'President'.
+   level    'Undergraduate', 'Master’s' or 'PhD'.
+   title    Overrides the default title, e.g. 'President'.
+   website  A personal site, with https://. Shown as a globe icon, next to
+            the email and LinkedIn icons.
    ------------------------------------------------------------------------- */
 
 export type Person = {
@@ -162,6 +164,7 @@ export type Person = {
   bio?: string;
   email?: string;
   linkedin?: string;
+  website?: string;
 };
 
 /** The default title, for anyone on the board without their own `title`. */
@@ -172,12 +175,30 @@ export const BOARD_TITLE = 'Exec Board Member';
 export const PHOTO_PX = 960;
 
 export const TEAM: Person[] = [
-  { name: 'Elaine Ly', title: 'President' },
-  { name: 'Soham Padia', title: 'President' },
-  { name: 'Rohan Kathuria' },
+  {
+    name: 'Elaine Ly',
+    title: 'President',
+    email: 'ly.el@northeastern.edu',
+    website: 'https://thisiselaine.github.io',
+  },
+  {
+    name: 'Soham Padia',
+    title: 'President',
+    email: 'padia.so@northeastern.edu',
+    website: 'https://soham-padia.github.io',
+  },
+  {
+    name: 'Rohan Kathuria',
+    email: 'kathuria.r@northeastern.edu',
+    website: 'https://rkathuria.com',
+  },
   { name: 'Julia Rowniewski' },
   { name: 'Eric Shi' },
-  { name: 'Ryan Baylon' },
+  {
+    name: 'Ryan Baylon',
+    email: 'baylon.r@northeastern.edu',
+    website: 'https://ryanbaylon.com',
+  },
   { name: 'Max Eng' },
   { name: 'Jacob Chen' },
 ];
