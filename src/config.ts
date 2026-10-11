@@ -178,12 +178,14 @@ export const TEAM: Person[] = [
   {
     name: 'Elaine Ly',
     title: 'President',
+    photo: '/team/elaine-ly.jpg',
     email: 'ly.el@northeastern.edu',
     website: 'https://thisiselaine.github.io',
   },
   {
     name: 'Soham Padia',
     title: 'President',
+    photo: '/team/soham-padia.jpg',
     email: 'padia.so@northeastern.edu',
     website: 'https://soham-padia.github.io',
   },
