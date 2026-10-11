@@ -556,9 +556,9 @@ strong { font-weight: 660; }
    already happening, what we do, who this is for. The page script sets --p
    on the section, 0 to 1 from its top to its bottom, and the scene reads it.
 
-   On a phone the scene shrinks to a small card pinned to the bottom corner
-   of the screen. It stays with you through the home section and plays the
-   same story, without covering the text. */
+   On a phone the scene shrinks to a small bar pinned to the bottom of the
+   screen, caption and print side by side. It stays with you through the
+   home section and plays the same story. */
 
 .home { --p: 0; position: relative; display: grid; }
 .home__text { padding-inline: var(--gutter); }
@@ -568,15 +568,14 @@ strong { font-weight: 660; }
   /* sit at the bottom right of the screen, out of the way of the text */
   top: calc(100svh - 7.75rem);
   z-index: 5;
-  justify-self: end;
-  width: 5.75rem;
+  justify-self: stretch;
   height: 6.75rem;
-  margin-inline-end: 0.75rem;
+  margin-inline: 0.75rem;
   margin-block-end: -6.75rem;
   border-radius: 1rem;
   overflow: hidden;
   box-shadow: 0 6px 22px rgb(31 21 23 / 0.22), 0 0 0 1px rgb(31 21 23 / 0.06);
-  background: #fbf8f2;
+  background: #f5efe3;
 }
 
 .home__step {
@@ -615,7 +614,8 @@ strong { font-weight: 660; }
     box-shadow: none;
   }
   .home__text { grid-column: 1; grid-row: 1; }
-  .home__step { min-height: 82svh; }
+  /* a screen per step, so the eight plates each get room */
+  .home__step { min-height: 100svh; }
   .home__step--intro { min-height: calc(100svh - var(--head)); padding-block-start: 0; }
 }
 
@@ -655,13 +655,42 @@ strong { font-weight: 660; }
 .offers li { display: grid; grid-template-columns: auto 1fr; gap: 1rem; align-items: start; }
 .offers p { margin: 0; font-size: var(--step-0); }
 
-/* --- painting -------------------------------------------------------------------
-   The watercolour (components/PaintedCity, scripts/painting.ts) fills the
-   pinned frame. Until p5 has painted, the frame shows plain paper. */
+/* --- the print ------------------------------------------------------------------
+   The risograph street (components/RisoStreet, scripts/street.ts) fills the
+   pinned frame, with its caption under it. On a phone the frame is a small
+   bar along the bottom of the screen: the caption, then the print. */
 
-.painted-city { position: absolute; inset: 0; opacity: 0; transition: opacity 700ms ease; }
-.painted-city.is-ready { opacity: 1; }
-.painted-city canvas { display: block; width: 100% !important; height: 100% !important; }
+.riso { margin: 0; height: 100%; display: grid; grid-template-columns: minmax(0, 1fr) 5.75rem; }
+.riso__plate { position: relative; grid-column: 2; grid-row: 1; overflow: hidden; }
+.riso__plate canvas { position: absolute; inset: 0; display: block; width: 100%; height: 100%; opacity: 0; transition: opacity 600ms ease; }
+.riso.is-ready canvas { opacity: 1; }
+.riso__caption {
+  grid-column: 1;
+  grid-row: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 0.2rem;
+  padding: 0.6rem 0.4rem 0.6rem 0.9rem;
+}
+.riso__kicker {
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--muted);
+  font-variant-numeric: tabular-nums;
+}
+.riso__term { color: var(--accent); margin-inline-start: 0.4em; }
+.riso__line { font-size: 0.82rem; line-height: 1.3; font-weight: 560; color: var(--ink); text-wrap: balance; }
+
+@media (min-width: 900px) {
+  .riso { grid-template-columns: 1fr; grid-template-rows: minmax(0, 1fr) auto; }
+  .riso__plate { grid-column: 1; grid-row: 1; }
+  .riso__caption { grid-column: 1; grid-row: 2; padding: 1rem 1.4rem 1.2rem; min-height: 5.6rem; justify-content: start; gap: 0.3rem; }
+  .riso__kicker { font-size: 0.75rem; }
+  .riso__line { font-size: 1.08rem; }
+}
 
 /* --- perceptron diagram -----------------------------------------------------
    Geometry comes from scripts/perceptron.py. Everything visual is here, so the
