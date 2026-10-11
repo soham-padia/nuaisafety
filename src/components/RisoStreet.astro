@@ -42,6 +42,29 @@ import { STORY } from '../data/story';
     // how far the opening runs: the spacer under the headline
     const opening = () => trigger.querySelector<HTMLElement>('.home__intro-space')?.offsetHeight ?? 0;
 
+    // The headline's label (see global.css) hugs its longest line. CSS cannot
+    // shrink a block to wrapped text, so measure the words. The width goes on
+    // the parent as a variable: React owns the heading's own style.
+    // React swaps the heading element when SplitText loads, so look it up each time
+    const holder = trigger.querySelector<HTMLElement>('.hero-title')?.parentElement;
+    const hug = () => {
+      const title = holder?.querySelector<HTMLElement>('.hero-title');
+      if (!holder || !title) return;
+      holder.style.removeProperty('--title-w');
+      const words = title.querySelectorAll('.split-word');
+      if (!words.length) return;
+      const left = title.getBoundingClientRect().left;
+      let right = left;
+      for (const w of words) right = Math.max(right, w.getBoundingClientRect().right);
+      holder.style.setProperty('--title-w', `${Math.ceil(right - left) + 2}px`);
+    };
+    if (holder) {
+      new MutationObserver(hug).observe(holder, { childList: true, subtree: true });
+      addEventListener('resize', hug);
+      document.fonts?.ready.then(hug);
+      hug();
+    }
+
     mountStreet(fig, reduce).then((view) => {
       const intro = { q: reduce || opening() === 0 ? 1 : 0 };
       const setOpen = () => {

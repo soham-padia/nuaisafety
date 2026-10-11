@@ -604,21 +604,23 @@ strong { font-weight: 660; }
 .home .actions { margin-block-start: 1.5rem; }
 
 /* The opening. The headline is held in place while the print shrinks away,
-   set on paper-coloured labels so it reads over the picture. Each label is
-   a little shorter than its line, so the lines stay apart, and reaches a
-   little past its word, so a line reads as one strip. */
+   on one solid paper-coloured label so it reads over the picture. The label
+   is a shadow, not padding, so the headline does not move when it fades. */
 .home__step--intro .home__lede,
 .home__step--intro .actions { opacity: clamp(0, calc(var(--q) * 2 - 1), 1); }
-.home__step--intro .split-word {
-  padding-inline: 0.14em;
-  margin-inline: -0.14em;
-  background: linear-gradient(rgb(245 239 227 / calc(1 - var(--q))), rgb(245 239 227 / calc(1 - var(--q)))) center / 100% 1.02em no-repeat;
+.home__step--intro .hero-title {
+  width: var(--title-w, fit-content);
+  color: #0c0d11;
+  font-weight: 800;
+  background: rgb(255 252 245 / calc(1 - var(--q)));
+  box-shadow: 0 0 0 0.22em rgb(255 252 245 / calc(1 - var(--q)));
 }
 @media (prefers-reduced-motion: no-preference) {
   .js { --q: 0; }
   .js .home__intro-space { height: 75svh; }
   .js .home__step--intro { position: sticky; top: var(--head); }
   .js:not(.opened) .home__step--intro { z-index: 6; }
+  .js:not(.opened) .nav a:not(.btn) { color: var(--ink); font-weight: 560; }
   /* the header over the print: no hard edge, a blur that fades out below it */
   .js:not(.opened) .masthead {
     background: rgb(255 255 255 / var(--q));
