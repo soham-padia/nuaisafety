@@ -844,8 +844,10 @@ export interface StreetView {
 export async function mountStreet(fig: HTMLElement, reduce: boolean): Promise<StreetView> {
   const frame = fig.querySelector<HTMLElement>('.riso__plate')!;
   const stage = fig.querySelector<HTMLElement>('.riso__stage')!;
-  const canvas = stage.querySelector('canvas')!;
-  const out = canvas.getContext('2d')!;
+  // two canvases: the plate you are on, and over it the next one, shown
+  // through a grid of halftone dots that grow as you scroll
+  const [canvas, upper] = [...stage.querySelectorAll('canvas')];
+  const shown = [-1, -1]; // which plate each canvas holds
   const capTerm = fig.querySelector<HTMLElement>('[data-riso-term]');
   const capLine = fig.querySelector<HTMLElement>('[data-riso-line]');
   const N = SCENES.length;
@@ -858,7 +860,7 @@ export async function mountStreet(fig: HTMLElement, reduce: boolean): Promise<St
   let sc: Screens;
   let covs: (Coverage | undefined)[] = [];
   const live = new Map<number, Record<Ink, HTMLCanvasElement>>();
-  let pos = 0, q = reduce ? 1 : 0, drawnKey = '', caption = 0;
+  let pos = 0, q = reduce ? 1 : 0, caption = 0;
 
   /** Where the screen and the frame are, in the stage's coordinates. The
    *  stage is the whole screen, under the header too: the header starts
@@ -886,12 +888,14 @@ export async function mountStreet(fig: HTMLElement, reduce: boolean): Promise<St
     pw = w;
     ph = Math.round((w * WORLD.h) / WORLD.w);
     ppu = pw / WORLD.w;
-    canvas.width = pw;
-    canvas.height = ph;
+    for (const c of [canvas, upper]) {
+      c.width = pw;
+      c.height = ph;
+    }
     sc = screens(pw, ph, Math.max(3, 3.2 * Math.min(1.5, ppu / m.uC)));
     covs = [];
     live.clear();
-    drawnKey = '';
+    shown[0] = shown[1] = -1;
   }
 
   /** Put the canvas where the opening says, and clip it to match. */
@@ -909,9 +913,11 @@ export async function mountStreet(fig: HTMLElement, reduce: boolean): Promise<St
     stage.style.top = `${-m.fy}px`;
     stage.style.width = `${m.SW}px`;
     stage.style.height = `${m.SH}px`;
-    canvas.style.width = `${WORLD.w * m.uF}px`;
-    canvas.style.height = `${WORLD.h * m.uF}px`;
-    canvas.style.transform = `translate(${mix(fxF, fxC)}px, ${mix(fyF, fyC)}px) scale(${u / m.uF})`;
+    for (const c of [canvas, upper]) {
+      c.style.width = `${WORLD.w * m.uF}px`;
+      c.style.height = `${WORLD.h * m.uF}px`;
+      c.style.transform = `translate(${mix(fxF, fxC)}px, ${mix(fyF, fyC)}px) scale(${u / m.uF})`;
+    }
     const R = m.radius * e;
     stage.style.clipPath =
       `inset(${m.fy * e}px ${(m.SW - m.fx - m.fw) * e}px ${(m.SH - m.fy - m.fh) * e}px ${m.fx * e}px round 0 ${R}px ${R}px 0)`;
@@ -939,43 +945,38 @@ export async function mountStreet(fig: HTMLElement, reduce: boolean): Promise<St
     const r = seeded(500 + i * 7 + (k === 'r' ? 1 : 2));
     return [jit(r, 2) * ppu, jit(r, 2) * ppu];
   };
-  // in a change of plate, each ink slides into register in turn, like a print being pulled
-  const SLIDE: Record<Ink, P> = { y: [0, -36], r: [30, 0], b: [-22, 20] };
-  const START: Record<Ink, number> = { y: 0, r: 0.2, b: 0.4 };
-  const ease = (t: number) => 1 - Math.pow(1 - t, 3);
-
-  function render() {
-    const p = Math.min(Math.max(pos, 0), N - 1);
-    const i = Math.min(Math.floor(p), N - 2);
-    let t = Math.min(1, Math.max(0, (p - i - 0.45) / 0.55));
-    if (reduce) t = t < 0.5 ? 0 : 1;
-    const key = `${i}:${t.toFixed(3)}:${pw}`;
-    if (key === drawnKey) return;
-    drawnKey = key;
-
-    const A = layers(i);
-    const Bl = t > 0 ? layers(i + 1) : null;
+  /** Print plate i onto a canvas: paper, then the three inks multiplied. */
+  function paint(which: 0 | 1, i: number) {
+    if (shown[which] === i) return;
+    shown[which] = i;
+    const out = (which ? upper : canvas).getContext('2d')!;
+    const L = layers(i);
     out.globalCompositeOperation = 'source-over';
-    out.globalAlpha = 1;
     out.fillStyle = PAPER;
     out.fillRect(0, 0, pw, ph);
     out.globalCompositeOperation = 'multiply';
     for (const k of INKS) {
-      const kk = Bl ? ease(Math.min(1, Math.max(0, (t - START[k]) / 0.6))) : 0;
-      if (kk < 1) {
-        const [x, y] = reg(i, k);
-        out.globalAlpha = 1 - kk;
-        out.drawImage(A[k], x, y);
-      }
-      if (Bl && kk > 0) {
-        const [x, y] = reg(i + 1, k);
-        const sl = reduce ? 0 : 1 - kk;
-        out.globalAlpha = kk;
-        out.drawImage(Bl[k], x + SLIDE[k][0] * sl * ppu, y + SLIDE[k][1] * sl * ppu);
-      }
+      const [x, y] = reg(i, k);
+      out.drawImage(L[k], x, y);
     }
-    out.globalAlpha = 1;
     out.globalCompositeOperation = 'source-over';
+  }
+
+  /** Between plates, the next one comes through halftone dots that grow
+   *  until they cover the last. Only the dot size changes as you scroll. */
+  function render() {
+    const p = Math.min(Math.max(pos, 0), N - 1);
+    const i = Math.min(Math.floor(p), N - 2);
+    let t = Math.min(1, Math.max(0, (p - i - 0.4) / 0.6));
+    if (reduce) t = t < 0.5 ? 0 : 1;
+    // once a change is done, the finished plate becomes the base
+    const base = t >= 1 ? i + 1 : i;
+    paint(0, base);
+    if (t > 0 && t < 1) {
+      paint(1, i + 1);
+      upper.style.setProperty('--dot', `${(t * t * (3 - 2 * t) * 0.75).toFixed(4)}`);
+      upper.style.visibility = 'visible';
+    } else upper.style.visibility = 'hidden';
 
     const now = t < 0.5 ? i : i + 1;
     if (now !== caption) setCaption(now);

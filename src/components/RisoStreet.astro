@@ -15,7 +15,7 @@
 import { STORY } from '../data/story';
 ---
 <figure class="riso" data-riso>
-  <div class="riso__plate"><div class="riso__stage"><canvas aria-hidden="true"></canvas></div></div>
+  <div class="riso__plate"><div class="riso__stage"><canvas aria-hidden="true"></canvas><canvas class="riso__next" aria-hidden="true"></canvas></div></div>
   <figcaption class="riso__caption" aria-hidden="true">
     <span class="riso__term" data-riso-term>{STORY[0].term}</span>
     <span class="riso__line" data-riso-line>{STORY[0].line}</span>
@@ -66,6 +66,9 @@ import { STORY } from '../data/story';
     }
 
     mountStreet(fig, reduce).then((view) => {
+      // Both numbers follow the scroll position directly, eased with a short
+      // tween each time it moves, so a re-measure of the page can never leave
+      // them stale.
       const intro = { q: reduce || opening() === 0 ? 1 : 0 };
       const setOpen = () => {
         view.open(intro.q);
@@ -75,27 +78,24 @@ import { STORY } from '../data/story';
       };
       setOpen();
       if (intro.q < 1) {
-        gsap.to(intro, {
-          q: 1,
-          ease: 'none',
-          scrollTrigger: { trigger, start: 'top top', end: () => `+=${opening()}`, scrub: 0.5, invalidateOnRefresh: true },
-          onUpdate: setOpen,
-        });
+        const follow = (self: ScrollTrigger) =>
+          gsap.to(intro, { q: self.progress, duration: 0.5, ease: 'power2.out', overwrite: true, onUpdate: setOpen });
+        ScrollTrigger.create({ trigger, start: 'top top', end: () => `+=${opening()}`, onUpdate: follow, onRefresh: follow });
       }
 
       const state = { pos: 0 };
-      gsap.to(state, {
-        // a little past the last plate, so it holds before the section ends
-        pos: STORY.length - 0.6,
-        ease: 'none',
-        scrollTrigger: {
-          trigger,
-          start: () => `top+=${opening()} top`,
-          end: 'bottom bottom',
-          scrub: reduce ? true : 0.6,
-          invalidateOnRefresh: true,
-        },
-        onUpdate: () => view.show(state.pos),
+      const last = STORY.length - 0.6; // a little past the last plate, so it holds before the section ends
+      const show = () => view.show(state.pos);
+      const follow = (self: ScrollTrigger) =>
+        reduce
+          ? ((state.pos = self.progress * last), show())
+          : gsap.to(state, { pos: self.progress * last, duration: 0.6, ease: 'power2.out', overwrite: true, onUpdate: show });
+      ScrollTrigger.create({
+        trigger,
+        start: () => `top+=${opening()} top`,
+        end: 'bottom bottom',
+        onUpdate: follow,
+        onRefresh: follow,
       });
     });
   }

@@ -699,6 +699,17 @@ strong { font-weight: 660; }
 .riso__stage { position: absolute; overflow: hidden; pointer-events: none; }
 .riso__stage canvas { position: absolute; left: 0; top: 0; display: block; transform-origin: 0 0; opacity: 0; transition: opacity 600ms ease; }
 .riso.is-ready canvas { opacity: 1; }
+/* The next plate, coming through a grid of halftone dots. --dot is the dot
+   radius as a share of the grid (0.75 covers it; the corners need over 0.71). */
+.riso__next {
+  --dot: 0;
+  --grid: 12px;
+  visibility: hidden;
+  -webkit-mask-image: radial-gradient(circle, #000 calc(var(--dot) * var(--grid)), transparent calc(var(--dot) * var(--grid) + 0.75px));
+  mask-image: radial-gradient(circle, #000 calc(var(--dot) * var(--grid)), transparent calc(var(--dot) * var(--grid) + 0.75px));
+  -webkit-mask-size: var(--grid) var(--grid);
+  mask-size: var(--grid) var(--grid);
+}
 .riso__caption {
   grid-column: 1;
   grid-row: 1;
