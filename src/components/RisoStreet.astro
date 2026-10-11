@@ -46,8 +46,9 @@ import { STORY } from '../data/story';
       const intro = { q: reduce || opening() === 0 ? 1 : 0 };
       const setOpen = () => {
         view.open(intro.q);
-        trigger.style.setProperty('--q', intro.q.toFixed(3));
-        trigger.classList.toggle('is-open', intro.q >= 0.999);
+        // on the root, so the header can fade with it
+        document.documentElement.style.setProperty('--q', intro.q.toFixed(3));
+        document.documentElement.classList.toggle('opened', intro.q >= 0.999);
       };
       setOpen();
       if (intro.q < 1) {

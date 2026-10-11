@@ -555,7 +555,9 @@ strong { font-weight: 660; }
    it. The first stretch of scrolling (.home__intro-space) shrinks the print
    into the right-hand column while the headline stays put, and the rest of
    the opening fades in beside it. The print's script writes that progress
-   to --q, 0 to 1, and adds .is-open when it is done. Without JavaScript, or
+   to --q on the root, 0 to 1, and adds .opened to the root when it is
+   done. The header starts see-through and blurred over the print, and
+   turns solid as the print settles. Without JavaScript, or
    with reduced motion, the page starts settled.
 
    Then the print is pinned on the right while the text scrolls past it on
@@ -565,7 +567,8 @@ strong { font-weight: 660; }
    On a phone the print shrinks into a small bar pinned to the bottom of the
    screen instead, caption and print side by side. */
 
-.home { --q: 1; position: relative; display: grid; overflow-x: clip; }
+:root { --q: 1; }
+.home { position: relative; display: grid; overflow-x: clip; }
 .home__text { padding-inline: var(--gutter); }
 
 .home__art {
@@ -591,7 +594,7 @@ strong { font-weight: 660; }
 }
 .home__step--intro { min-height: calc(88svh - var(--head)); padding-block-start: 2rem; }
 .home__step > :first-child { margin-block-start: 0; }
-.home__step h1 { font-size: clamp(2.3rem, 1.6rem + 3.4vw, 3.9rem); letter-spacing: -0.035em; line-height: 1.04; }
+.home__step h1 { font-size: clamp(2.3rem, 1.6rem + 3.4vw, 3.9rem); letter-spacing: -0.035em; line-height: 1.16; }
 .home__step h2 { font-size: var(--step-3); margin-block-end: 1.25rem; }
 .home__step h3 { margin-block-end: 0.25rem; }
 .home__step p { font-size: var(--step-1); line-height: 1.55; color: var(--muted); }
@@ -600,18 +603,27 @@ strong { font-weight: 660; }
 .home .actions { margin-block-start: 1.5rem; }
 
 /* The opening. The headline is held in place while the print shrinks away,
-   set on paper-coloured labels so it reads over the picture. */
+   set on paper-coloured labels so it reads over the picture. Each label is
+   a little shorter than its line, so the lines stay apart, and reaches a
+   little past its word, so a line reads as one strip. */
 .home__step--intro .home__lede,
 .home__step--intro .actions { opacity: clamp(0, calc(var(--q) * 2 - 1), 1); }
 .home__step--intro .split-word {
-  background: rgb(245 239 227 / calc(1 - var(--q)));
-  box-shadow: 0 0 0 0.12em rgb(245 239 227 / calc(1 - var(--q)));
+  padding-inline: 0.14em;
+  margin-inline: -0.14em;
+  background: linear-gradient(rgb(245 239 227 / calc(1 - var(--q))), rgb(245 239 227 / calc(1 - var(--q)))) center / 100% 1.02em no-repeat;
 }
 @media (prefers-reduced-motion: no-preference) {
-  .js .home { --q: 0; }
+  .js { --q: 0; }
   .js .home__intro-space { height: 75svh; }
   .js .home__step--intro { position: sticky; top: var(--head); }
-  .js .home:not(.is-open) .home__step--intro { z-index: 6; }
+  .js:not(.opened) .home__step--intro { z-index: 6; }
+  .js:not(.opened) .masthead {
+    background: rgb(255 255 255 / calc(0.4 + 0.6 * var(--q)));
+    border-block-end-color: rgb(230 226 220 / var(--q));
+    -webkit-backdrop-filter: blur(14px) saturate(1.2);
+    backdrop-filter: blur(14px) saturate(1.2);
+  }
 }
 
 @media (min-width: 900px) {

@@ -848,7 +848,6 @@ export async function mountStreet(fig: HTMLElement, reduce: boolean): Promise<St
   const out = canvas.getContext('2d')!;
   const capTerm = fig.querySelector<HTMLElement>('[data-riso-term]');
   const capLine = fig.querySelector<HTMLElement>('[data-riso-line]');
-  const head = document.querySelector<HTMLElement>('.masthead');
   const N = SCENES.length;
 
   try {
@@ -861,10 +860,12 @@ export async function mountStreet(fig: HTMLElement, reduce: boolean): Promise<St
   const live = new Map<number, Record<Ink, HTMLCanvasElement>>();
   let pos = 0, q = reduce ? 1 : 0, drawnKey = '', caption = 0;
 
-  /** Where the screen and the frame are, in the stage's coordinates. */
+  /** Where the screen and the frame are, in the stage's coordinates. The
+   *  stage is the whole screen, under the header too: the header starts
+   *  see-through, over the print. */
   function measure() {
-    const top = head?.offsetHeight ?? 0;
-    const SW = document.documentElement.clientWidth, SH = window.innerHeight - top;
+    const top = 0;
+    const SW = document.documentElement.clientWidth, SH = window.innerHeight;
     const f = frame.getBoundingClientRect();
     const uF = Math.max(SW / WORLD.w, SH / WORLD.h); // CSS px per world unit, full screen
     const uC = Math.max(f.width / 1000, f.height / WORLD.h); // and in the column
