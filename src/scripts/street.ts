@@ -1,12 +1,12 @@
 /**
- * The home page print: one corner of Boston's Back Bay, printed eight times.
+ * The home page print: one corner of Boston's Back Bay, printed six times.
  * The same brownstones, office tower, café and crossing in every plate; what
  * changes is the light, the people, the windows and the screen on the tower.
  * The order and the captions are in data/story.ts.
  *
  * Drawing goes through the riso press in scripts/riso.ts. Each plate is drawn
  * in two passes, like a real scene: everything lit by the sky, then the mood
- * of the plate printed over it (dusk, night, haze), then everything that
+ * of the plate printed over it (dusk, night), then everything that
  * gives off its own light (screens, lamps, lit windows, torches), so that a
  * lit window stays bright at night.
  *
@@ -100,7 +100,7 @@ function round(x: number, y: number, w: number, h: number, rad: number) {
   return p;
 }
 
-/** A soft, irregular round shape: foliage, smoke, clouds. */
+/** A soft, irregular round shape: foliage, clouds. */
 function blob(r: R, cx: number, cy: number, rx: number, ry: number, n = 12, j = 0.14) {
   const pts: P[] = [];
   for (let i = 0; i < n; i++) {
@@ -254,11 +254,6 @@ function buildStreet() {
       const x = cx + Math.cos(a) * rx * d, y = cy + Math.sin(a) * ry * d;
       (y > cy - ry * 0.1 && x > cx - rx * 0.3 ? dark : light).push(blob(r, x, y, rx * (0.22 + r() * 0.14), ry * (0.2 + r() * 0.12), 9, 0.2));
     }
-    const blossom: Path2D[] = [];
-    for (let i = 0; i < 70; i++) {
-      const a = r() * Math.PI * 2, d = Math.sqrt(r()) * 0.92;
-      blossom.push(circle(cx + Math.cos(a) * rx * d, cy + Math.sin(a) * ry * d, 4 + r() * 5));
-    }
     const trunk = poly([trunkX - 7, 944, trunkX - 4, cy + ry * 0.2, trunkX + 4, cy + ry * 0.2, trunkX + 7, 944]);
     const branches = new Path2D();
     const grow = (x: number, y: number, a: number, len: number, depth: number) => {
@@ -271,7 +266,7 @@ function buildStreet() {
       }
     };
     grow(trunkX, cy + ry * 0.4, -Math.PI / 2, ry * 0.55, 5);
-    return { leaves, dark, light, blossom, trunk, branches };
+    return { leaves, dark, light, trunk, branches };
   };
   const trees = [tree(-300, 640, 112, 104, -300), tree(96, 610, 128, 120, 96), tree(418, 690, 78, 74, 418)];
 
@@ -431,16 +426,6 @@ function camera(pl: Plate, x: number, y: number, d: 1 | -1) {
   pl.fill(DARK, poly([x + d * 6, y + 2, x + d * 34, y + 10, x + d * 32, y + 24, x + d * 4, y + 16]));
 }
 
-function smoke(pl: Plate, r: R, x: number, base: number, h: number) {
-  for (let k = 0; k < 12; k++) {
-    const t = k / 11;
-    const cx = x + Math.sin(t * 3.2 + x) * 20 + t * t * 110;
-    const rad = 24 + t * 52;
-    pl.fill({ b: 0.46 - t * 0.12, r: 0.42 - t * 0.16, y: 0.2 - t * 0.08 }, blob(r, cx, base - t * h, rad, rad * 0.8, 11, 0.2));
-  }
-  pl.glow(() => pl.fill({ r: 0.62, y: 0.95 }, blob(r, x, base - 4, 34, 22, 10, 0.25)));
-}
-
 function ambulance(pl: Plate, x: number, y: number) {
   pl.fill({ b: 0.05 }, round(x, y - 150, 190, 124, 10));
   pl.fill({ b: 0.05 }, poly([x + 190, y - 108, x + 236, y - 108, x + 262, y - 66, x + 262, y - 26, x + 190, y - 26]));
@@ -451,15 +436,6 @@ function ambulance(pl: Plate, x: number, y: number) {
     pl.fill(DARK, circle(x + wx, y - 22, 26));
     pl.fill({ b: 0.2, r: 0.1 }, circle(x + wx, y - 22, 10));
   }
-}
-
-function kite(pl: Plate, from: P, x: number, y: number, col: Spec) {
-  pl.stroke(DARK, line([from[0], from[1], (from[0] + x) / 2 + 30, (from[1] + y) / 2 + 40, x, y + 44]), 1.6);
-  pl.fill(col, poly([x, y, x + 30, y + 40, x, y + 92, x - 30, y + 40]));
-  pl.stroke(WHITE, line([x, y, x, y + 92]), 2);
-  pl.stroke(WHITE, line([x - 30, y + 40, x + 30, y + 40]), 2);
-  pl.stroke(DARK, line([x, y + 92, x - 12, y + 120, x + 8, y + 146, x - 6, y + 176]), 2);
-  for (const [tx, ty] of [[-8, 112], [2, 138], [-4, 164]]) pl.fill({ r: 0.95 }, poly([x + tx - 6, y + ty - 4, x + tx + 6, y + ty + 4, x + tx + 6, y + ty - 4, x + tx - 6, y + ty + 4]));
 }
 
 /* --- the screen on the tower ------------------------------------------------ */
@@ -502,11 +478,6 @@ const BILLS: Record<string, Bill> = {
     for (const [rad, w] of [[66, 16], [36, 14]] as const) pl.stroke({ b: 0.95 }, circle(cx, cy, rad), w);
     pl.fill({ b: 0.95 }, circle(cx, cy, 11));
   },
-  // a tick, whatever is happening
-  allClear: (pl) => {
-    screen(pl, { b: 0.62, y: 0.95 });
-    pl.stroke(WHITE, line([cx - 58, cy + 2, cx - 14, cy + 44, cx + 62, cy - 46]), 24);
-  },
   // static
   noSignal: (pl, r) => {
     screen(pl, { b: 0.7, r: 0.6 });
@@ -525,27 +496,11 @@ const BILLS: Record<string, Bill> = {
     pl.stroke(DARK, poly([hx - 46, cy - 6, hx, cy - 50, hx + 46, cy - 6, hx + 34, cy - 6, hx + 34, cy + 46, hx - 34, cy + 46, hx - 34, cy - 6]), 10);
     pl.fill(DARK, round(hx - 10, cy + 14, 20, 32, 3));
   },
-  // something growing
-  sprout: (pl) => {
-    screen(pl, { y: 0.85, r: 0.18 });
-    const g: Spec = { b: 0.62, y: 0.95 };
-    pl.fill({ r: 0.62, y: 0.8, b: 0.32 }, ellipse(cx, B.y + 160, 70, 20));
-    pl.stroke(g, line([cx, B.y + 152, cx - 2, B.y + 112, cx + 4, B.y + 70]), 9);
-    const leaf = (x: number, y: number, d: number) => {
-      const p = new Path2D();
-      p.moveTo(x, y);
-      p.quadraticCurveTo(x + d * 30, y - 44, x + d * 82, y - 30);
-      p.quadraticCurveTo(x + d * 50, y + 14, x, y);
-      return p;
-    };
-    pl.fill(g, leaf(cx - 1, B.y + 112, -1));
-    pl.fill(g, leaf(cx + 3, B.y + 82, 1));
-  },
 };
 
 /* --- the plates -------------------------------------------------------------- */
 
-type Mood = 'day' | 'haze' | 'dusk' | 'night' | 'grey' | 'dawn';
+type Mood = 'day' | 'dusk' | 'night' | 'grey';
 type WinState = 'day' | 'dark' | 'warm' | 'screen' | 'logo' | 'candle';
 
 interface Scene {
@@ -553,14 +508,14 @@ interface Scene {
   bill: keyof typeof BILLS;
   cafe: 'open' | 'auto' | 'closed' | 'dark';
   lamp: 'off' | 'on' | 'spark';
-  trees: 'summer' | 'bare' | 'blossom';
+  trees: 'summer' | 'bare';
   windows: (r: R, kind: 'house' | 'tower') => WinState;
   farLights?: boolean;
   clouds?: boolean;
   people: Who[];
-  /** things over the far city, behind the street: smoke */
+  /** things over the far city, behind the street */
   behind?: (pl: Plate, r: R) => void;
-  /** things in front: robots, drones, cars, kites, cameras */
+  /** things in front: robots, drones, cars, cameras */
   front?: (pl: Plate, r: R, drawn: Drawn[]) => void;
 }
 
@@ -630,22 +585,6 @@ const SCENES: Scene[] = [
       camera(pl, 602, 236, -1);
     },
   },
-  // Misalignment
-  {
-    mood: 'haze', bill: 'allClear', cafe: 'open', lamp: 'off', trees: 'summer',
-    windows: () => 'day',
-    people: [
-      { x: 200, y: 940, coat: COAT.orange, pose: 'stand', dir: 1, phone: true, skin: 3 },
-      { x: 330, y: 936, coat: COAT.sky, pose: 'stand', dir: -1, phone: true, hair: 2 },
-      { x: 640, y: 1080, coat: COAT.red, dir: 1, s: 1.3, phone: true, skin: 1, hair: 1 },
-      { x: 900, y: 946, coat: COAT.green, pose: 'stand', dir: -1, phone: true },
-    ],
-    behind: (pl, r) => {
-      smoke(pl, r, 120, 420, 230);
-      smoke(pl, r, 290, 440, 250);
-      smoke(pl, r, 455, 400, 210);
-    },
-  },
   // Cyber attacks
   {
     mood: 'night', bill: 'noSignal', cafe: 'dark', lamp: 'spark', trees: 'summer',
@@ -665,46 +604,20 @@ const SCENES: Scene[] = [
     ],
     front: (pl) => ambulance(pl, 600, 1092),
   },
-  // Our choice
-  {
-    mood: 'dawn', bill: 'sprout', cafe: 'open', lamp: 'off', trees: 'blossom',
-    windows: (r) => pick(r, 0.22, 'warm', 'day'),
-    people: [
-      { x: 120, y: 942, coat: COAT.red, pose: 'stand', dir: 1, book: true, hair: 1 },
-      { x: 175, y: 946, coat: COAT.yellow, pose: 'stand', dir: -1, skin: 2 },
-      { x: 236, y: 944, coat: COAT.green, pose: 'stand', dir: -1, skin: 1, hair: 3, book: true },
-      { x: 0, y: 0, coat: COAT.sky, pose: 'sit', dir: 1, book: true, skin: 3 },
-      { x: 450, y: 944, coat: COAT.orange, pose: 'stand', dir: 1, reach: true, hair: 2 },
-      { x: 590, y: 1050, coat: COAT.blue, dir: 1, s: 1.22, skin: 1 },
-      { x: 720, y: 1090, coat: COAT.pink, dir: -1, s: 1.33, hair: 1 },
-    ],
-    front: (pl, _r, drawn) => {
-      const flyer = drawn.find((d) => d.who.reach);
-      if (flyer) kite(pl, flyer.hand, 330, 214, { r: 0.95 });
-      kite(pl, [1040, 760], 575, 226, { b: 0.62, y: 0.95 });
-      for (const [x, y, s] of [[180, 330, 1], [214, 304, 0.8], [470, 280, 0.9]]) {
-        pl.stroke(DARK, line([x - 14 * s, y - 6 * s, x, y + 2 * s, x + 14 * s, y - 6 * s]), 3 * s);
-      }
-    },
-  },
 ];
 
 const SKY: Record<Mood, Spec> = {
   day: { b: lin(0.44, 0.1) },
-  haze: { y: lin(0.3, 0.75), r: lin(0.2, 0.45), b: lin(0.3, 0.1) },
   dusk: { b: lin(0.6, 0.06), r: lin(0.16, 0.5), y: lin(0, 0.7) },
   night: { b: lin(0.58, 0.32), r: lin(0.22, 0.14) },
   grey: { b: 0.17, r: 0.09, y: 0.05 },
-  dawn: { y: lin(0.12, 0.78), r: lin(0.08, 0.34), b: lin(0.3, 0) },
 };
 // the light of each plate, added to everything that does not give off its own
 const WASH: Record<Mood, Partial<Record<Ink, number>>> = {
   day: {},
-  haze: { r: 0.08, y: 0.14 },
   dusk: { r: 0.18, b: 0.26, y: 0.06 },
   night: { b: 0.64, r: 0.32 },
   grey: { b: 0.1, r: 0.06 },
-  dawn: { y: 0.08, r: 0.04 },
 };
 
 function drawPlate(i: number, pw: number, ph: number): Plate {
@@ -717,15 +630,6 @@ function drawPlate(i: number, pw: number, ph: number): Plate {
   // sky, and what is in it
   pl.fill(SKY[sc.mood], S.sky);
   if (sc.mood === 'day') pl.glow(() => pl.fill({ y: 0.95, r: 0.12 }, circle(250, 292, 50)));
-  if (sc.mood === 'dawn') {
-    pl.glow(() => {
-      for (let k = 0; k < 14; k++) {
-        const a0 = Math.PI + (k / 14) * Math.PI, a1 = a0 + Math.PI / 28;
-        pl.over({ y: 0.22, r: 0.04 }, poly([300, 380, 300 + Math.cos(a0) * 1400, 380 + Math.sin(a0) * 1400, 300 + Math.cos(a1) * 1400, 380 + Math.sin(a1) * 1400]));
-      }
-      pl.fill({ y: 0.98, r: 0.42 }, circle(300, 380, 84));
-    });
-  }
   if (sc.mood === 'dusk') pl.glow(() => pl.fill({ y: 0.95, r: 0.58 }, circle(290, 350, 62)));
   if (sc.mood === 'night') {
     pl.glow(() => {
@@ -850,7 +754,6 @@ function drawPlate(i: number, pw: number, ph: number): Plate {
     for (const l of t.leaves) pl.fill(LEAF, l);
     for (const l of t.light) pl.fill(LEAF_LIGHT, l);
     for (const l of t.dark) pl.fill(LEAF_DARK, l);
-    if (sc.trees === 'blossom') t.blossom.forEach((b, k) => pl.fill(k % 3 ? { r: 0.34 } : { r: 0.18 }, b));
   }
   for (const L of S.lamps) {
     pl.stroke(DARK, L.pole, 9);
@@ -943,7 +846,6 @@ export async function mountStreet(fig: HTMLElement, reduce: boolean): Promise<St
   const stage = fig.querySelector<HTMLElement>('.riso__stage')!;
   const canvas = stage.querySelector('canvas')!;
   const out = canvas.getContext('2d')!;
-  const capN = fig.querySelector<HTMLElement>('[data-riso-n]');
   const capTerm = fig.querySelector<HTMLElement>('[data-riso-term]');
   const capLine = fig.querySelector<HTMLElement>('[data-riso-line]');
   const head = document.querySelector<HTMLElement>('.masthead');
@@ -1080,7 +982,6 @@ export async function mountStreet(fig: HTMLElement, reduce: boolean): Promise<St
 
   function setCaption(n: number) {
     caption = n;
-    if (capN) capN.textContent = String(n + 1).padStart(2, '0');
     if (capTerm) capTerm.textContent = STORY[n].term;
     if (capLine) capLine.textContent = STORY[n].line;
     if (!reduce) {

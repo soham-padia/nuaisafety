@@ -630,7 +630,7 @@ strong { font-weight: 660; }
     box-shadow: none;
   }
   .home__text { grid-column: 1; grid-row: 1; }
-  /* a screen per step, so the eight plates each get room */
+  /* a screen per step, so the plates each get room */
   .home__step { min-height: 100svh; }
   .home__step--intro { min-height: calc(100svh - var(--head)); padding-block-start: 0; }
 }
@@ -682,22 +682,20 @@ strong { font-weight: 660; }
   padding: 0.6rem 0.4rem 0.6rem 0.9rem;
   opacity: var(--q);
 }
-.riso__kicker {
+.riso__term {
   font-size: 0.68rem;
   font-weight: 700;
   letter-spacing: 0.06em;
   text-transform: uppercase;
-  color: var(--muted);
-  font-variant-numeric: tabular-nums;
+  color: var(--accent);
 }
-.riso__term { color: var(--accent); margin-inline-start: 0.4em; }
 .riso__line { font-size: 0.82rem; line-height: 1.3; font-weight: 560; color: var(--ink); text-wrap: balance; }
 
 @media (min-width: 900px) {
   .riso { grid-template-columns: 1fr; grid-template-rows: minmax(0, 1fr) auto; }
   .riso__plate { --radius: 0px; grid-column: 1; grid-row: 1; }
   .riso__caption { grid-column: 1; grid-row: 2; padding: 0.9rem 1.5rem 1.1rem; min-height: 5.2rem; justify-content: start; gap: 0.3rem; }
-  .riso__kicker { font-size: 0.75rem; }
+  .riso__term { font-size: 0.75rem; }
   .riso__line { font-size: 1.08rem; }
 }
 

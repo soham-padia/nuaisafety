@@ -1,6 +1,6 @@
 ---
 /**
- * The home page print (scripts/street.ts): one Boston street, printed eight
+ * The home page print (scripts/street.ts): one Boston street, printed six
  * times as you scroll through the home section, each with a one-line caption
  * from data/story.ts.
  *
@@ -9,7 +9,7 @@
  * column; after that, scrolling moves through the plates. GSAP's
  * ScrollTrigger turns both into numbers, with a short smoothing lag.
  *
- * Screen readers get all eight captions as a list; the moving caption and the
+ * Screen readers get all six captions as a list; the moving caption and the
  * canvas are hidden from them.
  */
 import { STORY } from '../data/story';
@@ -17,11 +17,11 @@ import { STORY } from '../data/story';
 <figure class="riso" data-riso>
   <div class="riso__plate"><div class="riso__stage"><canvas aria-hidden="true"></canvas></div></div>
   <figcaption class="riso__caption" aria-hidden="true">
-    <span class="riso__kicker"><span data-riso-n>01</span>/{String(STORY.length).padStart(2, '0')} <span class="riso__term" data-riso-term>{STORY[0].term}</span></span>
+    <span class="riso__term" data-riso-term>{STORY[0].term}</span>
     <span class="riso__line" data-riso-line>{STORY[0].line}</span>
   </figcaption>
   <div class="sr-only">
-    <p>An illustration of a street in Boston, shown eight ways:</p>
+    <p>An illustration of a street in Boston, shown six ways:</p>
     <ol>{STORY.map((s) => <li>{s.term}: {s.line}</li>)}</ol>
   </div>
 </figure>
