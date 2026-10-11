@@ -1,0 +1,38 @@
+---
+/**
+ * Holds the home page painting (src/scripts/painting.ts). p5.js loads as its
+ * own chunk after the page, so the text never waits for it. GSAP's
+ * ScrollTrigger turns the home section's scroll into p, 0 to 1, with a short
+ * smoothing lag, and the painting redraws only when p moves.
+ */
+---
+<div
+  class="painted-city"
+  role="img"
+  aria-label="A watercolour of Boston's Back Bay across the Charles River, with sailboats, trees and people on the riverside path. As you scroll, small hard-edged squares appear across it, copying its colours, then spread and flatten into one identical red grid, until only the people on the path are still painted by hand."
+  data-painting
+></div>
+
+<script>
+  import { gsap } from 'gsap';
+  import { ScrollTrigger } from 'gsap/ScrollTrigger';
+  import { mountPainting } from '../scripts/painting';
+
+  gsap.registerPlugin(ScrollTrigger);
+
+  const host = document.querySelector<HTMLElement>('[data-painting]');
+  const trigger = host?.closest<HTMLElement>('[data-story]');
+
+  if (host && trigger) {
+    const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const state = { p: 0 };
+    mountPainting(host, () => state.p).then((redraw) => {
+      gsap.to(state, {
+        p: 1,
+        ease: 'none',
+        scrollTrigger: { trigger, start: 'top top', end: 'bottom bottom', scrub: reduce ? true : 0.8 },
+        onUpdate: redraw,
+      });
+    });
+  }
+</script>

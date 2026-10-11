@@ -1,4 +1,6 @@
 ---
+import '@fontsource-variable/bricolage-grotesque/opsz.css';
+import 'lenis/dist/lenis.css';
 import '../styles/global.css';
 import { SITE, NAV, NAV_CTA, SOCIAL, EMAIL, KHOURY_CLUB_URL } from '../config';
 
@@ -22,6 +24,7 @@ const ogImage = new URL('/og.png', Astro.site);
     <meta name="description" content={description} />
     <link rel="canonical" href={canonical} />
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <script is:inline>document.documentElement.classList.add('js');</script>
 
     <meta property="og:type" content="website" />
     <meta property="og:site_name" content={SITE.name} />
@@ -111,57 +114,43 @@ const ogImage = new URL('/og.png', Astro.site);
     </footer>
 
     <script>
-      import { animate, inView, stagger } from 'motion';
-
       /**
-       * Rules this follows, in order of importance:
+       * Smooth scrolling (Lenis) and gentle reveals (GSAP), site-wide.
        *
-       * 1. Never strand content invisible. Only elements below the fold at script
-       *    time are hidden, so anything the visitor can already see can never be
-       *    hidden by us. A timeout un-hides anything the observer never reached.
-       * 2. No flash. Hero text animates position only, never opacity, so there is
-       *    no visible-then-hidden snap when the deferred module runs.
-       * 3. The hero image is never animated. It is the LCP element and fading it
-       *    would push the measurement out.
+       * Lenis drives the scroll and GSAP's ticker drives Lenis, so the 3D city's
+       * ScrollTrigger and the smooth scroll stay in step. Rules for the reveals:
+       * never hide anything already on screen when the script runs, and with
+       * reduced motion do none of this at all: native scroll, everything shown.
        */
-      const reduce = matchMedia('(prefers-reduced-motion: reduce)');
-      const spring = { type: 'spring', stiffness: 200, damping: 26 };
+      import Lenis from 'lenis';
+      import { gsap } from 'gsap';
+      import { ScrollTrigger } from 'gsap/ScrollTrigger';
 
-      function clear(el) {
-        el.style.opacity = '';
-        el.style.transform = '';
-      }
+      gsap.registerPlugin(ScrollTrigger);
+      const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-      if (!reduce.matches) {
-        const heroText = document.querySelectorAll('.hero__text > *');
-        if (heroText.length) {
-          animate(heroText, { y: [14, 0] }, { ...spring, delay: stagger(0.07) });
-        }
+      if (!reduce) {
+        const head = document.querySelector<HTMLElement>('.masthead');
+        const lenis = new Lenis({
+          lerp: 0.11,
+          anchors: { offset: -(head?.offsetHeight ?? 64) },
+        });
+        lenis.on('scroll', ScrollTrigger.update);
+        gsap.ticker.add((t) => lenis.raf(t * 1000));
+        gsap.ticker.lagSmoothing(0);
 
-        const reveals = Array.from(
-          document.querySelectorAll('.block, .person, .callout, .prose > h2')
-        );
-        const hidden = new Set();
-
-        for (const el of reveals) {
-          if (el.getBoundingClientRect().top > innerHeight * 0.9) {
-            el.style.opacity = '0';
-            hidden.add(el);
-          }
-        }
-
-        inView(
-          reveals,
-          (el) => {
-            const wasHidden = hidden.delete(el);
-            animate(el, wasHidden ? { opacity: [0, 1], y: [18, 0] } : { y: [18, 0] }, spring)
-              .finished.then(() => clear(el), () => clear(el));
-          },
-          { amount: 0.15 }
-        );
-
-        // Failsafe: if the observer never fires for something, show it anyway.
-        setTimeout(() => { hidden.forEach(clear); hidden.clear(); }, 4000);
+        const items = gsap.utils.toArray<HTMLElement>(
+          '.section-title, .section-lede, .way, .track, .flow li, .areas li, .person, .faq__item, .paper'
+        ).filter((el) => el.getBoundingClientRect().top > innerHeight * 0.92);
+        gsap.set(items, { opacity: 0, y: 28 });
+        ScrollTrigger.batch(items, {
+          start: 'top 90%',
+          once: true,
+          onEnter: (batch) =>
+            gsap.to(batch, { opacity: 1, y: 0, duration: 0.8, ease: 'power3.out', stagger: 0.07, overwrite: true, clearProps: 'transform' }),
+        });
+        // fonts and the city change the page height after load
+        document.fonts?.ready.then(() => ScrollTrigger.refresh());
       }
     </script>
   </body>

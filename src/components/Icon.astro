@@ -7,8 +7,10 @@
 interface Props {
   name: 'book' | 'talk' | 'research' | 'chat' | 'chip' | 'policy' | 'flag' | 'cap';
   size?: number;
+  /** The disc's colour. Red by default; the palette's river and sun for variety. */
+  tone?: 'accent' | 'river' | 'sun' | 'brick';
 }
-const { name, size = 56 } = Astro.props;
+const { name, size = 56, tone = 'accent' } = Astro.props;
 
 const glyphs: Record<Props['name'], string> = {
   // an open book
@@ -37,7 +39,7 @@ const glyphs: Record<Props['name'], string> = {
   aria-hidden="true"
   focusable="false"
 >
-  <circle cx="40" cy="40" r="22" fill="var(--accent)" opacity="0.9" />
+  <circle cx="40" cy="40" r="22" fill={`var(--${tone})`} opacity="0.92" />
   <g
     fill="none"
     stroke="var(--ink)"

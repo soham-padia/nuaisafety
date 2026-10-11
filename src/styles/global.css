@@ -1,22 +1,40 @@
 /* ---------------------------------------------------------------------------
    NU AI Safety global styles
-   One accent, system type, no framework. See DESIGN.md for the reasoning.
+
+   Northeastern red stays the anchor: the one colour for things you press and
+   for the brand dot. Around it, a small palette taken from the city model on
+   the home page, used sparingly for sections and illustration:
+
+     river   the Charles, a deep teal            --river, --river-pale
+     sun     late afternoon light, amber         --sun, --sun-pale
+     brick   Back Bay brownstone                 --brick
+     sand    warm stone, for tinted sections     --sand
+
+   Type is Bricolage Grotesque throughout, its optical sizes doing the work of
+   a display face at large sizes and a text face at small ones.
    --------------------------------------------------------------------------- */
 
 :root {
-  --ink:    #14161a;
+  --ink:    #17181d;
   --muted:  #5b6169;
   --accent: #c8102e;
   --paper:  #ffffff;
   --wash:   #f6f7f8;
-  --rule:   #e3e6e9;
+  --rule:   #e6e2dc;
+
+  --river:      #1f6f78;
+  --river-pale: #e7f1f0;
+  --sun:        #e8a33d;
+  --sun-pale:   #fbf1e1;
+  --brick:      #a8432f;
+  --sand:       #f6f0e8;
 
   /* #c8102e on white is 5.88:1, which passes AA for body text, not just large.
      Darkened for the visited/hover state so it stays distinguishable. */
   --accent-deep: #a30d26;
 
-  --sans: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto,
-          "Helvetica Neue", Arial, sans-serif;
+  --sans: "Bricolage Grotesque Variable", ui-sans-serif, system-ui, -apple-system,
+          "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
 
   --measure: 36rem;   /* prose column, the readable line length */
   --page:    78rem;   /* outer container */
@@ -52,22 +70,23 @@ body {
   font-family: var(--sans);
   font-size: var(--step-0);
   line-height: 1.6;
+  font-optical-sizing: auto;
   font-synthesis-weight: none;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
 }
 
 h1, h2, h3 {
-  line-height: 1.15;
-  letter-spacing: -0.021em;
+  line-height: 1.1;
+  letter-spacing: -0.025em;
   text-wrap: balance;
   margin: 0;
-  font-weight: 640;
+  font-weight: 700;
 }
 
-h1 { font-size: var(--step-4); letter-spacing: -0.03em; }
+h1 { font-size: var(--step-4); letter-spacing: -0.04em; font-weight: 780; }
 h2 { font-size: var(--step-3); }
-h3 { font-size: var(--step-1); font-weight: 660; letter-spacing: -0.012em; }
+h3 { font-size: var(--step-1); font-weight: 680; letter-spacing: -0.015em; }
 
 p, li { text-wrap: pretty; }
 p { margin: 0 0 1.15em; max-width: var(--measure); }
@@ -149,11 +168,14 @@ strong { font-weight: 660; }
 
 /* A pale red band, and a full red one for the executive board. */
 .band--tint { background: #fdf2f3; }
+.band--river { background: var(--river-pale); }
+.band--sand { background: var(--sand); }
+
 .band--red { background: var(--accent); color: #fff; }
 .band--red .lede, .band--red p, .band--red dd { color: #fff; }
 .band--red .btn { background: #fff; color: var(--accent); border-color: #fff; }
 .band--red .btn:hover { background: #fde8eb; color: var(--accent-deep); border-color: #fde8eb; }
-.section.band--red + .section, .section + .section.band--red, .band--tint + .section, .section + .band--tint { border-block-start: 0; }
+.section.band--red + .section, .section + .section.band--red, .band--tint + .section, .section + .band--tint, .band--river + .section, .section + .band--river, .band--sand + .section, .section + .band--sand { border-block-start: 0; }
 
 /* Get involved: four ways in. */
 .ways { list-style: none; padding: 0; margin: 0; display: grid; gap: 1.25rem; }
@@ -170,6 +192,14 @@ strong { font-weight: 660; }
 .way h3 { margin-block-start: 0.5rem; }
 .way p { color: var(--muted); margin: 0; flex: 1; }
 .way .btn, .way .link-more { align-self: flex-start; margin-block-start: 0.5rem; }
+/* Every card is the same height, and the whole card is its link. */
+.ways > li { display: grid; }
+.way { transition: transform 200ms ease; }
+.way__link::before { content: ""; position: absolute; inset: 0; z-index: 2; border-radius: inherit; }
+.way__link:focus-visible { outline: none; }
+.way:has(.way__link:focus-visible) { outline: 3px solid var(--accent); outline-offset: 3px; }
+@media (hover: hover) { .way:hover { transform: translateY(-3px); } }
+@media (prefers-reduced-motion: reduce) { .way { transition: none; } .way:hover { transform: none; } }
 
 /* Fellowships: the two tracks, side by side. */
 .tracks { display: grid; gap: 1.25rem; }
@@ -546,7 +576,7 @@ strong { font-weight: 660; }
   border-radius: 1rem;
   overflow: hidden;
   box-shadow: 0 6px 22px rgb(31 21 23 / 0.22), 0 0 0 1px rgb(31 21 23 / 0.06);
-  background: #fdf2f3;
+  background: #fbf8f2;
 }
 
 .home__step {
@@ -625,77 +655,13 @@ strong { font-weight: 660; }
 .offers li { display: grid; grid-template-columns: auto 1fr; gap: 1rem; align-items: start; }
 .offers p { margin: 0; font-size: var(--step-0); }
 
-/* --- scene --------------------------------------------------------------------
-   Drawn by components/Scene.astro as flat shapes. Each ramp below is 0 until
-   its start and 1 at its end: clamp(0, (p - start) / length, 1). Groups only
-   move, fade or scale, so a scroll repaints a handful of plain shapes.
+/* --- painting -------------------------------------------------------------------
+   The watercolour (components/PaintedCity, scripts/painting.ts) fills the
+   pinned frame. Until p5 has painted, the frame shows plain paper. */
 
-   On a wide screen the scene fills the pinned column. On a phone it shrinks
-   to a small card in the corner that stays with you through the home section,
-   so the story still plays out without covering the text. */
-
-.scene {
-  display: block;
-  width: 100%;
-  height: 100%;
-
-  --rise:   clamp(0, calc((var(--p) - 0.04) / 0.26), 1);
-  --sail:   clamp(0, calc((var(--p) - 0.24) / 0.2), 1);
-  --drone:  clamp(0, calc((var(--p) - 0.26) / 0.22), 1);
-  --spread: clamp(0, calc((var(--p) - 0.3) / 0.45), 1);
-  --dusk:   clamp(0, calc((var(--p) - 0.5) / 0.3), 1);
-  --leave:  clamp(0, calc((var(--p) - 0.5) / 0.18), 1);
-  --smoke:  clamp(0, calc((var(--p) - 0.58) / 0.3), 1);
-  --fall:   clamp(0, calc((var(--p) - 0.78) / 0.22), 1);
-  --night:  clamp(0, calc((var(--p) - 0.74) / 0.26), 1);
-}
-
-.scene .tower { transform: translateY(calc((1 - var(--rise)) * 430px)); }
-.scene .tower-reflect { opacity: var(--rise); }
-
-.scene .boats { opacity: calc(1 - var(--sail)); transform: translateX(calc(var(--sail) * -90px)); }
-.scene .drones {
-  opacity: var(--drone);
-  transform: translate(calc((1 - var(--p)) * 70px), calc((1 - var(--drone)) * -40px));
-}
-.scene .clouds { transform: translateX(calc(var(--p) * 60px)); opacity: calc(1 - var(--dusk) * 0.8); }
-
-/* Red windows show inside a circle that grows out from the tower. */
-.scene .spread {
-  transform-box: fill-box;
-  transform-origin: center;
-  transform: scale(var(--spread));
-}
-.scene .lit { opacity: min(1, calc(var(--spread) * 6)); }
-
-.scene .dusk { opacity: var(--dusk); }
-.scene .sun--day { opacity: calc(1 - var(--dusk)); }
-.scene .sun {
-  transform-box: fill-box;
-  transform-origin: center;
-  transform: translateY(calc(var(--dusk) * 150px)) scale(calc(1 + var(--dusk) * 0.9));
-}
-.scene .sun--red { opacity: var(--dusk); }
-.scene .smoke { opacity: calc(var(--smoke) * 0.55); transform: translateY(calc((1 - var(--smoke)) * 60px)); }
-.scene .people { opacity: calc(1 - var(--leave)); transform: translateX(calc(var(--leave) * 30px)); }
-
-/* The collapse: buildings lean and sink below the waterline. */
-.scene .fall {
-  transform-box: fill-box;
-  transform-origin: 50% 100%;
-  transform:
-    translateY(calc(var(--fall) * (60px + var(--d) * 80px)))
-    rotate(calc(var(--fall) * (5deg + var(--d) * 9deg)));
-}
-.scene .fall--l {
-  transform:
-    translateY(calc(var(--fall) * (60px + var(--d) * 80px)))
-    rotate(calc(var(--fall) * (-5deg - var(--d) * 9deg)));
-}
-
-.scene .night { opacity: calc(var(--night) * 0.72); }
-.scene .fires { opacity: var(--fall); transform: scaleY(var(--fall)); transform-box: fill-box; transform-origin: bottom; }
-.scene .glow { opacity: var(--rise); }
+.painted-city { position: absolute; inset: 0; opacity: 0; transition: opacity 700ms ease; }
+.painted-city.is-ready { opacity: 1; }
+.painted-city canvas { display: block; width: 100% !important; height: 100% !important; }
 
 /* --- perceptron diagram -----------------------------------------------------
    Geometry comes from scripts/perceptron.py. Everything visual is here, so the
@@ -1057,51 +1023,36 @@ strong { font-weight: 660; }
 
 /* --- footer ---------------------------------------------------------------- */
 
+/* Dark, so the page ends with weight. The brand dot stays red. */
 .foot {
-  border-block-start: 1px solid var(--rule);
-  padding-block: 2.5rem 3rem;
-  color: var(--muted);
+  background: var(--ink);
+  color: #c9c6c0;
+  padding-block: 3.5rem 3rem;
   font-size: 0.9375rem;
 }
-.foot .cols { display: grid; gap: 1.5rem; grid-template-columns: 1fr; }
-@media (min-width: 40rem) { .foot .cols { grid-template-columns: 2fr 1fr 1fr; } }
-.foot h2 { font-size: 0.8125rem; letter-spacing: 0.055em; text-transform: uppercase; margin-block-end: 0.5rem; }
-.foot ul { list-style: none; padding: 0; margin: 0; }
-.foot li { margin-block-end: 0.3rem; }
-.foot a { color: var(--muted); text-decoration: none; }
-.foot a:hover { color: var(--ink); text-decoration: underline; }
-.foot .fine { margin-block-start: 2rem; max-width: var(--measure); font-size: 0.875rem; }
-/* One row: who we are and the nav on the left, contact and social on the right.
-   Replaces a three column block that repeated the nav and carried two
-   disclaimers the group no longer makes. */
-.foot__row {
-  display: grid;
-  gap: 1.5rem;
-  align-items: start;
-}
+.foot__row { display: grid; gap: 1.75rem; align-items: start; }
 @media (min-width: 46rem) {
   .foot__row { grid-template-columns: 1fr auto; gap: 3rem; }
   .foot__contact { text-align: right; }
 }
-
-.foot__name { margin-block-end: 0.55rem; max-width: none; color: var(--ink); }
-
-.foot__nav { display: flex; flex-wrap: wrap; gap: 0.3rem 1.1rem; }
-
-.foot__contact p { margin-block-end: 0.35rem; max-width: none; }
-.foot__contact p:last-child { margin-block-end: 0; }
-.foot__contact a + a { margin-inline-start: 0.9rem; }
-
-.foot__label {
-  display: block;
-  font-size: 0.75rem;
-  letter-spacing: 0.055em;
-  text-transform: uppercase;
-  color: var(--muted);
-  margin-block-end: 0.15rem;
+.foot p { margin: 0; max-width: none; }
+.foot__name { margin-block-end: 0.75rem; color: #fff; font-weight: 650; font-size: var(--step-1); }
+.foot__name::after {
+  content: "";
+  display: inline-block;
+  width: 0.36em; height: 0.36em;
+  margin-inline-start: 0.3em;
+  border-radius: 50%;
+  background: var(--accent);
 }
-
-.foot .credit { margin-block-start: 0.6rem; font-size: 0.8125rem; color: var(--muted); }
+.foot__nav { display: flex; flex-wrap: wrap; gap: 0.4rem 1.2rem; }
+.foot__contact p { margin-block-end: 0.6rem; }
+.foot__contact a + a { margin-inline-start: 0.9rem; }
+.foot__label { display: block; font-size: 0.8125rem; color: #8d8a85; margin-block-end: 0.15rem; }
+.foot a { color: #ece9e3; text-decoration: none; }
+.foot a:hover { color: #fff; text-decoration: underline; }
+.foot .credit { margin-block-start: 2.5rem; font-size: 0.8125rem; }
+.foot .credit a { color: #8d8a85; }
 
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation: none !important; transition: none !important; }

@@ -4,8 +4,12 @@
  * The two fellowship tracks and the executive board each have their own
  * section below with the detail; membership is just the Slack, so it is
  * complete here.
+ *
+ * Each card is one link: the link's ::before stretches over the whole card,
+ * so the card is clickable without nesting a link around block content.
  */
 import Icon from '../components/Icon.astro';
+import SpotlightCard from '../components/reactbits/SpotlightCard';
 import { SLACK_URL, mailtoHref } from '../config';
 
 const slackHref = SLACK_URL ?? mailtoHref('Joining the Slack');
@@ -19,29 +23,37 @@ const slackHref = SLACK_URL ?? mailtoHref('Joining the Slack');
     </p>
 
     <ol class="ways">
-      <li class="way">
-        <Icon name="chat" />
-        <h3>Member</h3>
-        <p>Join our Slack and come to open meetings and talks. No commitment, open to everyone.</p>
-        {slackHref && <a class="btn btn--small" href={slackHref}>Join the Slack</a>}
+      <li>
+        <SpotlightCard client:visible className="way" theme="light" spotlightColor="#c8102e" intensity={0.5} spotlightSize={320}>
+          <Icon name="chat" />
+          <h3>Member</h3>
+          <p>Join our Slack and come to open meetings and talks. No commitment, open to everyone.</p>
+          {slackHref && <a class="btn btn--small way__link" href={slackHref}>Join the Slack</a>}
+        </SpotlightCard>
       </li>
-      <li class="way">
-        <Icon name="chip" />
-        <h3>Technical Fellowship</h3>
-        <p>8 weeks on how AI systems are trained and how to make them safer.</p>
-        <a class="link-more" href="#fellowships">How the fellowships work</a>
+      <li>
+        <SpotlightCard client:visible className="way" theme="light" spotlightColor="#1f6f78" intensity={0.5} spotlightSize={320}>
+          <Icon name="chip" tone="river" />
+          <h3>Technical Fellowship</h3>
+          <p>8 weeks on how AI systems are trained and how to make them safer.</p>
+          <a class="link-more way__link" href="#fellowships">How the fellowships work</a>
+        </SpotlightCard>
       </li>
-      <li class="way">
-        <Icon name="policy" />
-        <h3>Policy Fellowship</h3>
-        <p>8 weeks on how AI should be governed. No technical background needed.</p>
-        <a class="link-more" href="#fellowships">How the fellowships work</a>
+      <li>
+        <SpotlightCard client:visible className="way" theme="light" spotlightColor="#e8a33d" intensity={0.55} spotlightSize={320}>
+          <Icon name="policy" tone="sun" />
+          <h3>Policy Fellowship</h3>
+          <p>8 weeks on how AI should be governed. No technical background needed.</p>
+          <a class="link-more way__link" href="#fellowships">How the fellowships work</a>
+        </SpotlightCard>
       </li>
-      <li class="way">
-        <Icon name="flag" />
-        <h3>Executive board</h3>
-        <p>Help run the group. 3–5 hours a week, and no background needed.</p>
-        <a class="link-more" href="#exec">What the board does</a>
+      <li>
+        <SpotlightCard client:visible className="way" theme="light" spotlightColor="#a8432f" intensity={0.5} spotlightSize={320}>
+          <Icon name="flag" tone="brick" />
+          <h3>Executive board</h3>
+          <p>Help run the group. 3–5 hours a week, and no background needed.</p>
+          <a class="link-more way__link" href="#exec">What the board does</a>
+        </SpotlightCard>
       </li>
     </ol>
 
