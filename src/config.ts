@@ -20,12 +20,8 @@ export const EXEC_URL: string | null =
  * LUMA_CALENDAR_ID - the Luma calendar shown in the Events section on the home page.
  *   It starts with "cal-". Find it in Luma under the calendar's Settings → Embed.
  *   Set it to null to hide the Events section entirely.
- *
- *   Null for now: events live on /events (see EVENTS below) and RSVPs go through
- *   a Google Form, so the Luma calendar is empty and the embed would show an empty
- *   list. Put the ID back ('cal-ttsDYte35jjI4Od') if events move to Luma.
  */
-export const LUMA_CALENDAR_ID: string | null = null;
+export const LUMA_CALENDAR_ID: string | null = 'cal-ttsDYte35jjI4Od';
 
 /** The calendar's public Luma page, where the "Subscribe on Luma" button goes. */
 export const LUMA_CALENDAR_URL = 'https://luma.com/nuaisafety';
@@ -106,7 +102,8 @@ export const NAV = [
            "Northeastern University, Boston, MA", so only set it off campus.
    summary One or two sentences.
    agenda  Optional. Each item is { time: '18:00', item: 'Talk' }.
-   rsvp    The RSVP form link. Without one the event shows no RSVP button.
+   rsvp    The RSVP link, usually the event's Luma page. Without one the event
+           shows no RSVP button.
    ------------------------------------------------------------------------- */
 
 export type GroupEvent = {
@@ -136,7 +133,7 @@ export const EVENTS: GroupEvent[] = [
       { time: '18:30', item: 'Questions' },
       { time: '18:40', item: 'Social hour: meet the team and other attendees' },
     ],
-    rsvp: 'https://docs.google.com/forms/d/e/1FAIpQLSddxG4cr2x2kuFzTUJIJaQSYo-ys2eRqPRLrMAHatOWeNCTRQ/viewform',
+    rsvp: 'https://luma.com/qqepuujt',
   },
 ];
 
