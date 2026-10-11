@@ -77,8 +77,62 @@ export const SOCIAL = [
 
 export const NAV = [
   { href: '/join', label: 'Join' },
+  { href: '/events', label: 'Events' },
   { href: '/team', label: 'Team' },
   { href: '/resources', label: 'Resources' },
+];
+
+/* -------------------------------------------------------------------------
+   Events, rendered by /events.
+
+   Add one entry per event. That is the whole job: the page, the RSVP button,
+   the "Add to calendar" file and the subscribable feed at /events.ics are all
+   built from this list. Order does not matter; the page sorts by date.
+
+   An event stays under "Upcoming" until it ends, then moves to "Past". The site
+   rebuilds itself every morning, so that happens without anyone editing it.
+
+   date    'YYYY-MM-DD'.
+   start   24-hour Boston time, e.g. '18:00'. Daylight saving is handled for you.
+   end     Same format.
+   place   As people should read it, e.g. 'Shillman Hall, Room 135'.
+   address What a maps app should search for. Defaults to the place plus
+           "Northeastern University, Boston, MA", so only set it off campus.
+   summary One or two sentences.
+   agenda  Optional. Each item is { time: '18:00', item: 'Talk' }.
+   rsvp    The RSVP link, usually the event's Luma page. Without one the event
+           shows no RSVP button.
+   ------------------------------------------------------------------------- */
+
+export type GroupEvent = {
+  title: string;
+  date: string;
+  start: string;
+  end: string;
+  place: string;
+  address?: string;
+  summary: string;
+  agenda?: { time: string; item: string }[];
+  rsvp?: string;
+};
+
+export const EVENTS: GroupEvent[] = [
+  {
+    title: 'Kickoff',
+    date: '2026-11-02',
+    start: '18:00',
+    end: '19:30',
+    place: 'Shillman Hall, Room 135',
+    summary:
+      'Our first event. We will cover our mission, what we plan to offer this year, ' +
+      'and how to get involved. Food and drink provided.',
+    agenda: [
+      { time: '18:00', item: 'Information session' },
+      { time: '18:30', item: 'Questions' },
+      { time: '18:40', item: 'Social hour: meet the team and other attendees' },
+    ],
+    rsvp: 'https://luma.com/qqepuujt',
+  },
 ];
 
 /* -------------------------------------------------------------------------
