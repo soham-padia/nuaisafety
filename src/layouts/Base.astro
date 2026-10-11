@@ -1,6 +1,6 @@
 ---
 import '../styles/global.css';
-import { SITE, NAV, SOCIAL, EMAIL, signupHref } from '../config';
+import { SITE, NAV, NAV_CTA, SOCIAL, EMAIL, KHOURY_CLUB_URL } from '../config';
 
 interface Props {
   title?: string;
@@ -9,7 +9,6 @@ interface Props {
 
 const { title, description = SITE.description } = Astro.props;
 const pageTitle = title ? `${title} | ${SITE.name}` : `${SITE.name} | ${SITE.tagline}`;
-const path = Astro.url.pathname.replace(/\.html$/, '').replace(/\/$/, '') || '/';
 const canonical = new URL(Astro.url.pathname, Astro.site);
 // Social scrapers need an absolute URL; a root-relative path is silently ignored.
 const ogImage = new URL('/og.png', Astro.site);
@@ -41,17 +40,37 @@ const ogImage = new URL('/og.png', Astro.site);
     <a class="skip" href="#main">Skip to content</a>
 
     <header class="masthead">
-      <div class="wrap">
-        <a class="wordmark" href="/">NU AI Safety</a>
-        <nav class="nav" aria-label="Primary">
-          {NAV.map((item) => (
-            <a href={item.href} aria-current={path === item.href ? 'page' : undefined}>
-              {item.label}
-            </a>
-          ))}
+      <div class="wrap masthead__row">
+        <a class="wordmark" href="/#top">NU AI Safety</a>
+        <button class="menu-toggle" type="button" aria-expanded="false" aria-controls="site-nav">
+          <span class="sr-only">Menu</span>
+          <svg width="24" height="24" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+            <path class="menu-toggle__bars" d="M3 6h18M3 12h18M3 18h18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+          </svg>
+        </button>
+        <nav class="nav" id="site-nav" aria-label="Primary">
+          {NAV.map((item) => <a href={item.href}>{item.label}</a>)}
+          <a class="btn btn--nav" href={NAV_CTA.href}>{NAV_CTA.label}</a>
         </nav>
       </div>
     </header>
+
+    <script>
+      /* Phone menu. Without JavaScript the toggle stays hidden and the links
+         show in a wrapped row instead, so nothing is out of reach. */
+      const head = document.querySelector('.masthead');
+      const toggle = head?.querySelector<HTMLButtonElement>('.menu-toggle');
+      if (head && toggle) {
+        head.classList.add('has-menu');
+        const set = (open: boolean) => {
+          head.classList.toggle('is-open', open);
+          toggle.setAttribute('aria-expanded', String(open));
+        };
+        toggle.addEventListener('click', () => set(!head.classList.contains('is-open')));
+        head.querySelectorAll('.nav a').forEach((a) => a.addEventListener('click', () => set(false)));
+        addEventListener('keydown', (e) => { if (e.key === 'Escape') set(false); });
+      }
+    </script>
 
     <main id="main">
       <slot />
@@ -79,6 +98,10 @@ const ogImage = new URL('/og.png', Astro.site);
                 {SOCIAL.map((s) => <a href={s.href}>{s.label}</a>)}
               </p>
             )}
+            <p>
+              <span class="foot__label">Club</span>
+              <a href={KHOURY_CLUB_URL}>Khoury clubs directory</a>
+            </p>
           </div>
         </div>
         <p class="credit">

@@ -1,0 +1,83 @@
+---
+/**
+ * Fellowships: the two tracks side by side, then how a fellowship runs, as
+ * numbered steps because it is a sequence.
+ *
+ * Copy follows Rohan's description of the plan (10 October 2026). Anything
+ * not yet set up is written as a plan ("we plan to"), never as done.
+ */
+import Icon from '../components/Icon.astro';
+import Signup from '../components/Signup.astro';
+---
+<section class="band band--tint section" id="fellowships" aria-labelledby="fellowships-title">
+  <div class="wrap">
+    <h2 id="fellowships-title" class="section-title dot">Fellowships</h2>
+    <p class="lede section-lede">
+      An 8-week introduction to AI safety, taught by people who work on it. There are no AI safety
+      courses for most Northeastern students, so we built one. Fellowships start in January 2027.
+    </p>
+
+    <h3 class="sub">Two tracks, one fellowship</h3>
+    <div class="tracks">
+      <article class="track">
+        <Icon name="chip" />
+        <h4>Technical track</h4>
+        <p class="track__for">For people who want to make AI systems safer by working on the systems themselves.</p>
+        <ul class="ticks">
+          <li>How modern AI systems are trained</li>
+          <li>Why aligning them is hard</li>
+          <li>Mechanistic interpretability: looking inside a model</li>
+          <li>Technical governance</li>
+        </ul>
+        <p class="track__need">Starts from the fundamentals.</p>
+      </article>
+      <article class="track">
+        <Icon name="policy" />
+        <h4>Policy track</h4>
+        <p class="track__for">For people who want to shape the rules around AI.</p>
+        <ul class="ticks">
+          <li>The risks posed by advanced AI</li>
+          <li>How governments and companies are responding</li>
+          <li>What good standards, safeguards and laws could look like</li>
+        </ul>
+        <p class="track__need">No technical background needed.</p>
+      </article>
+    </div>
+    <p class="note note--plain">
+      Both tracks lead to the same place. Finish either one and you are a fellow; the track is
+      only your focus.
+    </p>
+
+    <h3 class="sub">How it works</h3>
+    <ol class="flow">
+      <li>
+        <h4>Sign up</h4>
+        <p>Join the mailing list and we will email you before the fellowships begin.</p>
+      </li>
+      <li>
+        <h4>8 weekly sessions</h4>
+        <p>
+          A small group meets for 90 minutes each week. Sessions are taught, not just read:
+          graduate students, PhD students and invited researchers lead them, followed by
+          discussion.
+        </p>
+      </li>
+      <li>
+        <h4>Become a fellow</h4>
+        <p>Finish the 8 weeks and you are a fellow, whichever track you took.</p>
+      </li>
+      <li>
+        <h4>Get into research</h4>
+        <p>
+          Fellows get fellows-only research meetings and mixers with AI safety researchers at
+          Northeastern and around Boston. We plan to work with Northeastern labs on projects
+          fellows can join.
+        </p>
+      </li>
+    </ol>
+
+    <div class="actions section-actions">
+      <Signup />
+    </div>
+  </div>
+</section>

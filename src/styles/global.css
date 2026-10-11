@@ -123,6 +123,151 @@ strong { font-weight: 660; }
 /* The h1 is outside the grid, so it needs its own separation from the first row. */
 .prose > h1 { margin-block-end: 2.25rem; }
 
+/* --- sections -----------------------------------------------------------------
+   Every section title ends in the brand dot, the same dot as the wordmark. */
+.dot::after {
+  content: "";
+  display: inline-block;
+  width: 0.2em;
+  height: 0.2em;
+  margin-inline-start: 0.12em;
+  border-radius: 50%;
+  background: var(--accent);
+  vertical-align: 0.05em;
+}
+.section-title { margin-block-end: 1.25rem; }
+.section-lede { max-width: 40rem; margin-block: 0 2.5rem; }
+.section-actions { margin-block-start: 2.5rem; }
+.sub { font-size: var(--step-2); margin-block: 3rem 1.25rem; }
+.link-more { font-weight: 620; text-decoration: none; }
+.link-more::after { content: " \2192"; }
+.link-more:hover { text-decoration: underline; }
+.btn.btn--small { padding: 0.55em 1.1em; font-size: 0.9375rem; }
+
+.note { display: flex; align-items: center; gap: 0.6rem; margin-block: 2rem 0; font-weight: 560; max-width: none; }
+.note--plain { display: block; font-weight: 400; color: var(--muted); max-width: 40rem; }
+
+/* A pale red band, and a full red one for the executive board. */
+.band--tint { background: #fdf2f3; }
+.band--red { background: var(--accent); color: #fff; }
+.band--red .lede, .band--red p, .band--red dd { color: #fff; }
+.band--red .btn { background: #fff; color: var(--accent); border-color: #fff; }
+.band--red .btn:hover { background: #fde8eb; color: var(--accent-deep); border-color: #fde8eb; }
+.section.band--red + .section, .section + .section.band--red, .band--tint + .section, .section + .band--tint { border-block-start: 0; }
+
+/* Get involved: four ways in. */
+.ways { list-style: none; padding: 0; margin: 0; display: grid; gap: 1.25rem; }
+@media (min-width: 40rem) { .ways { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (min-width: 64rem) { .ways { grid-template-columns: repeat(4, minmax(0, 1fr)); } }
+.way {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  padding: 1.5rem;
+  border-radius: 1.25rem;
+  background: #fdf2f3;
+}
+.way h3 { margin-block-start: 0.5rem; }
+.way p { color: var(--muted); margin: 0; flex: 1; }
+.way .btn, .way .link-more { align-self: flex-start; margin-block-start: 0.5rem; }
+
+/* Fellowships: the two tracks, side by side. */
+.tracks { display: grid; gap: 1.25rem; }
+@media (min-width: 46rem) { .tracks { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+.track { background: #fff; border-radius: 1.25rem; padding: 1.75rem; }
+.track h4 { font-size: var(--step-2); margin: 0.75rem 0 0.4rem; letter-spacing: -0.02em; }
+.track__for { color: var(--ink); }
+.track__need { color: var(--accent); font-weight: 620; margin: 1rem 0 0; }
+.ticks li { position: relative; padding-inline-start: 1.3rem; margin-block-end: 0.45rem; color: var(--muted); }
+.ticks li::before { width: 0.45rem; height: 0.45rem; top: 0.6em; }
+
+/* How it works: numbered steps joined by a line, across on a wide screen. */
+.flow { list-style: none; padding: 0; margin: 0; display: grid; gap: 1.75rem; counter-reset: step; }
+@media (min-width: 56rem) { .flow { grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 2rem; } }
+.flow li { position: relative; counter-increment: step; padding-inline-start: 3.25rem; }
+.flow li::before {
+  content: counter(step);
+  position: absolute;
+  left: 0;
+  top: -0.2rem;
+  width: 2.3rem;
+  height: 2.3rem;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  background: var(--accent);
+  color: #fff;
+  font-weight: 700;
+}
+@media (min-width: 56rem) {
+  .flow li { padding: 3.25rem 0 0; }
+  .flow li::after {
+    content: "";
+    position: absolute;
+    top: 0.95rem;
+    left: 2.8rem;
+    right: -1.6rem;
+    height: 2px;
+    background: var(--accent);
+    opacity: 0.35;
+  }
+  .flow li:last-child::after { display: none; }
+}
+.flow h4 { font-size: var(--step-1); margin: 0 0 0.35rem; }
+.flow p { color: var(--muted); margin: 0; }
+
+/* Executive board: four areas and three facts. */
+.areas { list-style: none; padding: 0; margin: 0; display: grid; gap: 1px; background: rgb(255 255 255 / 0.35); border-radius: 1.25rem; overflow: hidden; }
+@media (min-width: 46rem) { .areas { grid-template-columns: repeat(4, minmax(0, 1fr)); } }
+.areas li { background: var(--accent); padding: 1.25rem 1.25rem 1.4rem; }
+.areas h3 { color: #fff; margin-block-end: 0.3rem; }
+.areas p { margin: 0; opacity: 0.9; }
+.facts-row { display: grid; gap: 1rem 2rem; margin: 2rem 0 0; }
+@media (min-width: 46rem) { .facts-row { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+.facts-row dt { font-weight: 700; margin-block-end: 0.15rem; }
+.facts-row dd { margin: 0; opacity: 0.92; }
+
+/* Research by members. */
+.papers { list-style: none; padding: 0; margin: 0; max-width: 46rem; }
+.paper { padding-block: 1.25rem; border-block-end: 1px solid var(--rule); }
+.paper__title { display: block; font-size: var(--step-1); font-weight: 650; color: var(--ink); text-decoration: none; }
+.paper__title:hover { color: var(--accent); }
+.paper__by { display: block; color: var(--accent); font-size: 0.9375rem; margin-block-start: 0.2rem; }
+.paper__summary { color: var(--muted); margin: 0.5rem 0 0; }
+
+/* FAQ. */
+.faq { max-width: 46rem; }
+.faq__item { border-block-end: 1px solid var(--rule); }
+.faq__item summary {
+  list-style: none;
+  cursor: pointer;
+  padding: 1.1rem 2.5rem 1.1rem 0;
+  font-weight: 640;
+  font-size: var(--step-1);
+  position: relative;
+}
+.faq__item summary::-webkit-details-marker { display: none; }
+.faq__item summary::after {
+  content: "+";
+  position: absolute;
+  right: 0.25rem;
+  top: 50%;
+  translate: 0 -50%;
+  width: 1.7rem;
+  height: 1.7rem;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  background: var(--accent);
+  color: #fff;
+  font-weight: 600;
+  line-height: 1;
+  padding-block-end: 0.12em;
+  transition: rotate 200ms ease;
+}
+.faq__item[open] summary::after { rotate: 45deg; }
+.faq__item p { color: var(--muted); margin: 0 0 1.25rem; max-width: 40rem; }
+
 /* --- one page -----------------------------------------------------------------
    Home, Join, Team and Resources are sections of one long page. Each section
    title is set at the old page-title size, so the page still reads as four
@@ -154,6 +299,16 @@ strong { font-weight: 660; }
 
 .lede { font-size: var(--step-1); color: var(--muted); line-height: 1.5; }
 
+/* Visible to screen readers only. */
+.sr-only {
+  position: absolute;
+  width: 1px; height: 1px;
+  padding: 0; margin: -1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
 /* --- header ---------------------------------------------------------------- */
 
 .skip {
@@ -174,11 +329,11 @@ strong { font-weight: 660; }
   border-block-end: 1px solid var(--rule);
   padding-block: 1.05rem;
 }
-.masthead .wrap {
+.masthead__row {
   display: flex;
   flex-wrap: wrap;
   gap: 0.6rem 1.5rem;
-  align-items: baseline;
+  align-items: center;
   justify-content: space-between;
 }
 
@@ -201,25 +356,58 @@ strong { font-weight: 660; }
   vertical-align: 0.06em;
 }
 
-.masthead__right {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 0.6rem 1.25rem;
-}
-
-.nav { display: flex; flex-wrap: wrap; gap: 0.35rem 1.15rem; }
-.nav a {
+.nav { display: flex; flex-wrap: wrap; align-items: center; gap: 0.35rem 1.4rem; }
+.nav a:not(.btn) {
   color: var(--muted);
   text-decoration: none;
   font-size: 0.9375rem;
   padding-block: 0.15rem;
 }
-.nav a:hover { color: var(--ink); }
+.nav a:not(.btn):hover { color: var(--ink); }
+/* The section on screen gets the brand dot under it. */
 .nav a[aria-current] {
   color: var(--ink);
   font-weight: 640;
-  box-shadow: inset 0 -2px 0 var(--accent);
+  background: radial-gradient(circle, var(--accent) 2.5px, transparent 3px) center bottom / 6px 6px no-repeat;
+  padding-block-end: 0.55rem;
+  margin-block-end: -0.4rem;
+}
+/* The one call to action in the header. */
+.btn.btn--nav { padding: 0.45em 1.05em; font-size: 0.9375rem; border-radius: 999px; }
+
+/* The phone menu. Hidden until JavaScript has wired the toggle (.has-menu),
+   so without it the links simply wrap under the wordmark. */
+.menu-toggle {
+  display: none;
+  appearance: none;
+  background: none;
+  border: 0;
+  padding: 0.35rem;
+  margin: -0.35rem;
+  color: var(--ink);
+  cursor: pointer;
+  border-radius: 6px;
+}
+@media (max-width: 759px) {
+  .has-menu .menu-toggle { display: inline-flex; }
+  .has-menu .nav {
+    display: none;
+    flex-basis: 100%;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0;
+    padding-block: 0.5rem 0.75rem;
+  }
+  .has-menu.is-open .nav { display: flex; }
+  .has-menu .nav a:not(.btn) {
+    font-size: var(--step-1);
+    color: var(--ink);
+    padding-block: 0.7rem;
+    border-block-end: 1px solid var(--rule);
+  }
+  .has-menu .nav a[aria-current] { background: none; margin: 0; padding-block: 0.7rem; }
+  .has-menu .nav a[aria-current]::before { content: "\25CF\00a0"; color: var(--accent); }
+  .has-menu .btn--nav { margin-block-start: 1rem; text-align: center; padding: 0.75em 1em; }
 }
 
 /* --- buttons --------------------------------------------------------------- */
@@ -333,48 +521,54 @@ strong { font-weight: 660; }
 }
 
 /* --- home ---------------------------------------------------------------------
-   The home section is two columns. The picture is pinned on the right while
-   the text scrolls past it on the left, one short step at a time: the intro,
-   the three things we do, who this is for. The page script sets --p on the
-   section, 0 to 1 from its top to its bottom, and the picture reads it.
+   The home section is two columns. The scene is pinned on the right while the
+   text scrolls past it on the left, one step at a time: the hook, what is
+   already happening, what we do, who this is for. The page script sets --p
+   on the section, 0 to 1 from its top to its bottom, and the scene reads it.
 
-   On a phone the picture pins to the top of the screen instead and the
-   steps scroll up underneath it. */
+   On a phone the scene shrinks to a small card pinned to the bottom corner
+   of the screen. It stays with you through the home section and plays the
+   same story, without covering the text. */
 
 .home { --p: 0; position: relative; display: grid; }
+.home__text { padding-inline: var(--gutter); }
+
 .home__art {
   position: sticky;
-  top: var(--head);
-  z-index: 2;
-  height: 46svh;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding-block: 0.75rem;
-  background: var(--paper);
+  /* sit at the bottom right of the screen, out of the way of the text */
+  top: calc(100svh - 7.75rem);
+  z-index: 5;
+  justify-self: end;
+  width: 5.75rem;
+  height: 6.75rem;
+  margin-inline-end: 0.75rem;
+  margin-block-end: -6.75rem;
+  border-radius: 1rem;
+  overflow: hidden;
+  box-shadow: 0 6px 22px rgb(31 21 23 / 0.22), 0 0 0 1px rgb(31 21 23 / 0.06);
+  background: #fdf2f3;
 }
-.home__text { padding-inline: var(--gutter); }
+
 .home__step {
-  min-height: 42svh;
   display: flex;
   flex-direction: column;
   justify-content: center;
-  padding-block: 2.5rem;
+  padding-block: 3rem;
   max-width: 34rem;
 }
-.home__step--intro { min-height: calc(54svh - var(--head)); padding-block-start: 1.5rem; }
+.home__step--intro { min-height: calc(88svh - var(--head)); padding-block-start: 2rem; }
 .home__step > :first-child { margin-block-start: 0; }
+.home__step h1 { font-size: clamp(2.3rem, 1.6rem + 3.4vw, 3.9rem); letter-spacing: -0.035em; line-height: 1.04; }
 .home__step h2 { font-size: var(--step-3); margin-block-end: 1.25rem; }
-.home__step h3 { margin-block-end: 0.5rem; }
+.home__step h3 { margin-block-end: 0.25rem; }
 .home__step p { font-size: var(--step-1); line-height: 1.55; color: var(--muted); }
 .home__step strong { color: var(--ink); }
-.home__step .home__lede { color: var(--ink); }
-.home .tagline { font-size: var(--step-2); margin-block: 0.4rem 1.25rem; }
-.home .actions { margin-block-start: 1.75rem; }
+.home__step .home__lede { color: var(--ink); margin-block-start: 1.25rem; }
+.home .actions { margin-block-start: 1.5rem; }
 
 @media (min-width: 900px) {
   .home {
-    grid-template-columns: minmax(0, 0.95fr) minmax(0, 1.05fr);
+    grid-template-columns: minmax(0, 0.92fr) minmax(0, 1.08fr);
     max-width: var(--page);
     margin-inline: auto;
   }
@@ -382,19 +576,126 @@ strong { font-weight: 660; }
     grid-column: 2;
     grid-row: 1;
     align-self: start;
-    height: calc(100svh - var(--head));
-    padding: 1.5rem var(--gutter) 1.5rem 0;
+    justify-self: stretch;
+    top: calc(var(--head) + 1.25rem);
+    width: auto;
+    height: calc(100svh - var(--head) - 2.5rem);
+    margin: 0 var(--gutter) 0 0;
+    border-radius: 1.75rem;
+    box-shadow: none;
   }
   .home__text { grid-column: 1; grid-row: 1; }
-  .home__step { min-height: 78svh; }
+  .home__step { min-height: 82svh; }
   .home__step--intro { min-height: calc(100svh - var(--head)); padding-block-start: 0; }
 }
 
-/* --- halftone -----------------------------------------------------------------
-   Drawn by components/Halftone.astro onto a canvas that fills the pinned box.
-   It has no frame; the dots fade out toward the edges into the page. */
+/* Paper grain over the scene: one small static tile, painted once. */
+.home__art::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0.35;
+  mix-blend-mode: multiply;
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0.3 0 0 0 0 0.2 0 0 0 0 0.2 0 0 0 0.35 0'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23n)'/%3E%3C/svg%3E");
+}
 
-.halftone { display: block; width: 100%; height: 100%; }
+/* What is already happening: a list with the brand dot for bullets. */
+.facts, .ticks { list-style: none; padding: 0; margin: 0; }
+.facts li {
+  position: relative;
+  padding-inline-start: 1.6rem;
+  font-size: var(--step-1);
+  line-height: 1.5;
+  margin-block-end: 0.9rem;
+}
+.facts li::before, .ticks li::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0.55em;
+  width: 0.6rem;
+  height: 0.6rem;
+  border-radius: 50%;
+  background: var(--accent);
+}
+
+/* What we do: icon, then name and one line. */
+.offers { list-style: none; padding: 0; margin: 0; display: grid; gap: 1.5rem; }
+.offers li { display: grid; grid-template-columns: auto 1fr; gap: 1rem; align-items: start; }
+.offers p { margin: 0; font-size: var(--step-0); }
+
+/* --- scene --------------------------------------------------------------------
+   Drawn by components/Scene.astro as flat shapes. Each ramp below is 0 until
+   its start and 1 at its end: clamp(0, (p - start) / length, 1). Groups only
+   move, fade or scale, so a scroll repaints a handful of plain shapes.
+
+   On a wide screen the scene fills the pinned column. On a phone it shrinks
+   to a small card in the corner that stays with you through the home section,
+   so the story still plays out without covering the text. */
+
+.scene {
+  display: block;
+  width: 100%;
+  height: 100%;
+
+  --rise:   clamp(0, calc((var(--p) - 0.04) / 0.26), 1);
+  --sail:   clamp(0, calc((var(--p) - 0.24) / 0.2), 1);
+  --drone:  clamp(0, calc((var(--p) - 0.26) / 0.22), 1);
+  --spread: clamp(0, calc((var(--p) - 0.3) / 0.45), 1);
+  --dusk:   clamp(0, calc((var(--p) - 0.5) / 0.3), 1);
+  --leave:  clamp(0, calc((var(--p) - 0.5) / 0.18), 1);
+  --smoke:  clamp(0, calc((var(--p) - 0.58) / 0.3), 1);
+  --fall:   clamp(0, calc((var(--p) - 0.78) / 0.22), 1);
+  --night:  clamp(0, calc((var(--p) - 0.74) / 0.26), 1);
+}
+
+.scene .tower { transform: translateY(calc((1 - var(--rise)) * 430px)); }
+.scene .tower-reflect { opacity: var(--rise); }
+
+.scene .boats { opacity: calc(1 - var(--sail)); transform: translateX(calc(var(--sail) * -90px)); }
+.scene .drones {
+  opacity: var(--drone);
+  transform: translate(calc((1 - var(--p)) * 70px), calc((1 - var(--drone)) * -40px));
+}
+.scene .clouds { transform: translateX(calc(var(--p) * 60px)); opacity: calc(1 - var(--dusk) * 0.8); }
+
+/* Red windows show inside a circle that grows out from the tower. */
+.scene .spread {
+  transform-box: fill-box;
+  transform-origin: center;
+  transform: scale(var(--spread));
+}
+.scene .lit { opacity: min(1, calc(var(--spread) * 6)); }
+
+.scene .dusk { opacity: var(--dusk); }
+.scene .sun--day { opacity: calc(1 - var(--dusk)); }
+.scene .sun {
+  transform-box: fill-box;
+  transform-origin: center;
+  transform: translateY(calc(var(--dusk) * 150px)) scale(calc(1 + var(--dusk) * 0.9));
+}
+.scene .sun--red { opacity: var(--dusk); }
+.scene .smoke { opacity: calc(var(--smoke) * 0.55); transform: translateY(calc((1 - var(--smoke)) * 60px)); }
+.scene .people { opacity: calc(1 - var(--leave)); transform: translateX(calc(var(--leave) * 30px)); }
+
+/* The collapse: buildings lean and sink below the waterline. */
+.scene .fall {
+  transform-box: fill-box;
+  transform-origin: 50% 100%;
+  transform:
+    translateY(calc(var(--fall) * (60px + var(--d) * 80px)))
+    rotate(calc(var(--fall) * (5deg + var(--d) * 9deg)));
+}
+.scene .fall--l {
+  transform:
+    translateY(calc(var(--fall) * (60px + var(--d) * 80px)))
+    rotate(calc(var(--fall) * (-5deg - var(--d) * 9deg)));
+}
+
+.scene .night { opacity: calc(var(--night) * 0.72); }
+.scene .fires { opacity: var(--fall); transform: scaleY(var(--fall)); transform-box: fill-box; transform-origin: bottom; }
+.scene .glow { opacity: var(--rise); }
 
 /* --- perceptron diagram -----------------------------------------------------
    Geometry comes from scripts/perceptron.py. Everything visual is here, so the
@@ -606,8 +907,8 @@ strong { font-weight: 660; }
   display: grid;
   place-items: center;
   overflow: hidden;
-  background: var(--wash);
-  border-block-start: 2px solid var(--ink);
+  background: #fdf2f3;
+  border-radius: 50%;
   margin-block-end: 0.85rem;
 }
 /* Fills the square whatever the file's own aspect ratio turns out to be, so a
@@ -622,7 +923,7 @@ strong { font-weight: 660; }
   font-weight: 620;
   letter-spacing: 0.08em;
   text-indent: 0.08em;   /* recentre against the trailing letter-space */
-  color: var(--muted);
+  color: var(--accent);
 }
 
 .person .name {

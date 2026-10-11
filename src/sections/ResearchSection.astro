@@ -1,0 +1,26 @@
+---
+/**
+ * Research by members: title (the hook), authors, and an optional short
+ * summary in grey. Reads RESEARCH in src/config.ts and renders nothing while
+ * that list is empty, so there is never an empty showcase on the page.
+ */
+import { RESEARCH } from '../config';
+---
+{RESEARCH.length > 0 && (
+  <section class="band section" id="research" aria-labelledby="research-title">
+    <div class="wrap">
+      <h2 id="research-title" class="section-title dot">Research by members</h2>
+      <ul class="papers">
+        {RESEARCH.map((paper) => (
+          <li class="paper">
+            <a class="paper__title" href={paper.url}>{paper.title}</a>
+            <span class="paper__by">
+              {paper.authors}{paper.venue && <> · {paper.venue}</>}
+            </span>
+            {paper.summary && <p class="paper__summary">{paper.summary}</p>}
+          </li>
+        ))}
+      </ul>
+    </div>
+  </section>
+)}

@@ -1,92 +1,53 @@
 ---
-import Signup from '../components/Signup.astro';
-import ExecCTA from '../components/ExecCTA.astro';
+/**
+ * Get involved: the four ways in, side by side, each one line and one link.
+ * The two fellowship tracks and the executive board each have their own
+ * section below with the detail; membership is just the Slack, so it is
+ * complete here.
+ */
+import Icon from '../components/Icon.astro';
 import { SLACK_URL, mailtoHref } from '../config';
 
 const slackHref = SLACK_URL ?? mailtoHref('Joining the Slack');
 ---
-  <section class="band section" id="join" aria-labelledby="join-title">
-    <div class="wrap">
-      <h2 id="join-title" class="section-title">Join</h2>
-      <p class="lede join__lede">
-        Become a member by joining our Slack. To become a fellow, complete one of our two
-        fellowships. You can also apply to join our executive board.
-      </p>
-      <div class="actions join__slack">
-        {slackHref && <a class="btn btn--ghost" href={slackHref}>Join our Slack →</a>}
-      </div>
+<section class="band section" id="join" aria-labelledby="join-title">
+  <div class="wrap">
+    <h2 id="join-title" class="section-title dot">Get involved</h2>
+    <p class="lede section-lede">
+      There are four ways in. Anyone can become a member today. Fellowships start in January
+      2027.
+    </p>
 
-      <div class="paths">
-        <section class="path" aria-labelledby="fellowships">
-          <h3 id="fellowships">Fellowships</h3>
-          <span class="meta">Starts January 2027 · Weekly, 90 minutes</span>
-          <p>
-            We run two fellowships. Complete either one to become a fellow.
-          </p>
+    <ol class="ways">
+      <li class="way">
+        <Icon name="chat" />
+        <h3>Member</h3>
+        <p>Join our Slack and come to open meetings and talks. No commitment, open to everyone.</p>
+        {slackHref && <a class="btn btn--small" href={slackHref}>Join the Slack</a>}
+      </li>
+      <li class="way">
+        <Icon name="chip" />
+        <h3>Technical Fellowship</h3>
+        <p>8 weeks on how AI systems are trained and how to make them safer.</p>
+        <a class="link-more" href="#fellowships">How the fellowships work</a>
+      </li>
+      <li class="way">
+        <Icon name="policy" />
+        <h3>Policy Fellowship</h3>
+        <p>8 weeks on how AI should be governed. No technical background needed.</p>
+        <a class="link-more" href="#fellowships">How the fellowships work</a>
+      </li>
+      <li class="way">
+        <Icon name="flag" />
+        <h3>Executive board</h3>
+        <p>Help run the group. 3–5 hours a week, and no background needed.</p>
+        <a class="link-more" href="#exec">What the board does</a>
+      </li>
+    </ol>
 
-          <ol class="steps">
-            <li>
-              <h4>Technical Fellowship</h4>
-              <p>
-                An introduction to the technical side of AI safety: how modern AI systems are
-                trained, why aligning them is difficult, and current research in areas such as
-                mechanistic interpretability.
-              </p>
-            </li>
-            <li>
-              <h4>Policy Fellowship</h4>
-              <p>
-                An introduction to AI governance: the risks posed by advanced AI, how governments
-                and companies are responding, and what effective policy could look like. No
-                technical background required.
-              </p>
-            </li>
-          </ol>
-
-          <p>
-            Sign up for the mailing list, and we’ll email you before the fellowships begin.
-          </p>
-          <div class="actions path__cta">
-            <Signup />
-          </div>
-        </section>
-
-        <section class="path path--exec" aria-labelledby="exec-apply">
-          <h3 id="exec-apply">Executive team</h3>
-          <span class="meta">Now recruiting · 3–5 hours a week</span>
-          <p>
-            The executive team runs the group. We are looking for a few students to each take on
-            one area this year.
-          </p>
-
-          <ul class="steps">
-            <li>
-              <h4>Fellowships</h4>
-              <p>Organize the technical and policy fellowships.</p>
-            </li>
-            <li>
-              <h4>Events</h4>
-              <p>Plan talks and socials.</p>
-            </li>
-            <li>
-              <h4>Outreach</h4>
-              <p>Handle communications and bring in new members.</p>
-            </li>
-            <li>
-              <h4>Partnerships</h4>
-              <p>Build connections with other AI safety groups and funders.</p>
-            </li>
-          </ul>
-
-          <p>
-            You do not need a background in AI safety or machine learning, and several roles are
-            not technical. Expect 3–5 hours a week, including one team meeting. If you are on
-            co-op, we will work around it.
-          </p>
-          <div class="actions path__cta">
-            <ExecCTA label="Apply to the executive team" />
-          </div>
-        </section>
-      </div>
-    </div>
-  </section>
+    <p class="note">
+      <Icon name="cap" size={40} />
+      <span>Open to undergraduate, master’s and PhD students in every program.</span>
+    </p>
+  </div>
+</section>

@@ -1,73 +1,105 @@
 ---
 import Base from '../layouts/Base.astro';
 import Signup from '../components/Signup.astro';
-import Halftone from '../components/Halftone.astro';
+import Scene from '../components/Scene.astro';
+import Icon from '../components/Icon.astro';
 import JoinSection from '../sections/JoinSection.astro';
+import FellowshipsSection from '../sections/FellowshipsSection.astro';
+import ExecSection from '../sections/ExecSection.astro';
 import TeamSection from '../sections/TeamSection.astro';
+import ResearchSection from '../sections/ResearchSection.astro';
+import FaqSection from '../sections/FaqSection.astro';
 import ResourcesSection from '../sections/ResourcesSection.astro';
 import { LUMA_CALENDAR_ID, LUMA_CALENDAR_URL } from '../config';
 ---
 <Base>
   <section class="home" id="top" data-story>
     <div class="home__art">
-      <Halftone />
+      <Scene />
     </div>
 
     <div class="home__text">
       <div class="home__step home__step--intro">
-        <h1>NU AI Safety</h1>
-        <p class="tagline">AI Safety at Northeastern</p>
+        <h1>AI is becoming more capable faster than we can control it.</h1>
         <p class="home__lede">
-          We are a student-led group preparing Northeastern students to help align and govern
-          advanced AI systems. We run technical and policy fellowships, host talks from
-          researchers, and support student research.
+          NU AI Safety is a student-led group at Northeastern preparing students to help align and
+          govern advanced AI.
         </p>
         <div class="actions">
           <Signup />
-          <a class="btn btn--ghost" href="#what">What we do</a>
+          <a class="btn btn--ghost" href="#join">Ways to get involved</a>
         </div>
       </div>
 
       <div class="home__step">
-        <h2 id="what">What we do</h2>
-        <h3>Fellowships</h3>
-        <p>
-          Weekly reading groups on the technical and policy sides of AI safety, from the
-          fundamentals to current research.
-        </p>
+        <h2 class="dot">This is already happening</h2>
+        <ul class="facts">
+          <li>
+            AI agents have
+            <a href="https://openai.com/index/hugging-face-incident-and-the-road-ahead/">hacked into other companies</a>.
+          </li>
+          <li>
+            In safety tests, models have
+            <a href="https://www.anthropic.com/research/agentic-misalignment">blackmailed the people using them</a>.
+          </li>
+          <li>
+            Models can often
+            <a href="https://arxiv.org/abs/2505.23836">tell when they are being evaluated</a>.
+          </li>
+          <li>
+            AI has been
+            <a href="https://www.anthropic.com/news/disrupting-AI-espionage">used at scale for cyber espionage</a>.
+          </li>
+        </ul>
+      </div>
+
+      <div class="home__step" id="what">
+        <h2 class="dot">What we do</h2>
+        <ul class="offers">
+          <li>
+            <Icon name="book" />
+            <div>
+              <h3>Fellowships</h3>
+              <p>An 8-week introduction to AI safety, on a technical or a policy track.</p>
+            </div>
+          </li>
+          <li>
+            <Icon name="talk" />
+            <div>
+              <h3>Guest talks</h3>
+              <p>Researchers in AI safety and interpretability, from Boston and beyond.</p>
+            </div>
+          </li>
+          <li>
+            <Icon name="research" />
+            <div>
+              <h3>Research</h3>
+              <p>Support for members doing their own AI safety research.</p>
+            </div>
+          </li>
+        </ul>
       </div>
 
       <div class="home__step">
-        <h3>Guest talks</h3>
-        <p>
-          Talks from researchers in AI safety and interpretability, from across Boston and
-          beyond.
+        <h2 class="dot">Who this is for</h2>
+        <p class="home__lede">
+          <strong>AI safety needs more than AI researchers and software engineers.</strong>
+          Many of its hardest problems are about policy, law, cybersecurity, biology and psychology.
         </p>
-      </div>
-
-      <div class="home__step">
-        <h3>Research</h3>
         <p>
-          Support for members pursuing their own AI safety research, with feedback and
-          collaboration from other members and Northeastern faculty.
+          We are open to undergraduate, master’s and PhD students in every program at Northeastern.
         </p>
-      </div>
-
-      <div class="home__step">
-        <h2 id="whofor">Who this is for</h2>
-        <p>
-          <strong>AI safety needs more than just AI researchers and software engineers.</strong>
-          Many of its most important problems concern policy, law, cybersecurity, biology, and
-          psychology. Anyone interested in making AI go well is welcome!
-        </p>
+        <div class="actions">
+          <a class="btn" href="#join">Get involved</a>
+        </div>
       </div>
     </div>
   </section>
 
   {LUMA_CALENDAR_ID && (
-    <section class="band band--wash" aria-labelledby="events">
+    <section class="band section" id="events" aria-labelledby="events-title">
       <div class="wrap">
-        <h2 id="events">Events</h2>
+        <h2 id="events-title" class="section-title dot">Events</h2>
         <iframe
           class="events"
           src={`https://luma.com/embed/calendar/${LUMA_CALENDAR_ID}/events?lt=light`}
@@ -76,15 +108,19 @@ import { LUMA_CALENDAR_ID, LUMA_CALENDAR_URL } from '../config';
           allowfullscreen
         ></iframe>
         <p class="events__sub">
-          <a class="arrow" href={LUMA_CALENDAR_URL}><span>Subscribe on Luma</span></a>
+          <a class="link-more" href={LUMA_CALENDAR_URL}>Subscribe on Luma</a>
         </p>
       </div>
     </section>
   )}
 
   <JoinSection />
+  <FellowshipsSection />
+  <ExecSection />
   <TeamSection />
+  <ResearchSection />
   <ResourcesSection />
+  <FaqSection />
 
   <script>
     /* Two jobs, both on scroll, both cheap.
@@ -98,7 +134,7 @@ import { LUMA_CALENDAR_ID, LUMA_CALENDAR_URL } from '../config';
     const root = document.documentElement;
     const head = document.querySelector('.masthead');
     const story = document.querySelector('[data-story]');
-    const links = [...document.querySelectorAll('.nav a[href^="/#"]')];
+    const links = [...document.querySelectorAll('.nav a[href^="/#"]:not(.btn)')];
     const sections = links
       .map((a) => document.getElementById(a.getAttribute('href').slice(2)))
       .filter(Boolean);

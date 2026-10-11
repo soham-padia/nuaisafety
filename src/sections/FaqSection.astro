@@ -1,0 +1,71 @@
+---
+/**
+ * Common questions. Native <details>, so each answer opens without
+ * JavaScript and works with a keyboard and a screen reader.
+ *
+ * Every answer is something the site already states or the group has
+ * decided. Do not add answers that promise dates, people or resources the
+ * group does not have yet.
+ */
+import { KHOURY_CLUB_URL, SLACK_URL } from '../config';
+
+const faqs: { q: string; a: string }[] = [
+  {
+    q: 'Who can join?',
+    a: 'Any Northeastern student: undergraduate, master’s or PhD, in any program. We are listed as a Khoury graduate club so that graduate students can join, but undergraduates are just as welcome, and most of our programs are built with them in mind.',
+  },
+  {
+    q: 'Do I need to know machine learning?',
+    a: 'No. The policy track needs no technical background, and the technical track starts from the fundamentals. Several executive board roles are not technical either.',
+  },
+  {
+    q: 'What is the difference between the technical and policy tracks?',
+    a: 'The technical track is about making AI systems safer by working on the systems themselves: how they are trained, why aligning them is hard, and interpretability. The policy track is about the rules around AI: the risks, how governments and companies are responding, and what good standards and laws could look like. Both make you a fellow.',
+  },
+  {
+    q: 'How much time does a fellowship take?',
+    a: 'One 90-minute session a week, for 8 weeks.',
+  },
+  {
+    q: 'When do fellowships start?',
+    a: 'January 2027. Join the mailing list and we will email you before they begin.',
+  },
+  {
+    q: 'What does a member do?',
+    a: 'Members are in our Slack and are welcome at open meetings and talks. There is no commitment.',
+  },
+  {
+    q: 'How do I join the executive board?',
+    a: 'Apply with the form in the executive board section. It takes 3–5 hours a week, including one board meeting, and no background is needed. If you are on co-op, we will work around it.',
+  },
+  {
+    q: 'I already work on AI safety. How can I get involved?',
+    a: 'Join the Slack and tell us what you are working on. We would like to hear from you.',
+  },
+];
+---
+<section class="band section" id="faq" aria-labelledby="faq-title">
+  <div class="wrap">
+    <h2 id="faq-title" class="section-title dot">FAQ</h2>
+    <div class="faq">
+      {faqs.map(({ q, a }) => (
+        <details class="faq__item">
+          <summary>{q}</summary>
+          <p>{a}</p>
+        </details>
+      ))}
+      <details class="faq__item">
+        <summary>Is NU AI Safety a Northeastern club?</summary>
+        <p>
+          Yes, we are a Khoury College club. You can find us in
+          <a href={KHOURY_CLUB_URL}>Khoury’s clubs directory</a>.
+        </p>
+      </details>
+    </div>
+    {SLACK_URL && (
+      <p class="note note--plain">
+        Still have a question? <a href={SLACK_URL}>Ask us in the Slack</a>.
+      </p>
+    )}
+  </div>
+</section>
