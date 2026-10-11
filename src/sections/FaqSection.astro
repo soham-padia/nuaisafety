@@ -4,6 +4,10 @@
  * JavaScript and works with a keyboard and a screen reader. They share a
  * name, so opening one closes the one that was open.
  *
+ * The script below only adds motion: each answer slides open and shut, and
+ * opening one slides the other closed. It takes over the one-at-a-time rule
+ * itself, since the browser would close the other answer instantly.
+ *
  * Every answer is something the site already states or the group has
  * decided. Do not add answers that promise dates, people or resources the
  * group does not have yet.
@@ -70,3 +74,49 @@ const faqs: { q: string; a: string }[] = [
     )}
   </div>
 </section>
+
+<script>
+  const items = [...document.querySelectorAll<HTMLDetailsElement>('.faq__item')];
+  const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const running = new WeakMap<HTMLDetailsElement, Animation>();
+
+  function animate(d: HTMLDetailsElement, open: boolean) {
+    const summary = d.querySelector('summary')!;
+    running.get(d)?.cancel();
+    const from = d.offsetHeight;
+    if (open) d.open = true;
+    const border = d.offsetHeight - d.clientHeight;
+    const to = open ? d.offsetHeight : summary.offsetHeight + border;
+    d.classList.toggle('is-closing', !open);
+    d.style.overflow = 'hidden';
+    const a = d.animate(
+      { height: [`${from}px`, `${to}px`] },
+      { duration: open ? 360 : 260, easing: open ? 'cubic-bezier(.2,.7,.2,1)' : 'cubic-bezier(.4,0,.2,1)' },
+    );
+    if (open) {
+      d.querySelector('summary + *')?.animate(
+        { opacity: [0, 1], transform: ['translateY(-6px)', 'none'] },
+        { duration: 320, delay: 60, easing: 'ease-out', fill: 'backwards' },
+      );
+    }
+    running.set(d, a);
+    a.onfinish = () => {
+      if (!open) d.open = false;
+      d.classList.remove('is-closing');
+      d.style.overflow = '';
+      running.delete(d);
+    };
+  }
+
+  if (!reduce) {
+    for (const d of items) {
+      d.removeAttribute('name'); // the script keeps one open at a time instead
+      d.querySelector('summary')!.addEventListener('click', (e) => {
+        e.preventDefault();
+        const opening = !d.open || d.classList.contains('is-closing');
+        if (opening) for (const o of items) if (o !== d && o.open && !o.classList.contains('is-closing')) animate(o, false);
+        animate(d, opening);
+      });
+    }
+  }
+</script>

@@ -293,9 +293,10 @@ strong { font-weight: 660; }
   font-weight: 600;
   line-height: 1;
   padding-block-end: 0.12em;
-  transition: rotate 200ms ease;
+  transition: rotate 260ms cubic-bezier(.2,.7,.2,1);
 }
 .faq__item[open] summary::after { rotate: 45deg; }
+.faq__item.is-closing summary::after { rotate: 0deg; }
 .faq__item p { color: var(--muted); margin: 0 0 1.25rem; max-width: 40rem; }
 
 /* --- one page -----------------------------------------------------------------
