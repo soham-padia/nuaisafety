@@ -2,7 +2,11 @@
 import Base from '../layouts/Base.astro';
 import Signup from '../components/Signup.astro';
 import Perceptron from '../components/Perceptron.astro';
-import { LUMA_CALENDAR_ID, LUMA_CALENDAR_URL } from '../config';
+import { LUMA_CALENDAR_ID, LUMA_CALENDAR_URL, SLACK_URL, mailtoHref } from '../config';
+
+/* Joining the Slack is how someone becomes a member, so it is the red button.
+   Same fallback chain as /join: email, then the join page itself. */
+const slackHref = SLACK_URL ?? mailtoHref('Joining the Slack') ?? '/join';
 ---
 <Base>
   <section class="hero">
@@ -16,8 +20,8 @@ import { LUMA_CALENDAR_ID, LUMA_CALENDAR_URL } from '../config';
           researchers, and support student research.
         </p>
         <div class="actions">
-          <Signup />
-          <a class="btn btn--ghost" href="/resources">What we do</a>
+          <a class="btn" href={slackHref}>Join our Slack →</a>
+          <a class="btn btn--ghost" href="/join">Other ways to join</a>
         </div>
       </div>
       <figure class="hero__art">
