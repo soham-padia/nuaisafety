@@ -15,7 +15,7 @@
  * already made, so scrolling costs a few image draws and nothing runs while
  * the page is still.
  */
-import { Plate, PAPER, INKS, type Ink, type Spec, type Tone, type Coverage, type Screens, screens, press, inkLayer, seeded } from './riso';
+import { Plate, PAPER, INKS, WORLD, type Ink, type Spec, type Tone, type Coverage, type Screens, screens, press, inkLayer, seeded } from './riso';
 import { STORY } from '../data/story';
 
 type P = [number, number];
@@ -128,18 +128,18 @@ function line(pts: number[]) {
    Built once, from one seed, so the architecture is identical in every plate. */
 
 const GROUND = 900;
+const SEAT = 4; // the stoop someone sits on: the second house from the crossing
 const BILL = { x: 632, y: 262, w: 280, h: 186 };
 
 interface Win { path: Path2D; inner: Path2D; frame: Path2D; x: number; y: number; w: number; h: number }
 
 function buildStreet() {
   const r = seeded(11);
-  const sky = poly([-400, -400, 1400, -400, 1400, GROUND, -400, GROUND]);
-  const all = poly([-400, -400, 1400, -400, 1400, 1600, -400, 1600]);
+  const sky = poly([-600, -400, 1600, -400, 1600, GROUND, -600, GROUND]);
 
   // far city, seen over the roofs and in the gap between the houses and the tower
   const far: { body: Path2D; dots: Path2D }[] = [];
-  for (let x = -30; x < 640; ) {
+  for (let x = -520; x < 1520; ) {
     const w = 46 + r() * 70, top = 270 + r() * 140;
     const dots = new Path2D();
     for (let yy = top + 16; yy < GROUND - 20; yy += 22)
@@ -183,6 +183,9 @@ function buildStreet() {
 
   // three brownstones
   const houses = [
+    { x0: -470, x1: -318, top: 402, paint: { y: 0.95 } as Spec },
+    { x0: -318, x1: -160, top: 372, paint: { r: 0.55, b: 0.62 } as Spec },
+    { x0: -160, x1: -12, top: 414, paint: { r: 0.95 } as Spec },
     { x0: -12, x1: 166, top: 392, paint: { b: 0.9 } as Spec },
     { x0: 166, x1: 326, top: 424, paint: { r: 0.95 } as Spec },
     { x0: 326, x1: 480, top: 376, paint: { b: 0.62, y: 0.95 } as Spec },
@@ -222,9 +225,9 @@ function buildStreet() {
   });
 
   // street furniture and the street
-  const sidewalk = quad(r, -40, GROUND, 1080, 52, 0.5);
-  const curb = quad(r, -40, 950, 1080, 12, 0.5);
-  const road = poly([-40, 962, 1040, 962, 1040, 1600, -40, 1600]);
+  const sidewalk = quad(r, -540, GROUND, 2080, 52, 0.5);
+  const curb = quad(r, -540, 950, 2080, 12, 0.5);
+  const road = poly([-540, 962, 1540, 962, 1540, 1600, -540, 1600]);
   const zebra = new Path2D();
   const bands = [[975, 990], [1004, 1024], [1042, 1068], [1090, 1122], [1146, 1186]];
   for (const [y0, y1] of bands) {
@@ -232,11 +235,15 @@ function buildStreet() {
     zebra.addPath(poly([560 - 40 * k0, y0, 760 + 40 * k0, y0, 760 + 40 * k1, y1, 560 - 40 * k1, y1]));
   }
   const laneMarks = new Path2D();
-  for (let x = -20; x < 1040; x += 120) if (x < 470 || x > 820) laneMarks.addPath(quad(r, x, 1088, 64, 7, 0.6));
-  const lampPole = line([520, 942, 520, 600]);
-  const lampArm = line([520, 612, 528, 596, 536, 590]);
-  const lantern = poly([506, 560, 534, 560, 538, 596, 502, 596]);
-  const lanternCap = poly([500, 562, 520, 544, 540, 562]);
+  for (let x = -500; x < 1520; x += 120) if (x < 470 || x > 820) laneMarks.addPath(quad(r, x, 1088, 64, 7, 0.6));
+  // street lamps; the one at 520, by the crossing, is the one each plate changes
+  const lamps = [-200, 520, 1170].map((x) => ({
+    x,
+    pole: line([x, 942, x, 600]),
+    arm: line([x, 612, x + 8, 596, x + 16, 590]),
+    lantern: poly([x - 14, 560, x + 14, 560, x + 18, 596, x - 18, 596]),
+    cap: poly([x - 20, 562, x, 544, x + 20, 562]),
+  }));
 
   // trees: a big one in front of the first house, a small one by the third
   const tree = (cx: number, cy: number, rx: number, ry: number, trunkX: number) => {
@@ -266,9 +273,36 @@ function buildStreet() {
     grow(trunkX, cy + ry * 0.4, -Math.PI / 2, ry * 0.55, 5);
     return { leaves, dark, light, blossom, trunk, branches };
   };
-  const trees = [tree(96, 610, 128, 120, 96), tree(418, 690, 78, 74, 418)];
+  const trees = [tree(-300, 640, 112, 104, -300), tree(96, 610, 128, 120, 96), tree(418, 690, 78, 74, 418)];
 
-  return { sky, all, far, pru, pruCrown, pruMast, pruBands, hancock, hancockLines, tower, towerCap, cells, billFrame, billScreen, cafeSign, awning, cafeGlass, cafeDoor, counter, houses, sidewalk, curb, road, zebra, laneMarks, lampPole, lampArm, lantern, lanternCap, trees };
+  // Trinity Church, across the square to the right of the tower
+  const arch = (x: number, y: number, w: number, h: number) => {
+    const p = new Path2D();
+    p.moveTo(x, y + h);
+    p.lineTo(x, y + w / 2);
+    p.arc(x + w / 2, y + w / 2, w / 2, Math.PI, 0);
+    p.lineTo(x + w, y + h);
+    p.closePath();
+    return p;
+  };
+  const churchArches = new Path2D();
+  for (const x of [1066, 1112, 1376, 1422]) churchArches.addPath(arch(x, 700, 28, 70));
+  for (const x of [1206, 1244, 1282]) churchArches.addPath(arch(x, 452, 22, 92));
+  const churchDoors = new Path2D();
+  for (const x of [1196, 1240, 1284]) churchDoors.addPath(arch(x, 806, 36, 94));
+  const church = {
+    nave: quad(r, 1040, 646, 440, GROUND - 646, 1),
+    gable: poly([1030, 650, 1262, 524, 1494, 650]),
+    tower: quad(r, 1180, 404, 164, 250, 1),
+    roof: poly([1166, 408, 1262, 252, 1358, 408]),
+    turrets: [poly([1170, 410, 1182, 360, 1194, 410]), poly([1330, 410, 1342, 360, 1354, 410])],
+    band: quad(r, 1040, 790, 440, 10, 0.6),
+    rose: circle(1262, 600, 26),
+    arches: churchArches,
+    doors: churchDoors,
+  };
+
+  return { sky, far, church, pru, pruCrown, pruMast, pruBands, hancock, hancockLines, tower, towerCap, cells, billFrame, billScreen, cafeSign, awning, cafeGlass, cafeDoor, counter, houses, sidewalk, curb, road, zebra, laneMarks, lamps, trees };
 }
 
 let street: ReturnType<typeof buildStreet> | null = null;
@@ -434,59 +468,78 @@ type Bill = (pl: Plate, r: R) => void;
 const B = BILL, cx = B.x + B.w / 2, cy = B.y + B.h / 2;
 const screen = (pl: Plate, spec: Spec) => pl.fill(spec, street!.billScreen);
 
+// Pictures, not words: the captions do the talking.
 const BILLS: Record<string, Bill> = {
+  // an assistant, typing
   assistant: (pl) => {
     screen(pl, { b: 0.62 });
-    pl.fill(WHITE, round(B.x + 30, B.y + 38, B.w - 60, 92, 22));
-    pl.fill(WHITE, poly([B.x + 66, B.y + 126, B.x + 96, B.y + 126, B.x + 58, B.y + 152]));
-    pl.text(DARK, 'How can I help?', cx, B.y + 84, 26, 760);
-    pl.fill({ r: 0.95 }, quad(still, B.x + B.w - 92, B.y + 160, 54, 14, 0.4));
+    pl.fill(WHITE, round(B.x + 44, B.y + 40, B.w - 88, 88, 22));
+    pl.fill(WHITE, poly([B.x + 80, B.y + 124, B.x + 112, B.y + 124, B.x + 70, B.y + 154]));
+    for (const dx of [-38, 0, 38]) pl.fill(DARK, circle(cx + dx, B.y + 84, 11));
   },
-  hiring: (pl) => {
+  // a robot's face
+  robot: (pl) => {
     screen(pl, { y: 0.95 });
-    pl.text(DARK, 'NOW HIRING:', cx, B.y + 62, 32, 820);
-    pl.text({ r: 0.95 }, 'NO ONE', cx, B.y + 122, 56, 840);
+    pl.stroke(DARK, line([cx, B.y + 52, cx, B.y + 26]), 6);
+    pl.fill({ r: 0.95 }, circle(cx, B.y + 22, 10));
+    pl.fill(DARK, round(cx - 92, B.y + 92, 20, 40, 6));
+    pl.fill(DARK, round(cx + 72, B.y + 92, 20, 40, 6));
+    pl.fill(DARK, round(cx - 72, B.y + 50, 144, 116, 22));
+    for (const dx of [-32, 32]) pl.fill({ y: 0.95 }, circle(cx + dx, B.y + 96, 15));
+    pl.fill({ y: 0.95 }, round(cx - 34, B.y + 132, 68, 12, 6));
   },
-  input: (pl) => {
+  // waiting, forever
+  waiting: (pl) => {
     screen(pl, { b: 0.85, r: 0.2 });
-    pl.text(WHITE, 'THANK YOU', cx, B.y + 62, 38, 800);
-    pl.text(WHITE, 'FOR YOUR INPUT.', cx, B.y + 106, 28, 800);
-    pl.text({ b: 0.3 }, 'It has not changed anything.', cx, B.y + 150, 16, 600);
+    for (let k = 0; k < 12; k++) {
+      const a = -Math.PI / 2 + (k / 12) * Math.PI * 2, f = k / 12;
+      pl.fill({ b: 0.85 * f, r: 0.2 * f }, circle(cx + Math.cos(a) * 54, cy + Math.sin(a) * 54, 10));
+    }
   },
+  // one logo
   oneAnswer: (pl) => {
     screen(pl, { y: 0.06 });
-    for (const [rad, w] of [[44, 12], [23, 10]] as const) pl.stroke({ b: 0.95 }, circle(B.x + 62, cy, rad), w);
-    pl.fill({ b: 0.95 }, circle(B.x + 62, cy, 7));
-    pl.text(DARK, 'ONE MODEL.', B.x + 192, cy - 20, 24, 820);
-    pl.text({ b: 0.95 }, 'ONE ANSWER.', B.x + 192, cy + 18, 24, 820);
+    for (const [rad, w] of [[66, 16], [36, 14]] as const) pl.stroke({ b: 0.95 }, circle(cx, cy, rad), w);
+    pl.fill({ b: 0.95 }, circle(cx, cy, 11));
   },
+  // a tick, whatever is happening
   allClear: (pl) => {
     screen(pl, { b: 0.62, y: 0.95 });
-    pl.stroke(WHITE, line([cx - 40, B.y + 74, cx - 8, B.y + 104, cx + 46, B.y + 42]), 18);
-    pl.text(WHITE, 'ALL SYSTEMS NORMAL', cx, B.y + 146, 22, 820);
+    pl.stroke(WHITE, line([cx - 58, cy + 2, cx - 14, cy + 44, cx + 62, cy - 46]), 24);
   },
+  // static
   noSignal: (pl, r) => {
     screen(pl, { b: 0.7, r: 0.6 });
     const tones: Spec[] = [{ b: 0.5 }, { r: 0.6 }, { y: 0.9 }, WHITE, { b: 0.95, r: 0.2 }];
-    for (let i = 0; i < 46; i++) {
+    for (let i = 0; i < 60; i++) {
       const y = B.y + r() * B.h, h = 2 + r() * 9;
       pl.fill(tones[(r() * tones.length) | 0], quad(r, B.x + r() * B.w * 0.5, y, 30 + r() * B.w * 0.5, h, 0.5));
     }
-    pl.fill(DARK, quad(r, cx - 104, cy - 28, 208, 56, 0.6));
-    pl.text({ y: 0.95 }, 'NO SIGNAL', cx, cy, 32, 820);
   },
+  // a medical cross and a house
   stayHome: (pl) => {
     screen(pl, { b: 0.04 });
-    const x = B.x + 64, y = cy;
+    const x = B.x + 80, y = cy;
     pl.fill({ r: 0.95 }, poly([x - 14, y - 46, x + 14, y - 46, x + 14, y - 14, x + 46, y - 14, x + 46, y + 14, x + 14, y + 14, x + 14, y + 46, x - 14, y + 46, x - 14, y + 14, x - 46, y + 14, x - 46, y - 14, x - 14, y - 14]));
-    pl.text(DARK, 'STAY', B.x + 190, cy - 24, 42, 840);
-    pl.text(DARK, 'HOME', B.x + 190, cy + 22, 42, 840);
+    const hx = B.x + 196;
+    pl.stroke(DARK, poly([hx - 46, cy - 6, hx, cy - 50, hx + 46, cy - 6, hx + 34, cy - 6, hx + 34, cy + 46, hx - 34, cy + 46, hx - 34, cy - 6]), 10);
+    pl.fill(DARK, round(hx - 10, cy + 14, 20, 32, 3));
   },
-  choose: (pl) => {
+  // something growing
+  sprout: (pl) => {
     screen(pl, { y: 0.85, r: 0.18 });
-    pl.text(DARK, 'WE STILL', cx, B.y + 64, 36, 820);
-    pl.text(DARK, 'GET TO CHOOSE', cx - 6, B.y + 110, 31, 820);
-    pl.fill({ r: 0.95 }, circle(cx + 112, B.y + 118, 6));
+    const g: Spec = { b: 0.62, y: 0.95 };
+    pl.fill({ r: 0.62, y: 0.8, b: 0.32 }, ellipse(cx, B.y + 160, 70, 20));
+    pl.stroke(g, line([cx, B.y + 152, cx - 2, B.y + 112, cx + 4, B.y + 70]), 9);
+    const leaf = (x: number, y: number, d: number) => {
+      const p = new Path2D();
+      p.moveTo(x, y);
+      p.quadraticCurveTo(x + d * 30, y - 44, x + d * 82, y - 30);
+      p.quadraticCurveTo(x + d * 50, y + 14, x, y);
+      return p;
+    };
+    pl.fill(g, leaf(cx - 1, B.y + 112, -1));
+    pl.fill(g, leaf(cx + 3, B.y + 82, 1));
   },
 };
 
@@ -525,11 +578,17 @@ const SCENES: Scene[] = [
       { x: 600, y: 1058, coat: COAT.blue, dir: 1, s: 1.25, skin: 3, hair: 3 },
       { x: 700, y: 1094, coat: COAT.green, dir: -1, s: 1.34, skin: 1 },
       { x: 880, y: 946, coat: COAT.orange, pose: 'stand', dir: -1, phone: true, hair: 1 },
+      // further along, seen only in the full-screen opening
+      { x: -380, y: 942, coat: COAT.green, dir: 1, skin: 2, hair: 3 },
+      { x: -110, y: 946, coat: COAT.sky, pose: 'stand', dir: -1, phone: true, skin: 1 },
+      { x: 1110, y: 946, coat: COAT.red, dir: -1, hair: 2 },
+      { x: 1330, y: 940, coat: COAT.yellow, dir: 1, s: 0.96, skin: 3 },
+      { x: 1250, y: 1060, coat: COAT.plum, dir: -1, s: 1.25, skin: 1 },
     ],
   },
   // Automation
   {
-    mood: 'day', bill: 'hiring', cafe: 'auto', lamp: 'off', trees: 'summer', clouds: true,
+    mood: 'day', bill: 'robot', cafe: 'auto', lamp: 'off', trees: 'summer', clouds: true,
     windows: (r, k) => (k === 'tower' ? pick(r, 0.7, 'screen', 'day') : pick(r, 0.3, 'screen', 'day')),
     people: [
       { x: 150, y: 942, coat: COAT.sky, pose: 'stand', dir: 1, phone: true, skin: 1 },
@@ -545,7 +604,7 @@ const SCENES: Scene[] = [
   },
   // Gradual disempowerment
   {
-    mood: 'dusk', bill: 'input', cafe: 'auto', lamp: 'on', trees: 'summer', farLights: true,
+    mood: 'dusk', bill: 'waiting', cafe: 'auto', lamp: 'on', trees: 'summer', farLights: true,
     windows: (r) => pick(r, 0.82, 'screen', 'dark'),
     people: [
       { x: 0, y: 0, coat: COAT.plum, pose: 'sit', dir: -1, phone: true, skin: 2 },
@@ -608,7 +667,7 @@ const SCENES: Scene[] = [
   },
   // Our choice
   {
-    mood: 'dawn', bill: 'choose', cafe: 'open', lamp: 'off', trees: 'blossom',
+    mood: 'dawn', bill: 'sprout', cafe: 'open', lamp: 'off', trees: 'blossom',
     windows: (r) => pick(r, 0.22, 'warm', 'day'),
     people: [
       { x: 120, y: 942, coat: COAT.red, pose: 'stand', dir: 1, book: true, hair: 1 },
@@ -680,7 +739,7 @@ function drawPlate(i: number, pw: number, ph: number): Plate {
     pl.fill(SKY.night, circle(265, 262, 34)); // the shadow that makes it a crescent
   }
   if (sc.clouds) {
-    for (const [x, y, w] of [[110, 236, 120], [440, 206, 96]]) {
+    for (const [x, y, w] of [[-280, 220, 130], [110, 236, 120], [440, 206, 96], [1230, 200, 120]]) {
       for (let k = 0; k < 4; k++) pl.fill({ b: 0.04 }, blob(r, x + (k - 1.5) * w * 0.35, y + Math.abs(k - 1.5) * 8, w * 0.32, w * 0.2, 10, 0.12));
     }
   }
@@ -711,6 +770,22 @@ function drawPlate(i: number, pw: number, ph: number): Plate {
   for (const bx of [BILL.x + 30, BILL.x + BILL.w - 30]) pl.stroke(DARK, line([bx, BILL.y + BILL.h + 12, bx, BILL.y + BILL.h + 32]), 6);
   pl.glow(() => BILLS[sc.bill](pl, r));
 
+  // the church
+  const C = S.church;
+  const granite: Spec = { r: 0.42, y: 0.5, b: 0.14 };
+  const roof: Spec = { r: 0.7, b: 0.62, y: 0.32 };
+  pl.fill(roof, C.gable);
+  pl.fill(granite, C.nave);
+  pl.fill({ r: 0.7, y: 0.6, b: 0.3 }, C.band);
+  pl.fill(roof, C.roof);
+  for (const t of C.turrets) pl.fill(roof, t);
+  pl.fill(granite, C.tower);
+  pl.over({ b: 0.16 }, quad(still, 1180, 404, 40, 250, 0));
+  pl.fill(GLASS_DARK, C.arches);
+  pl.fill(GLASS_DARK, C.rose);
+  pl.stroke({ r: 0.7, y: 0.6, b: 0.3 }, C.rose, 4);
+  pl.fill({ r: 0.75, b: 0.7, y: 0.3 }, C.doors);
+
   // the café
   pl.fill(DARK, S.cafeSign);
   S.awning.forEach((a, k) => pl.fill(k % 2 ? WHITE : { r: 0.95 }, a));
@@ -729,8 +804,9 @@ function drawPlate(i: number, pw: number, ph: number): Plate {
     pl.fill(WHITE, round(764, 838, 18, 22, 3));
   }
   if (sc.cafe === 'closed') {
-    pl.fill(WHITE, round(880, 826, 54, 24, 3));
-    pl.text({ r: 0.95 }, 'CLOSED', 907, 838, 12, 800);
+    // a no-entry sign on the door
+    pl.fill({ r: 0.95 }, circle(907, 838, 15));
+    pl.fill(WHITE, round(897, 835, 20, 6, 2));
   }
   pl.stroke(DARK, S.cafeGlass, 5);
   pl.stroke(DARK, S.cafeDoor, 5);
@@ -776,29 +852,31 @@ function drawPlate(i: number, pw: number, ph: number): Plate {
     for (const l of t.dark) pl.fill(LEAF_DARK, l);
     if (sc.trees === 'blossom') t.blossom.forEach((b, k) => pl.fill(k % 3 ? { r: 0.34 } : { r: 0.18 }, b));
   }
-  pl.stroke(DARK, S.lampPole, 9);
-  pl.stroke(DARK, S.lampArm, 5);
-  pl.fill(DARK, S.lanternCap);
-  if (sc.lamp === 'on') {
-    pl.glow(() => {
-      pl.over({ y: { x: 520, y: 580, r: 200, from: 0.5, to: 0 } }, circle(520, 580, 200));
-      pl.fill({ y: 0.9 }, S.lantern);
-    });
-  } else pl.fill({ b: 0.32, r: 0.2 }, S.lantern);
-  pl.stroke(DARK, S.lantern, 4);
-  if (sc.lamp === 'spark') {
-    pl.glow(() => {
-      for (const [dx, dy, a] of [[-30, -10, 0.4], [26, -18, -0.3], [8, 30, 1.2], [-20, 26, 2.2]]) {
-        const x = 520 + dx, y = 578 + dy;
-        pl.stroke({ y: 0.95 }, line([x, y, x + Math.cos(a) * 14 + 4, y + Math.sin(a) * 14 - 6, x + Math.cos(a) * 26, y + Math.sin(a) * 26]), 3);
-      }
-      pl.fill({ y: 0.95, r: 0.3 }, circle(520, 578, 7));
-    });
+  for (const L of S.lamps) {
+    pl.stroke(DARK, L.pole, 9);
+    pl.stroke(DARK, L.arm, 5);
+    pl.fill(DARK, L.cap);
+    if (sc.lamp === 'on') {
+      pl.glow(() => {
+        pl.over({ y: { x: L.x, y: 580, r: 200, from: 0.5, to: 0 } }, circle(L.x, 580, 200));
+        pl.fill({ y: 0.9 }, L.lantern);
+      });
+    } else pl.fill({ b: 0.32, r: 0.2 }, L.lantern);
+    pl.stroke(DARK, L.lantern, 4);
+    if (L.x === 520 && sc.lamp === 'spark') {
+      pl.glow(() => {
+        for (const [dx, dy, a] of [[-30, -10, 0.4], [26, -18, -0.3], [8, 30, 1.2], [-20, 26, 2.2]]) {
+          const x = L.x + dx, y = 578 + dy;
+          pl.stroke({ y: 0.95 }, line([x, y, x + Math.cos(a) * 14 + 4, y + Math.sin(a) * 14 - 6, x + Math.cos(a) * 26, y + Math.sin(a) * 26]), 3);
+        }
+        pl.fill({ y: 0.95, r: 0.3 }, circle(L.x, 578, 7));
+      });
+    }
   }
 
   // people, each with whatever light they carry, then whatever else is in front
   const drawn = sc.people.map((w) => {
-    const d = person(pl, w.pose === 'sit' && w.x === 0 ? { ...w, x: S.houses[1].seat[0], y: S.houses[1].seat[1] } : w);
+    const d = person(pl, w.pose === 'sit' && w.x === 0 ? { ...w, x: S.houses[SEAT].seat[0], y: S.houses[SEAT].seat[1] } : w);
     pl.glow(() => personGlow(pl, d));
     return d;
   });
@@ -843,45 +921,97 @@ function silhouette(pl: Plate, w: Win) {
   pl.fill({ b: 0.88, r: 0.5 }, p);
 }
 
-/* --- on the page ------------------------------------------------------------- */
+/* --- on the page -------------------------------------------------------------
+   The canvas always holds the whole world. Where it sits is two things,
+   blended by the opening's progress (0 to 1):
+
+     full screen  the world covers the screen below the header
+     column       the middle of the world (x 0 to 1000) covers the frame
+
+   Moving between them only changes a CSS transform and a clip, so the
+   opening costs no drawing at all. */
 
 export interface StreetView {
   /** Where the story is, 0 to the last plate; fractions are transitions. */
   show(pos: number): void;
+  /** The opening: 0 full screen, 1 settled in its column. */
+  open(q: number): void;
 }
 
 export async function mountStreet(fig: HTMLElement, reduce: boolean): Promise<StreetView> {
-  const canvas = fig.querySelector('canvas')!;
-  const box = canvas.parentElement!;
+  const frame = fig.querySelector<HTMLElement>('.riso__plate')!;
+  const stage = fig.querySelector<HTMLElement>('.riso__stage')!;
+  const canvas = stage.querySelector('canvas')!;
   const out = canvas.getContext('2d')!;
   const capN = fig.querySelector<HTMLElement>('[data-riso-n]');
   const capTerm = fig.querySelector<HTMLElement>('[data-riso-term]');
   const capLine = fig.querySelector<HTMLElement>('[data-riso-line]');
+  const head = document.querySelector<HTMLElement>('.masthead');
   const N = SCENES.length;
 
   try {
     await document.fonts?.load('800 40px "Bricolage Grotesque Variable"');
   } catch { /* fall back to the system face */ }
 
-  let pw = 0, ph = 0, pr = 1;
+  let pw = 0, ph = 0, ppu = 1; // canvas pixels, and canvas pixels per world unit
   let sc: Screens;
   let covs: (Coverage | undefined)[] = [];
   const live = new Map<number, Record<Ink, HTMLCanvasElement>>();
-  let pos = 0, drawnKey = '', caption = 0;
+  let pos = 0, q = reduce ? 1 : 0, drawnKey = '', caption = 0;
 
-  function setup() {
-    const r = box.getBoundingClientRect();
-    pr = Math.min(window.devicePixelRatio || 1, 1.5);
-    const max = 1.1e6;
-    if (r.width * r.height * pr * pr > max) pr = Math.sqrt(max / (r.width * r.height));
-    pw = Math.max(1, Math.round(r.width * pr));
-    ph = Math.max(1, Math.round(r.height * pr));
+  /** Where the screen and the frame are, in the stage's coordinates. */
+  function measure() {
+    const top = head?.offsetHeight ?? 0;
+    const SW = document.documentElement.clientWidth, SH = window.innerHeight - top;
+    const f = frame.getBoundingClientRect();
+    const uF = Math.max(SW / WORLD.w, SH / WORLD.h); // CSS px per world unit, full screen
+    const uC = Math.max(f.width / 1000, f.height / WORLD.h); // and in the column
+    const radius = parseFloat(getComputedStyle(frame).getPropertyValue('--radius')) || 0;
+    return { SW, SH, fx: f.left, fy: f.top - top, fw: f.width, fh: f.height, uF, uC, radius };
+  }
+
+  /** Size the canvas: sharp enough in the column, and never too many pixels. */
+  function setup(m = measure()) {
+    const T = Math.min(window.devicePixelRatio || 1, 1.5);
+    let D = T * Math.min(1, Math.max(m.uC / m.uF, 0.75)); // canvas px per CSS px, full screen
+    const max = 1.5e6;
+    const area = WORLD.w * WORLD.h * (m.uF * D) ** 2;
+    if (area > max) D *= Math.sqrt(max / area);
+    const w = Math.max(1, Math.round(WORLD.w * m.uF * D));
+    // a small change in size (a phone's address bar) does not redraw the plates
+    if (pw && Math.abs(w - pw) / pw < 0.15) return;
+    pw = w;
+    ph = Math.round((w * WORLD.h) / WORLD.w);
+    ppu = pw / WORLD.w;
     canvas.width = pw;
     canvas.height = ph;
-    sc = screens(pw, ph, Math.max(3, 3.4 * pr));
+    sc = screens(pw, ph, Math.max(3, 3.2 * Math.min(1.5, ppu / m.uC)));
     covs = [];
     live.clear();
     drawnKey = '';
+  }
+
+  /** Put the canvas where the opening says, and clip it to match. */
+  function place(m = measure()) {
+    const e = q * q * (3 - 2 * q);
+    const mix = (a: number, b: number) => a + (b - a) * e;
+    // full screen: the world centred across, a little more street than sky
+    const fxF = (m.SW - WORLD.w * m.uF) / 2;
+    const fyF = (m.SH - WORLD.h * m.uF) * 0.6;
+    // column: world x 0 to 1000 across the frame
+    const fxC = m.fx + (m.fw - 1000 * m.uC) / 2 + WORLD.x0 * m.uC;
+    const fyC = m.fy + (m.fh - WORLD.h * m.uC) * 0.6;
+    const u = mix(m.uF, m.uC);
+    stage.style.left = `${-m.fx}px`;
+    stage.style.top = `${-m.fy}px`;
+    stage.style.width = `${m.SW}px`;
+    stage.style.height = `${m.SH}px`;
+    canvas.style.width = `${WORLD.w * m.uF}px`;
+    canvas.style.height = `${WORLD.h * m.uF}px`;
+    canvas.style.transform = `translate(${mix(fxF, fxC)}px, ${mix(fyF, fyC)}px) scale(${u / m.uF})`;
+    const R = m.radius * e;
+    stage.style.clipPath =
+      `inset(${m.fy * e}px ${(m.SW - m.fx - m.fw) * e}px ${(m.SH - m.fy - m.fh) * e}px ${m.fx * e}px round 0 ${R}px ${R}px 0)`;
   }
 
   const coverage = (i: number) => (covs[i] ??= press(drawPlate(i, pw, ph), sc));
@@ -896,7 +1026,7 @@ export async function mountStreet(fig: HTMLElement, reduce: boolean): Promise<St
     const c = coverage(i);
     l = { y: inkLayer(c.y, 'y', pw, ph), r: inkLayer(c.r, 'r', pw, ph), b: inkLayer(c.b, 'b', pw, ph) };
     live.set(i, l);
-    if (live.size > 3) live.delete(live.keys().next().value!);
+    if (live.size > 2) live.delete(live.keys().next().value!);
     return l;
   }
 
@@ -904,10 +1034,10 @@ export async function mountStreet(fig: HTMLElement, reduce: boolean): Promise<St
   const reg = (i: number, k: Ink): P => {
     if (k === 'y') return [0, 0];
     const r = seeded(500 + i * 7 + (k === 'r' ? 1 : 2));
-    return [jit(r, 1.4) * pr, jit(r, 1.4) * pr];
+    return [jit(r, 2) * ppu, jit(r, 2) * ppu];
   };
   // in a change of plate, each ink slides into register in turn, like a print being pulled
-  const SLIDE: Record<Ink, P> = { y: [0, -26], r: [22, 0], b: [-16, 14] };
+  const SLIDE: Record<Ink, P> = { y: [0, -36], r: [30, 0], b: [-22, 20] };
   const START: Record<Ink, number> = { y: 0, r: 0.2, b: 0.4 };
   const ease = (t: number) => 1 - Math.pow(1 - t, 3);
 
@@ -916,7 +1046,7 @@ export async function mountStreet(fig: HTMLElement, reduce: boolean): Promise<St
     const i = Math.min(Math.floor(p), N - 2);
     let t = Math.min(1, Math.max(0, (p - i - 0.45) / 0.55));
     if (reduce) t = t < 0.5 ? 0 : 1;
-    const key = `${i}:${t.toFixed(3)}:${pw}x${ph}`;
+    const key = `${i}:${t.toFixed(3)}:${pw}`;
     if (key === drawnKey) return;
     drawnKey = key;
 
@@ -938,7 +1068,7 @@ export async function mountStreet(fig: HTMLElement, reduce: boolean): Promise<St
         const [x, y] = reg(i + 1, k);
         const sl = reduce ? 0 : 1 - kk;
         out.globalAlpha = kk;
-        out.drawImage(Bl[k], x + SLIDE[k][0] * sl * pr, y + SLIDE[k][1] * sl * pr);
+        out.drawImage(Bl[k], x + SLIDE[k][0] * sl * ppu, y + SLIDE[k][1] * sl * ppu);
       }
     }
     out.globalAlpha = 1;
@@ -961,7 +1091,9 @@ export async function mountStreet(fig: HTMLElement, reduce: boolean): Promise<St
     }
   }
 
-  setup();
+  const m0 = measure();
+  setup(m0);
+  place(m0);
   render();
   fig.classList.add('is-ready');
 
@@ -971,30 +1103,38 @@ export async function mountStreet(fig: HTMLElement, reduce: boolean): Promise<St
   let next = 1;
   const warm = () => {
     if (next >= N) return;
-    const size = `${pw}x${ph}`;
+    const size = pw;
     coverage(next++);
-    if (size === `${pw}x${ph}`) idle(warm);
+    if (size === pw) idle(warm);
   };
   idle(warm);
 
   let timer = 0;
-  new ResizeObserver(() => {
+  const resized = () => {
     clearTimeout(timer);
     timer = window.setTimeout(() => {
-      const r = box.getBoundingClientRect();
-      if (Math.round(r.width * pr) === pw && Math.round(r.height * pr) === ph) return;
-      setup();
+      const m = measure();
+      const before = pw;
+      setup(m);
+      place(m);
       render();
-      next = 1;
-      idle(warm);
-    }, 250);
-  }).observe(box);
+      if (pw !== before) {
+        next = 1;
+        idle(warm);
+      }
+    }, 200);
+  };
+  new ResizeObserver(resized).observe(frame);
+  window.addEventListener('resize', resized);
 
   return {
     show(p: number) {
       pos = p;
       render();
     },
+    open(v: number) {
+      q = reduce ? 1 : Math.min(1, Math.max(0, v));
+      place();
+    },
   };
 }
-

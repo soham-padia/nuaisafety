@@ -15,7 +15,9 @@
  *
  * Overprinting is where the colour comes from: red and yellow make orange,
  * blue and yellow make green, red and blue make the near-black used for
- * lines. Everything is drawn in a fixed 1000 × 1200 space and cropped to fit.
+ * lines. Everything is drawn in one fixed space, WORLD: 1900 × 1200, x from
+ * -450 to 1450. The column on the page shows the middle, x 0 to 1000; the
+ * full-screen opening shows as much of the width as the screen allows.
  */
 export type Ink = 'y' | 'r' | 'b';
 export const INKS: Ink[] = ['y', 'r', 'b'];
@@ -25,8 +27,7 @@ export const INK_RGB: Record<Ink, [number, number, number]> = {
   b: [0, 112, 186],
 };
 export const PAPER = '#f5efe3';
-export const VW = 1000;
-export const VH = 1200;
+export const WORLD = { x0: -450, w: 1900, h: 1200 };
 
 /** How much ink: a flat amount, a vertical gradient, or a radial glow. */
 export type Tone =
@@ -45,10 +46,10 @@ export class Plate {
   private lit = false;
 
   constructor(readonly pw: number, readonly ph: number) {
-    // cover the frame; when cropping height, lose more sky than street
-    const s = Math.max(pw / VW, ph / VH);
-    const ox = (pw - VW * s) / 2;
-    const oy = (ph - VH * s) * 0.6;
+    // the canvas is the whole world, so this is only a scale and a shift
+    const s = pw / WORLD.w;
+    const ox = -WORLD.x0 * s;
+    const oy = 0;
     for (const k of INKS) {
       const cv = document.createElement('canvas');
       cv.width = pw;

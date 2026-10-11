@@ -551,21 +551,26 @@ strong { font-weight: 660; }
 }
 
 /* --- home ---------------------------------------------------------------------
-   The home section is two columns. The scene is pinned on the right while the
-   text scrolls past it on the left, one step at a time: the hook, what is
-   already happening, what we do, who this is for. The page script sets --p
-   on the section, 0 to 1 from its top to its bottom, and the scene reads it.
+   The page opens on the street print at full screen, with the headline on
+   it. The first stretch of scrolling (.home__intro-space) shrinks the print
+   into the right-hand column while the headline stays put, and the rest of
+   the opening fades in beside it. The print's script writes that progress
+   to --q, 0 to 1, and adds .is-open when it is done. Without JavaScript, or
+   with reduced motion, the page starts settled.
 
-   On a phone the scene shrinks to a small bar pinned to the bottom of the
-   screen, caption and print side by side. It stays with you through the
-   home section and plays the same story. */
+   Then the print is pinned on the right while the text scrolls past it on
+   the left, one step at a time: the hook, what is already happening, what
+   we do, who this is for.
 
-.home { --p: 0; position: relative; display: grid; }
+   On a phone the print shrinks into a small bar pinned to the bottom of the
+   screen instead, caption and print side by side. */
+
+.home { --q: 1; position: relative; display: grid; overflow-x: clip; }
 .home__text { padding-inline: var(--gutter); }
 
 .home__art {
   position: sticky;
-  /* sit at the bottom right of the screen, out of the way of the text */
+  /* a bar along the bottom of the screen, out of the way of the text */
   top: calc(100svh - 7.75rem);
   z-index: 5;
   justify-self: stretch;
@@ -573,9 +578,8 @@ strong { font-weight: 660; }
   margin-inline: 0.75rem;
   margin-block-end: -6.75rem;
   border-radius: 1rem;
-  overflow: hidden;
-  box-shadow: 0 6px 22px rgb(31 21 23 / 0.22), 0 0 0 1px rgb(31 21 23 / 0.06);
-  background: #f5efe3;
+  background: rgb(245 239 227 / var(--q));
+  box-shadow: 0 6px 22px rgb(31 21 23 / calc(0.22 * var(--q))), 0 0 0 1px rgb(31 21 23 / calc(0.06 * var(--q)));
 }
 
 .home__step {
@@ -595,39 +599,40 @@ strong { font-weight: 660; }
 .home__step .home__lede { color: var(--ink); margin-block-start: 1.25rem; }
 .home .actions { margin-block-start: 1.5rem; }
 
+/* The opening. The headline is held in place while the print shrinks away,
+   set on paper-coloured labels so it reads over the picture. */
+.home__step--intro .home__lede,
+.home__step--intro .actions { opacity: clamp(0, calc(var(--q) * 2 - 1), 1); }
+.home__step--intro .split-word {
+  background: rgb(245 239 227 / calc(1 - var(--q)));
+  box-shadow: 0 0 0 0.12em rgb(245 239 227 / calc(1 - var(--q)));
+}
+@media (prefers-reduced-motion: no-preference) {
+  .js .home { --q: 0; }
+  .js .home__intro-space { height: 75svh; }
+  .js .home__step--intro { position: sticky; top: var(--head); }
+  .js .home:not(.is-open) .home__step--intro { z-index: 6; }
+}
+
 @media (min-width: 900px) {
-  .home {
-    grid-template-columns: minmax(0, 0.92fr) minmax(0, 1.08fr);
-    max-width: var(--page);
-    margin-inline: auto;
-  }
+  .home { grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr); }
+  /* the text lines up with the page; the print runs to the right edge */
+  .home__text { padding-inline: max(var(--gutter), calc((100vw - var(--page)) / 2 + var(--gutter))) 2.5rem; }
   .home__art {
     grid-column: 2;
     grid-row: 1;
     align-self: start;
-    justify-self: stretch;
-    top: calc(var(--head) + 1.25rem);
-    width: auto;
-    height: calc(100svh - var(--head) - 2.5rem);
-    margin: 0 var(--gutter) 0 0;
-    border-radius: 1.75rem;
+    top: var(--head);
+    height: calc(100svh - var(--head));
+    margin: 0;
+    border-radius: 0;
+    background: none;
     box-shadow: none;
   }
   .home__text { grid-column: 1; grid-row: 1; }
   /* a screen per step, so the eight plates each get room */
   .home__step { min-height: 100svh; }
   .home__step--intro { min-height: calc(100svh - var(--head)); padding-block-start: 0; }
-}
-
-/* Paper grain over the scene: one small static tile, painted once. */
-.home__art::after {
-  content: "";
-  position: absolute;
-  inset: 0;
-  pointer-events: none;
-  opacity: 0.35;
-  mix-blend-mode: multiply;
-  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0.3 0 0 0 0 0.2 0 0 0 0 0.2 0 0 0 0.35 0'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23n)'/%3E%3C/svg%3E");
 }
 
 /* What is already happening: a list with the brand dot for bullets. */
@@ -656,13 +661,16 @@ strong { font-weight: 660; }
 .offers p { margin: 0; font-size: var(--step-0); }
 
 /* --- the print ------------------------------------------------------------------
-   The risograph street (components/RisoStreet, scripts/street.ts) fills the
-   pinned frame, with its caption under it. On a phone the frame is a small
-   bar along the bottom of the screen: the caption, then the print. */
+   The risograph street (components/RisoStreet, scripts/street.ts). The frame
+   (.riso__plate) only marks where the print settles; the stage inside it is
+   sized to the screen by the script, and clipped down to the frame as the
+   opening ends. The caption sits under the print, as plain text. On a phone
+   the frame is the right-hand end of the bar, the caption the rest. */
 
 .riso { margin: 0; height: 100%; display: grid; grid-template-columns: minmax(0, 1fr) 5.75rem; }
-.riso__plate { position: relative; grid-column: 2; grid-row: 1; overflow: hidden; }
-.riso__plate canvas { position: absolute; inset: 0; display: block; width: 100%; height: 100%; opacity: 0; transition: opacity 600ms ease; }
+.riso__plate { --radius: 16px; position: relative; grid-column: 2; grid-row: 1; }
+.riso__stage { position: absolute; overflow: hidden; pointer-events: none; }
+.riso__stage canvas { position: absolute; left: 0; top: 0; display: block; transform-origin: 0 0; opacity: 0; transition: opacity 600ms ease; }
 .riso.is-ready canvas { opacity: 1; }
 .riso__caption {
   grid-column: 1;
@@ -672,6 +680,7 @@ strong { font-weight: 660; }
   justify-content: center;
   gap: 0.2rem;
   padding: 0.6rem 0.4rem 0.6rem 0.9rem;
+  opacity: var(--q);
 }
 .riso__kicker {
   font-size: 0.68rem;
@@ -686,8 +695,8 @@ strong { font-weight: 660; }
 
 @media (min-width: 900px) {
   .riso { grid-template-columns: 1fr; grid-template-rows: minmax(0, 1fr) auto; }
-  .riso__plate { grid-column: 1; grid-row: 1; }
-  .riso__caption { grid-column: 1; grid-row: 2; padding: 1rem 1.4rem 1.2rem; min-height: 5.6rem; justify-content: start; gap: 0.3rem; }
+  .riso__plate { --radius: 0px; grid-column: 1; grid-row: 1; }
+  .riso__caption { grid-column: 1; grid-row: 2; padding: 0.9rem 1.5rem 1.1rem; min-height: 5.2rem; justify-content: start; gap: 0.3rem; }
   .riso__kicker { font-size: 0.75rem; }
   .riso__line { font-size: 1.08rem; }
 }
