@@ -618,11 +618,23 @@ strong { font-weight: 660; }
   .js .home__intro-space { height: 75svh; }
   .js .home__step--intro { position: sticky; top: var(--head); }
   .js:not(.opened) .home__step--intro { z-index: 6; }
+  /* the header over the print: no hard edge, a blur that fades out below it */
   .js:not(.opened) .masthead {
-    background: rgb(255 255 255 / calc(0.4 + 0.6 * var(--q)));
+    background: rgb(255 255 255 / var(--q));
     border-block-end-color: rgb(230 226 220 / var(--q));
-    -webkit-backdrop-filter: blur(14px) saturate(1.2);
-    backdrop-filter: blur(14px) saturate(1.2);
+  }
+  .js:not(.opened) .masthead::before {
+    content: "";
+    position: absolute;
+    inset: 0 0 -3rem;
+    z-index: -1;
+    pointer-events: none;
+    background: linear-gradient(rgb(255 255 255 / 0.6), rgb(255 255 255 / 0.3) 55%, rgb(255 255 255 / 0));
+    -webkit-backdrop-filter: blur(12px);
+    backdrop-filter: blur(12px);
+    -webkit-mask-image: linear-gradient(#000 50%, transparent);
+    mask-image: linear-gradient(#000 50%, transparent);
+    opacity: calc(1 - var(--q));
   }
 }
 

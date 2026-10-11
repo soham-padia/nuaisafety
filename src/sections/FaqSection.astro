@@ -1,7 +1,8 @@
 ---
 /**
  * Common questions. Native <details>, so each answer opens without
- * JavaScript and works with a keyboard and a screen reader.
+ * JavaScript and works with a keyboard and a screen reader. They share a
+ * name, so opening one closes the one that was open.
  *
  * Every answer is something the site already states or the group has
  * decided. Do not add answers that promise dates, people or resources the
@@ -49,12 +50,12 @@ const faqs: { q: string; a: string }[] = [
     <h2 id="faq-title" class="section-title dot">FAQ</h2>
     <div class="faq">
       {faqs.map(({ q, a }) => (
-        <details class="faq__item">
+        <details class="faq__item" name="faq">
           <summary>{q}</summary>
           <p>{a}</p>
         </details>
       ))}
-      <details class="faq__item">
+      <details class="faq__item" name="faq">
         <summary>Is NU AI Safety a Northeastern club?</summary>
         <p>
           Yes, we are a Khoury College club. You can find us in
