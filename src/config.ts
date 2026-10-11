@@ -37,12 +37,10 @@ export const SLACK_URL: string | null =
 
 /**
  * EMAIL - the address published in the footer, or null while there is none to
- *   publish. The gmail address is retired pending a nuaisafety@northeastern.edu.
- *   While this is null the footer drops its Contact line and every email
- *   fallback routes elsewhere, so nothing renders a dead mailto. To switch it
- *   back on, put the address here. That is the only edit needed.
+ *   publish. Setting it to null drops the footer's Contact line and routes every
+ *   email fallback elsewhere, so nothing ever renders a dead mailto.
  */
-export const EMAIL: string | null = null;
+export const EMAIL: string | null = 'aisafety@northeastern.edu';
 
 /** A mailto for the group, or null when there is no address to publish. */
 export const mailtoHref = (subject?: string): string | null =>
