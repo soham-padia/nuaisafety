@@ -36,13 +36,11 @@ export const SLACK_URL: string | null =
   'https://join.slack.com/t/nuaisafety/shared_invite/zt-4bwdf0z1w-DnPKeS6kprWA~7e1_BPCQw';
 
 /**
- * EMAIL - the address published in the footer, or null while there is none to
- *   publish. The gmail address is retired pending a nuaisafety@northeastern.edu.
- *   While this is null the footer drops its Contact line and every email
- *   fallback routes elsewhere, so nothing renders a dead mailto. To switch it
- *   back on, put the address here. That is the only edit needed.
+ * EMAIL - the group's address for general inquiries, shown in the footer and
+ *   under the FAQ. Set it to null to take it down: the footer drops its line
+ *   and every email fallback routes elsewhere, so nothing renders a dead mailto.
  */
-export const EMAIL: string | null = null;
+export const EMAIL: string | null = 'aisafety@northeastern.edu';
 
 /** A mailto for the group, or null when there is no address to publish. */
 export const mailtoHref = (subject?: string): string | null =>

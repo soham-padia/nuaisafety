@@ -12,7 +12,7 @@
  * decided. Do not add answers that promise dates, people or resources the
  * group does not have yet.
  */
-import { KHOURY_CLUB_URL, SLACK_URL } from '../config';
+import { EMAIL, KHOURY_CLUB_URL, SLACK_URL } from '../config';
 
 const faqs: { q: string; a: string }[] = [
   {
@@ -67,9 +67,13 @@ const faqs: { q: string; a: string }[] = [
         </p>
       </details>
     </div>
-    {SLACK_URL && (
+    {(SLACK_URL || EMAIL) && (
       <p class="note note--plain">
-        Still have a question? <a href={SLACK_URL}>Ask us in the Slack</a>.
+        Still have a question?
+        {SLACK_URL && <> <a href={SLACK_URL}>Ask us in the Slack</a></>}
+        {SLACK_URL && EMAIL && ' or email'}
+        {!SLACK_URL && EMAIL && ' Email'}
+        {EMAIL && <> <a href={`mailto:${EMAIL}`}>{EMAIL}</a></>}.
       </p>
     )}
   </div>
