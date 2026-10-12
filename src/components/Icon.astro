@@ -1,0 +1,51 @@
+---
+/**
+ * Small spot icons. Each is a simple ink drawing sitting on a red dot, the
+ * same dot as the wordmark's, so the brand mark carries through the page.
+ * Decorative: the text next to an icon always says what it means.
+ */
+interface Props {
+  name: 'book' | 'talk' | 'research' | 'chat' | 'chip' | 'policy' | 'flag' | 'cap';
+  size?: number;
+  /** The disc's colour. Red by default; the palette's river and sun for variety. */
+  tone?: 'accent' | 'river' | 'sun' | 'brick';
+}
+const { name, size = 56, tone = 'accent' } = Astro.props;
+
+const glyphs: Record<Props['name'], string> = {
+  // an open book
+  book: '<path d="M16 22c5-2 10-2 16 1 6-3 11-3 16-1v22c-5-2-10-2-16 1-6-3-11-3-16-1z"/><path d="M32 23v22"/>',
+  // a lectern with a microphone
+  talk: '<path d="M22 30h20l-3 18H25z"/><path d="M18 30h28"/><path d="M36 30c0-6 2-10 6-12"/><circle cx="44" cy="17" r="3"/><path d="M28 48v4h8v-4"/>',
+  // a magnifier over a small network
+  research: '<circle cx="28" cy="28" r="10"/><path d="M35 35l11 11"/><circle cx="24" cy="26" r="1.6"/><circle cx="31" cy="24" r="1.6"/><circle cx="29" cy="32" r="1.6"/><path d="M24 26l7-2-2 8z"/>',
+  // two speech bubbles
+  chat: '<path d="M14 20h22v14H24l-6 5v-5h-4z"/><path d="M40 27h10v13h-3v5l-6-5H30v-3"/>',
+  // a chip, for the technical track
+  chip: '<rect x="22" y="22" width="20" height="20" rx="2"/><rect x="28" y="28" width="8" height="8"/><path d="M27 16v6M32 16v6M37 16v6M27 42v6M32 42v6M37 42v6M16 27h6M16 32h6M16 37h6M42 27h6M42 32h6M42 37h6"/>',
+  // a columned building, for the policy track
+  policy: '<path d="M16 26l16-10 16 10z"/><path d="M19 26v16M26 26v16M32 26v16M38 26v16M45 26v16"/><path d="M15 44h34M14 48h36"/>',
+  // a flag, for the executive board
+  flag: '<path d="M22 50V14"/><path d="M22 16c8-4 12 4 20 0v16c-8 4-12-4-20 0"/>',
+  // a mortarboard, for degree levels
+  cap: '<path d="M12 26l20-9 20 9-20 9z"/><path d="M20 30v9c7 5 17 5 24 0v-9"/><path d="M50 27v10"/>',
+};
+---
+<svg
+  class={`icon icon--${name}`}
+  width={size}
+  height={size}
+  viewBox="0 0 64 64"
+  aria-hidden="true"
+  focusable="false"
+>
+  <circle cx="40" cy="40" r="22" fill={`var(--${tone})`} opacity="0.92" />
+  <g
+    fill="none"
+    stroke="var(--ink)"
+    stroke-width="2.6"
+    stroke-linecap="round"
+    stroke-linejoin="round"
+    set:html={glyphs[name]}
+  />
+</svg>

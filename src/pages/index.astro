@@ -1,83 +1,117 @@
 ---
 import Base from '../layouts/Base.astro';
-import Signup from '../components/Signup.astro';
-import Perceptron from '../components/Perceptron.astro';
+import RisoStreet from '../components/RisoStreet.astro';
+import HeroTitle from '../components/HeroTitle';
+import Icon from '../components/Icon.astro';
+import JoinSection from '../sections/JoinSection.astro';
+import FellowshipsSection from '../sections/FellowshipsSection.astro';
+import ExecSection from '../sections/ExecSection.astro';
+import TeamSection from '../sections/TeamSection.astro';
+import ResearchSection from '../sections/ResearchSection.astro';
+import FaqSection from '../sections/FaqSection.astro';
+import ResourcesSection from '../sections/ResourcesSection.astro';
 import { LUMA_CALENDAR_ID, LUMA_CALENDAR_URL, SLACK_URL, mailtoHref } from '../config';
 
 /* Joining the Slack is how someone becomes a member, so it is the red button.
-   Same fallback chain as /join: email, then the join page itself. */
-const slackHref = SLACK_URL ?? mailtoHref('Joining the Slack') ?? '/join';
+   Fallbacks: email, then the Get involved section. */
+const slackHref = SLACK_URL ?? mailtoHref('Joining the Slack') ?? '#join';
 ---
 <Base>
-  <section class="hero">
-    <div class="wrap hero__grid">
-      <div class="hero__text">
-        <h1>NU AI Safety</h1>
-        <p class="tagline">AI Safety at Northeastern</p>
+  <!-- before anything renders: this page decides where a load starts (below) -->
+  <script is:inline>if ('scrollRestoration' in history) history.scrollRestoration = 'manual';</script>
+  <section class="home" data-story>
+    <!-- Where "Home" goes: the end of the opening, with the page settled
+         (see .home__mark in global.css). Scrolling up still reaches the start. -->
+    <span class="home__mark" id="top" aria-hidden="true"></span>
+    <div class="home__art">
+      <RisoStreet />
+    </div>
+
+    <div class="home__text">
+      <div class="home__intro">
+        <div class="home__step home__step--intro">
+          <HeroTitle client:load text="AI is becoming more capable faster than we can control it." />
+          <p class="home__lede">
+            NU AI Safety is a student-led group at Northeastern. We prepare students to help make
+            advanced AI safe, through research and through policy.
+          </p>
+          <div class="actions">
+            <a class="btn" href={slackHref}>Join our Slack →</a>
+            <a class="btn btn--ghost" href="#join">Ways to get involved</a>
+          </div>
+        </div>
+        <div class="home__intro-space" aria-hidden="true"></div>
+      </div>
+
+      <div class="home__step">
+        <h2 class="dot">This is already happening</h2>
+        <ul class="facts">
+          <li>
+            AI agents have
+            <a href="https://openai.com/index/hugging-face-incident-and-the-road-ahead/">hacked into other companies</a>.
+          </li>
+          <li>
+            In safety tests, models have
+            <a href="https://www.anthropic.com/research/agentic-misalignment">blackmailed the people using them</a>.
+          </li>
+          <li>
+            Models can often
+            <a href="https://arxiv.org/abs/2505.23836">tell when they are being evaluated</a>.
+          </li>
+          <li>
+            AI has been
+            <a href="https://www.anthropic.com/news/disrupting-AI-espionage">used at scale for cyber espionage</a>.
+          </li>
+        </ul>
+      </div>
+
+      <div class="home__step" id="what">
+        <h2 class="dot">What we do</h2>
+        <ul class="offers">
+          <li>
+            <Icon name="book" tone="river" />
+            <div>
+              <h3>Fellowships</h3>
+              <p>An 8-week introduction to AI safety, on a technical or a policy track.</p>
+            </div>
+          </li>
+          <li>
+            <Icon name="talk" tone="sun" />
+            <div>
+              <h3>Guest talks</h3>
+              <p>Researchers in AI safety and interpretability, from Boston and beyond.</p>
+            </div>
+          </li>
+          <li>
+            <Icon name="research" />
+            <div>
+              <h3>Research</h3>
+              <p>Support for members doing their own AI safety research.</p>
+            </div>
+          </li>
+        </ul>
+      </div>
+
+      <div class="home__step">
+        <h2 class="dot">Who this is for</h2>
+        <p class="home__lede">
+          <strong>AI safety needs more than AI researchers and software engineers.</strong>
+          Many of its hardest problems are about policy, law, cybersecurity, biology and psychology.
+        </p>
         <p>
-          We are a student-led group preparing Northeastern students to help align and govern
-          advanced AI systems. We run technical and policy fellowships, host talks from
-          researchers, and support student research.
+          We welcome undergraduate, master’s and PhD students from every program at Northeastern.
         </p>
         <div class="actions">
-          <a class="btn" href={slackHref}>Join our Slack →</a>
-          <a class="btn btn--ghost" href="/join">Other ways to join</a>
+          <a class="btn" href="#join">Get involved</a>
         </div>
       </div>
-      <figure class="hero__art">
-        <Perceptron />
-        <figcaption>
-          Organization of a perceptron, after Rosenblatt, 1958. Red marks the cells active for
-          the input, and the response unit that fires as a result.
-        </figcaption>
-      </figure>
-    </div>
-  </section>
-
-  <section class="band band--wash" aria-labelledby="what">
-    <div class="wrap">
-      <h2 id="what" class="sr-only-heading">What we do</h2>
-      <div class="grid grid--3">
-        <div class="block">
-          <h3>Fellowships</h3>
-          <p>
-            Weekly reading groups on the technical and policy sides of AI safety, from the
-            fundamentals to current research.
-          </p>
-        </div>
-        <div class="block">
-          <h3>Guest talks</h3>
-          <p>
-            Talks from researchers in AI safety and interpretability, from across Boston and
-            beyond.
-          </p>
-        </div>
-        <div class="block">
-          <h3>Research</h3>
-          <p>
-            Support for members pursuing their own AI safety research, with feedback and
-            collaboration from other members and Northeastern faculty.
-          </p>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <section class="band" aria-labelledby="whofor">
-    <div class="wrap prose">
-      <h2 id="whofor">Who this is for</h2>
-      <p>
-        <strong>AI safety needs more than just AI researchers and software engineers.</strong>
-        Many of its most important problems concern policy, law, cybersecurity, biology, and psychology. Anyone
-        interested in making AI go well is welcome!
-      </p>
     </div>
   </section>
 
   {LUMA_CALENDAR_ID && (
-    <section class="band band--wash" aria-labelledby="events">
+    <section class="band band--sand section" id="events" aria-labelledby="events-title">
       <div class="wrap">
-        <h2 id="events">Events</h2>
+        <h2 id="events-title" class="section-title dot">Events</h2>
         <iframe
           class="events"
           src={`https://luma.com/embed/calendar/${LUMA_CALENDAR_ID}/events?lt=light`}
@@ -86,21 +120,111 @@ const slackHref = SLACK_URL ?? mailtoHref('Joining the Slack') ?? '/join';
           allowfullscreen
         ></iframe>
         <p class="events__sub">
-          <a class="arrow" href={LUMA_CALENDAR_URL}><span>Subscribe on Luma</span></a>
+          <a class="link-more" href={LUMA_CALENDAR_URL}>Subscribe on Luma</a>
         </p>
       </div>
     </section>
   )}
 
-  <section class="band" aria-labelledby="new">
-    <div class="wrap prose">
-      <h2 id="new">Join Us!</h2>
-      <p class="lede">Fellowships start in January 2027. Learn more <a href="/join">here</a>.</p>
-      <div class="actions">
-        <Signup />
-      </div>
-    </div>
-  </section>
+  <JoinSection />
+  <FellowshipsSection />
+  <ExecSection />
+  <TeamSection />
+  <ResearchSection />
+  <ResourcesSection />
+  <FaqSection />
+
+  <script>
+    /* The menu: mark whichever section is on screen as the current one, on
+       scroll. Without this script the menu still jumps to each section. */
+    const root = document.documentElement;
+    const head = document.querySelector('.masthead');
+    const links = [...document.querySelectorAll('.nav a[href^="/#"]:not(.btn)')];
+    // a link may point at a marker inside a section (Home does): track the section
+    const sections = links
+      .map((a) => document.getElementById(a.getAttribute('href').slice(2)))
+      .map((el) => el && (el.closest('section') ?? el))
+      .filter(Boolean);
+
+    function measure() {
+      if (head) root.style.setProperty('--head', head.offsetHeight + 'px');
+    }
+
+    function update() {
+      const line = (head ? head.offsetHeight : 0) + innerHeight * 0.25;
+      let current = null;
+      for (const sec of sections) if (sec.getBoundingClientRect().top <= line) current = sec;
+      for (const a of links) {
+        const on = current && a.getAttribute('href') === '/#' + current.id;
+        if (on) a.setAttribute('aria-current', 'location');
+        else a.removeAttribute('aria-current');
+      }
+    }
+
+    let queued = false;
+    function onScroll() {
+      if (queued) return;
+      queued = true;
+      requestAnimationFrame(() => { queued = false; update(); });
+    }
+
+    measure();
+
+    /* Home, and where a page load starts.
+
+       Home (#top) goes to the end of the opening, where the page is settled
+       (.home__mark). That spot is only for the menu: a load or a refresh
+       starts at the very top, on the full-screen opening. So on this page the
+       Home links scroll there without putting #top in the address, the
+       browser does not restore an old scroll position, and arriving from
+       another page at /#top lands settled and then drops the #top.
+
+       With any other section in the address (an old /team link redirects to
+       /#team, for example), go straight there, a header's height above it as
+       the smooth scroll does for a click. The browser does not always do it on
+       its own after a redirect, and a smooth scroll the length of the story
+       would be a slow way to arrive. */
+    const mark = document.getElementById('top');
+    const headHeight = () => (head ? head.offsetHeight : 0);
+    const below = (el) => el.getBoundingClientRect().top + scrollY - headHeight();
+
+    for (const a of document.querySelectorAll('a[href="/#top"], a[href="#top"]')) {
+      a.addEventListener('click', (e) => {
+        if (!mark || e.metaKey || e.ctrlKey || e.shiftKey || e.button !== 0) return;
+        e.preventDefault();
+        e.stopPropagation(); // the smooth scroll would otherwise follow the link itself
+        const lenis = window.lenis;
+        if (lenis) lenis.scrollTo(below(mark));
+        else window.scrollTo({ top: below(mark), behavior: 'smooth' });
+      });
+    }
+
+    const id = location.hash.slice(1);
+    const target = id ? document.getElementById(id) : null;
+    if (id === 'top') history.replaceState(null, '', location.pathname + location.search);
+    // the browser's own scroll: the smooth scroll follows it
+    const start = () => window.scrollTo({ top: target ? below(target) : 0, behavior: 'instant' });
+    start();
+    // the browser and the scroll libraries can still move the page while it
+    // loads, so put it back once everything has, unless the reader has
+    // already started scrolling
+    let moved = false;
+    for (const type of ['wheel', 'touchstart', 'keydown', 'pointerdown']) {
+      addEventListener(type, () => (moved = true), { once: true, passive: true });
+    }
+    addEventListener('load', () => requestAnimationFrame(() => moved || start()), { once: true });
+
+    // #top typed into the address on this page: go to Home, and drop it again
+    addEventListener('hashchange', () => {
+      if (location.hash !== '#top' || !mark) return;
+      history.replaceState(null, '', location.pathname + location.search);
+      window.scrollTo({ top: below(mark), behavior: 'instant' });
+    });
+
+    update();
+    addEventListener('scroll', onScroll, { passive: true });
+    addEventListener('resize', () => { measure(); update(); });
+  </script>
 </Base>
 
 <style>

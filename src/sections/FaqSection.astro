@@ -1,0 +1,126 @@
+---
+/**
+ * Common questions. Native <details>, so each answer opens without
+ * JavaScript and works with a keyboard and a screen reader. They share a
+ * name, so opening one closes the one that was open.
+ *
+ * The script below only adds motion: each answer slides open and shut, and
+ * opening one slides the other closed. It takes over the one-at-a-time rule
+ * itself, since the browser would close the other answer instantly.
+ *
+ * Every answer is something the site already states or the group has
+ * decided. Do not add answers that promise dates, people or resources the
+ * group does not have yet.
+ */
+import { EMAIL, KHOURY_CLUB_URL, SLACK_URL } from '../config';
+
+const faqs: { q: string; a: string }[] = [
+  {
+    q: 'Who can join?',
+    a: 'Any Northeastern student, at any level and in any program. We are registered as a Khoury graduate club so that graduate students can take part, but undergraduates are equally welcome, and most of our programs are designed with them in mind.',
+  },
+  {
+    q: 'Do I need to know machine learning?',
+    a: 'No. The policy track requires no technical background, and the technical track starts from the fundamentals. Several executive board roles are also non-technical.',
+  },
+  {
+    q: 'What is the difference between the technical and policy tracks?',
+    a: 'The technical track focuses on making AI systems safer by working on the technology itself: how models are trained, why aligning them is hard, and interpretability. The policy track focuses on how AI is governed: the risks, how governments and companies are responding, and what good standards and laws could look like. Completing either track makes you a fellow.',
+  },
+  {
+    q: 'How much time does a fellowship take?',
+    a: 'One 90-minute session per week, for eight weeks.',
+  },
+  {
+    q: 'When do fellowships start?',
+    a: 'In January 2027. Join the mailing list and we will email you before they begin.',
+  },
+  {
+    q: 'What does a member do?',
+    a: 'Members join our Slack and are welcome at all open meetings and talks. There is no time commitment.',
+  },
+  {
+    q: 'How do I join the executive board?',
+    a: 'Apply using the form in the executive board section above. The role takes about 3–5 hours a week, including one board meeting, and no prior experience is required. Students on co-op are welcome to apply.',
+  },
+  {
+    q: 'I already work on AI safety. How can I get involved?',
+    a: 'Join our Slack and tell us about your work. We would love to hear from you.',
+  },
+];
+---
+<section class="band section" id="faq" aria-labelledby="faq-title">
+  <div class="wrap">
+    <h2 id="faq-title" class="section-title dot">FAQ</h2>
+    <div class="faq">
+      {faqs.map(({ q, a }) => (
+        <details class="faq__item" name="faq">
+          <summary>{q}</summary>
+          <p>{a}</p>
+        </details>
+      ))}
+      <details class="faq__item" name="faq">
+        <summary>Is NU AI Safety a Northeastern club?</summary>
+        <p>
+          Yes, we are a Khoury College club. You can find us in
+          <a href={KHOURY_CLUB_URL}>Khoury’s clubs directory</a>.
+        </p>
+      </details>
+    </div>
+    {(SLACK_URL || EMAIL) && (
+      <p class="note note--plain">
+        Still have a question?
+        {SLACK_URL && <> <a href={SLACK_URL}>Ask us in the Slack</a></>}
+        {SLACK_URL && EMAIL && ' or email'}
+        {!SLACK_URL && EMAIL && ' Email'}
+        {EMAIL && <> <a href={`mailto:${EMAIL}`}>{EMAIL}</a></>}.
+      </p>
+    )}
+  </div>
+</section>
+
+<script>
+  const items = [...document.querySelectorAll<HTMLDetailsElement>('.faq__item')];
+  const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const running = new WeakMap<HTMLDetailsElement, Animation>();
+
+  function animate(d: HTMLDetailsElement, open: boolean) {
+    const summary = d.querySelector('summary')!;
+    running.get(d)?.cancel();
+    const from = d.offsetHeight;
+    if (open) d.open = true;
+    const border = d.offsetHeight - d.clientHeight;
+    const to = open ? d.offsetHeight : summary.offsetHeight + border;
+    d.classList.toggle('is-closing', !open);
+    d.style.overflow = 'hidden';
+    const a = d.animate(
+      { height: [`${from}px`, `${to}px`] },
+      { duration: open ? 360 : 260, easing: open ? 'cubic-bezier(.2,.7,.2,1)' : 'cubic-bezier(.4,0,.2,1)' },
+    );
+    if (open) {
+      d.querySelector('summary + *')?.animate(
+        { opacity: [0, 1], transform: ['translateY(-6px)', 'none'] },
+        { duration: 320, delay: 60, easing: 'ease-out', fill: 'backwards' },
+      );
+    }
+    running.set(d, a);
+    a.onfinish = () => {
+      if (!open) d.open = false;
+      d.classList.remove('is-closing');
+      d.style.overflow = '';
+      running.delete(d);
+    };
+  }
+
+  if (!reduce) {
+    for (const d of items) {
+      d.removeAttribute('name'); // the script keeps one open at a time instead
+      d.querySelector('summary')!.addEventListener('click', (e) => {
+        e.preventDefault();
+        const opening = !d.open || d.classList.contains('is-closing');
+        if (opening) for (const o of items) if (o !== d && o.open && !o.classList.contains('is-closing')) animate(o, false);
+        animate(d, opening);
+      });
+    }
+  }
+</script>

@@ -1,26 +1,45 @@
 /* ---------------------------------------------------------------------------
    NU AI Safety global styles
-   One accent, system type, no framework. See DESIGN.md for the reasoning.
+
+   Northeastern red stays the anchor: the one colour for things you press and
+   for the brand dot. Around it, a small palette taken from the city model on
+   the home page, used sparingly for sections and illustration:
+
+     river   the Charles, a deep teal            --river, --river-pale
+     sun     late afternoon light, amber         --sun, --sun-pale
+     brick   Back Bay brownstone                 --brick
+     sand    warm stone, for tinted sections     --sand
+
+   Type is Bricolage Grotesque throughout, its optical sizes doing the work of
+   a display face at large sizes and a text face at small ones.
    --------------------------------------------------------------------------- */
 
 :root {
-  --ink:    #14161a;
+  --ink:    #17181d;
   --muted:  #5b6169;
   --accent: #c8102e;
   --paper:  #ffffff;
   --wash:   #f6f7f8;
-  --rule:   #e3e6e9;
+  --rule:   #e6e2dc;
+
+  --river:      #1f6f78;
+  --river-pale: #e7f1f0;
+  --sun:        #e8a33d;
+  --sun-pale:   #fbf1e1;
+  --brick:      #a8432f;
+  --sand:       #f6f0e8;
 
   /* #c8102e on white is 5.88:1, which passes AA for body text, not just large.
      Darkened for the visited/hover state so it stays distinguishable. */
   --accent-deep: #a30d26;
 
-  --sans: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto,
-          "Helvetica Neue", Arial, sans-serif;
+  --sans: "Bricolage Grotesque Variable", ui-sans-serif, system-ui, -apple-system,
+          "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
 
   --measure: 36rem;   /* prose column, the readable line length */
   --page:    78rem;   /* outer container */
   --gutter:  1.5rem;
+  --head:    3.75rem;   /* sticky header height; the page script measures the real one */
 
   --step-0: 1.0625rem;
   --step-1: 1.25rem;
@@ -51,22 +70,23 @@ body {
   font-family: var(--sans);
   font-size: var(--step-0);
   line-height: 1.6;
+  font-optical-sizing: auto;
   font-synthesis-weight: none;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
 }
 
 h1, h2, h3 {
-  line-height: 1.15;
-  letter-spacing: -0.021em;
+  line-height: 1.1;
+  letter-spacing: -0.025em;
   text-wrap: balance;
   margin: 0;
-  font-weight: 640;
+  font-weight: 700;
 }
 
-h1 { font-size: var(--step-4); letter-spacing: -0.03em; }
+h1 { font-size: var(--step-4); letter-spacing: -0.04em; font-weight: 780; }
 h2 { font-size: var(--step-3); }
-h3 { font-size: var(--step-1); font-weight: 660; letter-spacing: -0.012em; }
+h3 { font-size: var(--step-1); font-weight: 680; letter-spacing: -0.015em; }
 
 p, li { text-wrap: pretty; }
 p { margin: 0 0 1.15em; max-width: var(--measure); }
@@ -122,6 +142,202 @@ strong { font-weight: 660; }
 /* The h1 is outside the grid, so it needs its own separation from the first row. */
 .prose > h1 { margin-block-end: 2.25rem; }
 
+/* --- sections -----------------------------------------------------------------
+   Every section title ends in the brand dot, the same dot as the wordmark. */
+.dot::after {
+  content: "";
+  display: inline-block;
+  width: 0.2em;
+  height: 0.2em;
+  margin-inline-start: 0.12em;
+  border-radius: 50%;
+  background: var(--accent);
+  vertical-align: 0.05em;
+}
+.section-title { margin-block-end: 1.25rem; }
+.section-lede { max-width: 40rem; margin-block: 0 2.5rem; }
+.section-actions { margin-block-start: 2.5rem; }
+.sub { font-size: var(--step-2); margin-block: 3rem 1.25rem; }
+.link-more { font-weight: 620; text-decoration: none; }
+.link-more::after { content: " \2192"; }
+.link-more:hover { text-decoration: underline; }
+.btn.btn--small { padding: 0.55em 1.1em; font-size: 0.9375rem; }
+
+.note { display: flex; align-items: center; gap: 0.6rem; margin-block: 2rem 0; font-weight: 560; max-width: none; }
+.note--plain { display: block; font-weight: 400; color: var(--muted); max-width: 40rem; }
+
+/* A pale red band, and a full red one for the executive board. */
+.band--tint { background: #fdf2f3; }
+.band--river { background: var(--river-pale); }
+.band--sand { background: var(--sand); }
+
+.band--red { background: var(--accent); color: #fff; }
+.band--red .lede, .band--red p, .band--red dd { color: #fff; }
+.band--red .btn { background: #fff; color: var(--accent); border-color: #fff; }
+.band--red .btn:hover { background: #fde8eb; color: var(--accent-deep); border-color: #fde8eb; }
+.section.band--red + .section, .section + .section.band--red, .band--tint + .section, .section + .band--tint, .band--river + .section, .section + .band--river, .band--sand + .section, .section + .band--sand { border-block-start: 0; }
+
+/* Get involved: four ways in. */
+.ways { list-style: none; padding: 0; margin: 0; display: grid; gap: 1.25rem; }
+@media (min-width: 40rem) { .ways { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (min-width: 64rem) { .ways { grid-template-columns: repeat(4, minmax(0, 1fr)); } }
+.way {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  padding: 1.5rem;
+  border-radius: 1.25rem;
+  background: #fdf2f3;
+}
+.way h3 { margin-block-start: 0.5rem; }
+.way p { color: var(--muted); margin: 0; flex: 1; }
+.way .btn, .way .link-more { align-self: flex-start; margin-block-start: 0.5rem; }
+/* Every card is the same height, and the whole card is its link. */
+.ways > li { display: grid; }
+.way { transition: transform 200ms ease; }
+.way__link::before { content: ""; position: absolute; inset: 0; z-index: 2; border-radius: inherit; }
+.way__link:focus-visible { outline: none; }
+.way:has(.way__link:focus-visible) { outline: 3px solid var(--accent); outline-offset: 3px; }
+@media (hover: hover) { .way:hover { transform: translateY(-3px); } }
+@media (prefers-reduced-motion: reduce) { .way { transition: none; } .way:hover { transform: none; } }
+
+/* Fellowships: the two tracks, side by side. */
+.tracks { display: grid; gap: 1.25rem; }
+@media (min-width: 46rem) { .tracks { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+/* On a phone the two tracks sit side by side in a row you swipe, with the
+   second card peeking in from the right, and dots that show which is in view. */
+.tracks__dots { display: none; }
+@media (max-width: 45.99rem) {
+  .tracks {
+    display: flex;
+    gap: 0.9rem;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    overscroll-behavior-x: contain;
+    margin-inline: calc(-1 * var(--gutter));
+    padding-inline: var(--gutter);
+    scroll-padding-inline: var(--gutter);
+    scrollbar-width: none;
+  }
+  .tracks::-webkit-scrollbar { display: none; }
+  .track { flex: 0 0 84%; scroll-snap-align: start; }
+  .tracks__dots { display: flex; justify-content: center; gap: 0.5rem; margin-block-start: 1rem; }
+  .tracks__dots button {
+    width: 0.6rem;
+    height: 0.6rem;
+    padding: 0;
+    border: 0;
+    border-radius: 0.3rem;
+    background: rgb(23 24 29 / 0.2);
+    cursor: pointer;
+    transition: background-color 200ms ease, width 200ms ease;
+  }
+  .tracks__dots button[aria-current="true"] { width: 1.4rem; background: var(--accent); }
+}
+.track { background: #fff; border-radius: 1.25rem; padding: 1.75rem; }
+.track h4 { font-size: var(--step-2); margin: 0.75rem 0 0.4rem; letter-spacing: -0.02em; }
+.track__for { color: var(--ink); }
+.track__need { color: var(--accent); font-weight: 620; margin: 1rem 0 0; }
+.ticks li { position: relative; padding-inline-start: 1.3rem; margin-block-end: 0.45rem; color: var(--muted); }
+.ticks li::before { width: 0.45rem; height: 0.45rem; top: 0.6em; }
+
+/* How it works: numbered steps joined by a line, across on a wide screen. */
+.flow { list-style: none; padding: 0; margin: 0; display: grid; gap: 1.75rem; counter-reset: step; }
+@media (min-width: 56rem) { .flow { grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 2rem; } }
+.flow li { position: relative; counter-increment: step; padding-inline-start: 3.25rem; }
+.flow li::before {
+  content: counter(step);
+  position: absolute;
+  left: 0;
+  top: -0.2rem;
+  width: 2.3rem;
+  height: 2.3rem;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  background: var(--accent);
+  color: #fff;
+  font-weight: 700;
+}
+@media (min-width: 56rem) {
+  .flow li { padding: 3.25rem 0 0; }
+  .flow li::after {
+    content: "";
+    position: absolute;
+    top: 0.95rem;
+    left: 2.8rem;
+    right: -1.6rem;
+    height: 2px;
+    background: var(--accent);
+    opacity: 0.35;
+  }
+  .flow li:last-child::after { display: none; }
+}
+.flow h4 { font-size: var(--step-1); margin: 0 0 0.35rem; }
+.flow p { color: var(--muted); margin: 0; }
+
+/* Executive board: four areas and three facts. */
+.areas { list-style: none; padding: 0; margin: 0; display: grid; gap: 1px; background: rgb(255 255 255 / 0.35); border-radius: 1.25rem; overflow: hidden; }
+@media (min-width: 46rem) { .areas { grid-template-columns: repeat(4, minmax(0, 1fr)); } }
+.areas li { background: var(--accent); padding: 1.25rem 1.25rem 1.4rem; }
+.areas h3 { color: #fff; margin-block-end: 0.3rem; }
+.areas p { margin: 0; opacity: 0.9; }
+.facts-row { display: grid; gap: 1rem 2rem; margin: 2rem 0 0; }
+@media (min-width: 46rem) { .facts-row { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+.facts-row dt { font-weight: 700; margin-block-end: 0.15rem; }
+.facts-row dd { margin: 0; opacity: 0.92; }
+
+/* Research by members. */
+.papers { list-style: none; padding: 0; margin: 0; max-width: 46rem; }
+.paper { padding-block: 1.25rem; border-block-end: 1px solid var(--rule); }
+.paper__title { display: block; font-size: var(--step-1); font-weight: 650; color: var(--ink); text-decoration: none; }
+.paper__title:hover { color: var(--accent); }
+.paper__by { display: block; color: var(--accent); font-size: 0.9375rem; margin-block-start: 0.2rem; }
+.paper__summary { color: var(--muted); margin: 0.5rem 0 0; }
+
+/* FAQ. */
+.faq { max-width: 46rem; }
+.faq__item { border-block-end: 1px solid var(--rule); }
+.faq__item summary {
+  list-style: none;
+  cursor: pointer;
+  padding: 1.1rem 2.5rem 1.1rem 0;
+  font-weight: 640;
+  font-size: var(--step-1);
+  position: relative;
+}
+.faq__item summary::-webkit-details-marker { display: none; }
+.faq__item summary::after {
+  content: "+";
+  position: absolute;
+  right: 0.25rem;
+  top: 50%;
+  translate: 0 -50%;
+  width: 1.7rem;
+  height: 1.7rem;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  background: var(--accent);
+  color: #fff;
+  font-weight: 600;
+  line-height: 1;
+  padding-block-end: 0.12em;
+  transition: rotate 260ms cubic-bezier(.2,.7,.2,1);
+}
+.faq__item[open] summary::after { rotate: 45deg; }
+.faq__item.is-closing summary::after { rotate: 0deg; }
+.faq__item p { color: var(--muted); margin: 0 0 1.25rem; max-width: 40rem; }
+
+/* --- one page -----------------------------------------------------------------
+   Home, Join, Team and Resources are sections of one long page. Each section
+   title is set at the old page-title size, so the page still reads as four
+   chapters. scroll-margin keeps a jumped-to title clear of the sticky header. */
+.section-title { font-size: var(--step-4); letter-spacing: -0.03em; }
+.prose > .section-title { margin-block: 0 2.25rem; }
+.section { scroll-margin-top: var(--head); }
+.section + .section { border-block-start: 1px solid var(--rule); }
+
 @media (min-width: 62rem) {
   .prose .row {
     grid-template-columns: 16rem minmax(0, 1fr);
@@ -144,6 +360,16 @@ strong { font-weight: 660; }
 
 .lede { font-size: var(--step-1); color: var(--muted); line-height: 1.5; }
 
+/* Visible to screen readers only. */
+.sr-only {
+  position: absolute;
+  width: 1px; height: 1px;
+  padding: 0; margin: -1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
 /* --- header ---------------------------------------------------------------- */
 
 .skip {
@@ -155,15 +381,23 @@ strong { font-weight: 660; }
 }
 .skip:focus { inset-inline-start: var(--gutter); top: 0.5rem; }
 
+/* Sticky, because on one long page the menu is how you jump between sections. */
 .masthead {
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  /* see-through and blurred, so the page shows softly behind it */
+  background: rgb(255 255 255 / 0.72);
+  -webkit-backdrop-filter: blur(14px) saturate(1.4);
+  backdrop-filter: blur(14px) saturate(1.4);
   border-block-end: 1px solid var(--rule);
   padding-block: 1.05rem;
 }
-.masthead .wrap {
+.masthead__row {
   display: flex;
   flex-wrap: wrap;
   gap: 0.6rem 1.5rem;
-  align-items: baseline;
+  align-items: center;
   justify-content: space-between;
 }
 
@@ -186,25 +420,60 @@ strong { font-weight: 660; }
   vertical-align: 0.06em;
 }
 
-.masthead__right {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 0.6rem 1.25rem;
-}
-
-.nav { display: flex; flex-wrap: wrap; gap: 0.35rem 1.15rem; }
-.nav a {
+.nav { display: flex; flex-wrap: wrap; align-items: center; gap: 0.35rem 1.4rem; }
+.nav a:not(.btn) {
   color: var(--muted);
   text-decoration: none;
   font-size: 0.9375rem;
   padding-block: 0.15rem;
 }
-.nav a:hover { color: var(--ink); }
-.nav a[aria-current="page"] {
+.nav a:not(.btn):hover { color: var(--ink); }
+/* The section on screen gets the brand dot under it. */
+.nav a[aria-current] {
   color: var(--ink);
   font-weight: 640;
-  box-shadow: inset 0 -2px 0 var(--accent);
+  background: radial-gradient(circle, var(--accent) 2.5px, transparent 3px) center bottom / 6px 6px no-repeat;
+  padding-block-end: 0.55rem;
+  margin-block-end: -0.4rem;
+}
+/* The one call to action in the header. */
+.btn.btn--nav { padding: 0.45em 1.05em; font-size: 0.9375rem; border-radius: 999px; }
+
+/* The phone menu. Hidden until JavaScript has wired the toggle (.has-menu),
+   so without it the links simply wrap under the wordmark. */
+.menu-toggle {
+  display: none;
+  appearance: none;
+  background: none;
+  border: 0;
+  padding: 0.35rem;
+  margin: -0.35rem;
+  color: var(--ink);
+  cursor: pointer;
+  border-radius: 6px;
+}
+@media (max-width: 759px) {
+  .has-menu .menu-toggle { display: inline-flex; }
+  .has-menu .nav {
+    display: none;
+    flex-basis: 100%;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0;
+    padding-block: 0.5rem 0.75rem;
+  }
+  .has-menu.is-open .nav { display: flex; }
+  /* an open menu covers the page, so it needs to be near solid to read */
+  .has-menu.is-open { background: rgb(255 255 255 / 0.95); }
+  .has-menu .nav a:not(.btn) {
+    font-size: var(--step-1);
+    color: var(--ink);
+    padding-block: 0.7rem;
+    border-block-end: 1px solid var(--rule);
+  }
+  .has-menu .nav a[aria-current] { background: none; margin: 0; padding-block: 0.7rem; }
+  .has-menu .nav a[aria-current]::before { content: "\25CF\00a0"; color: var(--accent); }
+  .has-menu .btn--nav { margin-block-start: 1rem; text-align: center; padding: 0.75em 1em; }
 }
 
 /* --- buttons --------------------------------------------------------------- */
@@ -315,6 +584,231 @@ strong { font-weight: 660; }
   font-size: 0.8125rem;
   line-height: 1.45;
   color: var(--muted);
+}
+
+/* --- home ---------------------------------------------------------------------
+   The page opens on the street print at full screen, with the headline on
+   it. The first stretch of scrolling (.home__intro-space) shrinks the print
+   into the right-hand column while the headline stays put, and the rest of
+   the opening fades in beside it. The print's script writes that progress
+   to --q on the root, 0 to 1, and adds .opened to the root when it is
+   done. The header starts see-through and blurred over the print, and
+   turns solid as the print settles. Without JavaScript, or
+   with reduced motion, the page starts settled.
+
+   Then the print is pinned on the right while the text scrolls past it on
+   the left, one step at a time: the hook, what is already happening, what
+   we do, who this is for.
+
+   On a phone there is no opening: the print is the still background of the
+   first screen, and scrolls away with the page. */
+
+:root { --q: 1; }
+/* "Home" lands here: at the top of the section, or, where there is an
+   opening, just after it, so the page arrives settled. Arriving at an anchor
+   stops a header's height above it, so it sits one header height further
+   down. Its offset matches .home__intro-space. */
+.home__mark {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 1px;
+  height: 1px;
+}
+/* the opening's full-screen print is wider than the page box; keep it from
+   widening the page (clip, unlike hidden, leaves sticky alone) */
+main { overflow-x: clip; }
+.home { position: relative; display: grid; }
+.home__text { padding-inline: var(--gutter); }
+
+/* On a phone the print is the background of the first screen, under the
+   header too, still: the headline, intro and buttons sit on it, and it
+   scrolls away with the page. */
+.home__art {
+  position: absolute;
+  top: calc(-1 * var(--head));
+  left: 0;
+  right: 0;
+  height: 100svh;
+}
+@media (max-width: 899px) {
+  .home__text { position: relative; z-index: 1; }
+  .home__step--intro { min-height: calc(100svh - var(--head)); padding-block: 2rem; }
+  /* the hook, on cream labels so it reads over the picture (.home for
+     weight over the opening's fading label further down) */
+  .home .home__step--intro .hero-title {
+    background: rgb(255 252 245);
+    box-shadow: 0 0 0 0.22em rgb(255 252 245);
+  }
+  .home__step--intro .home__lede {
+    width: fit-content;
+    margin-block-start: 1.5rem;
+    background: rgb(255 252 245);
+    box-shadow: 0 0 0 0.55rem rgb(255 252 245);
+  }
+  .home__step--intro .actions { margin-block-start: 1.75rem; }
+  .home__step--intro .btn--ghost { background: #fff; }
+}
+
+.home__step {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding-block: 3rem;
+  max-width: 34rem;
+}
+.home__step > :first-child { margin-block-start: 0; }
+.home__step h1 { font-size: clamp(2.3rem, 1.6rem + 3.4vw, 3.9rem); letter-spacing: -0.035em; line-height: 1.16; }
+.home__step h2 { font-size: var(--step-3); margin-block-end: 1.25rem; }
+.home__step h3 { margin-block-end: 0.25rem; }
+.home__step p { font-size: var(--step-1); line-height: 1.55; color: var(--muted); }
+.home__step strong { color: var(--ink); }
+.home__step .home__lede { color: var(--ink); margin-block-start: 1.25rem; }
+.home .actions { margin-block-start: 1.5rem; }
+
+/* The opening. The headline is held in place while the print shrinks away,
+   on one solid paper-coloured label so it reads over the picture. The label
+   is a shadow, not padding, so the headline does not move when it fades. */
+.home__step--intro .home__lede,
+.home__step--intro .actions { opacity: clamp(0, calc(var(--q) * 2 - 1), 1); }
+.home__step--intro .hero-title {
+  width: var(--title-w, fit-content);
+  color: #0c0d11;
+  font-weight: 800;
+  background: rgb(255 252 245 / calc(1 - var(--q)));
+  box-shadow: 0 0 0 0.22em rgb(255 252 245 / calc(1 - var(--q)));
+}
+@media (prefers-reduced-motion: no-preference) and (min-width: 900px) {
+  .js { --q: 0; }
+  .js .home__intro-space { height: 75svh; }
+  .js .home__mark { top: calc(75svh + var(--head)); }
+  .js .home__step--intro { position: sticky; top: var(--head); }
+  .js:not(.opened) .home__step--intro { z-index: 6; }
+  .js:not(.opened) .nav a:not(.btn) { color: var(--ink); font-weight: 560; }
+  /* the header over the print: no hard edge, a blur that fades out below it */
+  .js:not(.opened) .masthead {
+    background: rgb(255 255 255 / calc(0.72 * var(--q)));
+    border-block-end-color: rgb(230 226 220 / var(--q));
+    /* the soft blur below does this job here; a blur on the header itself
+       would bring back the hard edge and hide the print from it */
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+  }
+  .js:not(.opened) .masthead::before {
+    content: "";
+    position: absolute;
+    inset: 0 0 -3rem;
+    z-index: -1;
+    pointer-events: none;
+    background: linear-gradient(rgb(255 255 255 / 0.6), rgb(255 255 255 / 0.3) 55%, rgb(255 255 255 / 0));
+    -webkit-backdrop-filter: blur(12px);
+    backdrop-filter: blur(12px);
+    -webkit-mask-image: linear-gradient(#000 50%, transparent);
+    mask-image: linear-gradient(#000 50%, transparent);
+    opacity: calc(1 - var(--q));
+  }
+}
+
+@media (min-width: 900px) {
+  /* text on the left, the print framed on the centre-right, both inside the page */
+  .home {
+    grid-template-columns: minmax(0, 0.92fr) minmax(0, 1.08fr);
+    max-width: var(--page);
+    margin-inline: auto;
+  }
+  .home__text { padding-inline: var(--gutter) 2.5rem; }
+  .home__art {
+    position: sticky;
+    z-index: 5;
+    left: auto;
+    right: auto;
+    grid-column: 2;
+    grid-row: 1;
+    align-self: start;
+    aspect-ratio: auto;
+    top: calc(var(--head) + 1.25rem);
+    height: calc(100svh - var(--head) - 1.25rem);
+    margin: 0 var(--gutter) 0 0;
+    border-radius: 0;
+    background: none;
+    box-shadow: none;
+  }
+  .home__text { grid-column: 1; grid-row: 1; }
+  /* a screen per step, so the plates each get room */
+  .home__step { min-height: 100svh; }
+  .home__step--intro { min-height: calc(100svh - var(--head)); padding-block: 0 2rem; }
+}
+
+/* What is already happening: a list with the brand dot for bullets. */
+.facts, .ticks { list-style: none; padding: 0; margin: 0; }
+.facts li {
+  position: relative;
+  padding-inline-start: 1.6rem;
+  font-size: var(--step-1);
+  line-height: 1.5;
+  margin-block-end: 0.9rem;
+}
+.facts li::before, .ticks li::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0.55em;
+  width: 0.6rem;
+  height: 0.6rem;
+  border-radius: 50%;
+  background: var(--accent);
+}
+
+/* What we do: icon, then name and one line. */
+.offers { list-style: none; padding: 0; margin: 0; display: grid; gap: 1.5rem; }
+.offers li { display: grid; grid-template-columns: auto 1fr; gap: 1rem; align-items: start; }
+.offers p { margin: 0; font-size: var(--step-0); }
+
+/* --- the print ------------------------------------------------------------------
+   The risograph street (components/RisoStreet, scripts/street.ts). The frame
+   (.riso__plate) only marks where the print settles, with --radius for its
+   corners; the stage inside it is sized to the screen by the script, and
+   clipped down to the frame as the opening ends. The caption sits under the print, as plain text. On a phone
+   the print is the first screen's background, with no caption. */
+
+.riso { margin: 0; height: 100%; display: grid; grid-template-rows: minmax(0, 1fr) auto; }
+.riso__plate { --radius: 0px; position: relative; }
+.riso__stage { position: absolute; overflow: hidden; pointer-events: none; }
+.riso__stage canvas { position: absolute; left: 0; top: 0; display: block; transform-origin: 0 0; opacity: 0; transition: opacity 600ms ease; }
+.riso.is-ready canvas { opacity: 1; }
+/* The next plate, coming through a grid of halftone dots. --dot is the dot
+   radius as a share of the grid (0.75 covers it; the corners need over 0.71). */
+.riso__next {
+  --dot: 0;
+  --grid: 12px;
+  visibility: hidden;
+  -webkit-mask-image: radial-gradient(circle, #000 calc(var(--dot) * var(--grid)), transparent calc(var(--dot) * var(--grid) + 0.75px));
+  mask-image: radial-gradient(circle, #000 calc(var(--dot) * var(--grid)), transparent calc(var(--dot) * var(--grid) + 0.75px));
+  -webkit-mask-size: var(--grid) var(--grid);
+  mask-size: var(--grid) var(--grid);
+}
+.riso__caption {
+  display: none;
+  flex-direction: column;
+  justify-content: center;
+  gap: 0.2rem;
+  padding: 0.6rem 0.4rem 0.6rem 0.9rem;
+  opacity: var(--q);
+}
+.riso__term {
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--accent);
+}
+.riso__line { font-size: 0.82rem; line-height: 1.3; font-weight: 560; color: var(--ink); text-wrap: balance; }
+
+@media (min-width: 900px) {
+  .riso__plate { --radius: 20px; }
+  .riso__caption { display: flex; flex-direction: column; padding: 0.9rem 0.25rem 1.1rem; min-height: 5.2rem; gap: 0.3rem; }
+  .riso__term { font-size: 0.75rem; }
+  .riso__line { font-size: 1.08rem; }
 }
 
 /* --- perceptron diagram -----------------------------------------------------
@@ -527,8 +1021,8 @@ strong { font-weight: 660; }
   display: grid;
   place-items: center;
   overflow: hidden;
-  background: var(--wash);
-  border-block-start: 2px solid var(--ink);
+  background: #fdf2f3;
+  border-radius: 50%;
   margin-block-end: 0.85rem;
 }
 /* Fills the square whatever the file's own aspect ratio turns out to be, so a
@@ -543,7 +1037,7 @@ strong { font-weight: 660; }
   font-weight: 620;
   letter-spacing: 0.08em;
   text-indent: 0.08em;   /* recentre against the trailing letter-space */
-  color: var(--muted);
+  color: var(--accent);
 }
 
 .person .name {
@@ -662,7 +1156,7 @@ strong { font-weight: 660; }
 }
 /* The exec card is outlined in the accent so the application stands out. */
 .path--exec { border-color: var(--accent); }
-.path > h2 { margin-block-end: 0.5rem; }
+.path > h3 { font-size: var(--step-3); margin-block-end: 0.5rem; }
 .path p { max-width: 40rem; }
 .path__cta { margin-block-start: auto; padding-block-start: 0.75rem; }
 
@@ -672,56 +1166,41 @@ strong { font-weight: 660; }
 .steps { list-style: none; padding: 0; margin: 0.25rem 0 1.75rem; }
 .steps li { border-block-start: 1px solid #d9dde1; padding-block: 0.9rem; }
 .steps li:last-child { border-block-end: 1px solid #d9dde1; }
-.steps h3 { margin: 0; }
+.steps h4 { margin: 0; font-size: var(--step-1); font-weight: 660; letter-spacing: -0.012em; line-height: 1.2; }
 .steps p { color: var(--muted); margin-block: 0.3rem 0; }
 
 /* --- footer ---------------------------------------------------------------- */
 
+/* Dark, so the page ends with weight. The brand dot stays red. */
 .foot {
-  border-block-start: 1px solid var(--rule);
-  padding-block: 2.5rem 3rem;
-  color: var(--muted);
+  background: var(--ink);
+  color: #c9c6c0;
+  padding-block: 3.5rem 3rem;
   font-size: 0.9375rem;
 }
-.foot .cols { display: grid; gap: 1.5rem; grid-template-columns: 1fr; }
-@media (min-width: 40rem) { .foot .cols { grid-template-columns: 2fr 1fr 1fr; } }
-.foot h2 { font-size: 0.8125rem; letter-spacing: 0.055em; text-transform: uppercase; margin-block-end: 0.5rem; }
-.foot ul { list-style: none; padding: 0; margin: 0; }
-.foot li { margin-block-end: 0.3rem; }
-.foot a { color: var(--muted); text-decoration: none; }
-.foot a:hover { color: var(--ink); text-decoration: underline; }
-.foot .fine { margin-block-start: 2rem; max-width: var(--measure); font-size: 0.875rem; }
-/* One row: who we are and the nav on the left, contact and social on the right.
-   Replaces a three column block that repeated the nav and carried two
-   disclaimers the group no longer makes. */
-.foot__row {
-  display: grid;
-  gap: 1.5rem;
-  align-items: start;
-}
+.foot__row { display: grid; gap: 1.75rem; align-items: start; }
 @media (min-width: 46rem) {
   .foot__row { grid-template-columns: 1fr auto; gap: 3rem; }
   .foot__contact { text-align: right; }
 }
-
-.foot__name { margin-block-end: 0.55rem; max-width: none; color: var(--ink); }
-
-.foot__nav { display: flex; flex-wrap: wrap; gap: 0.3rem 1.1rem; }
-
-.foot__contact p { margin-block-end: 0.35rem; max-width: none; }
-.foot__contact p:last-child { margin-block-end: 0; }
-.foot__contact a + a { margin-inline-start: 0.9rem; }
-
-.foot__label {
-  display: block;
-  font-size: 0.75rem;
-  letter-spacing: 0.055em;
-  text-transform: uppercase;
-  color: var(--muted);
-  margin-block-end: 0.15rem;
+.foot p { margin: 0; max-width: none; }
+.foot__name { margin-block-end: 0.75rem; color: #fff; font-weight: 650; font-size: var(--step-1); }
+.foot__name::after {
+  content: "";
+  display: inline-block;
+  width: 0.36em; height: 0.36em;
+  margin-inline-start: 0.3em;
+  border-radius: 50%;
+  background: var(--accent);
 }
-
-.foot .credit { margin-block-start: 0.6rem; font-size: 0.8125rem; color: var(--muted); }
+.foot__nav { display: flex; flex-wrap: wrap; gap: 0.4rem 1.2rem; }
+.foot__contact p { margin-block-end: 0.6rem; }
+.foot__contact a + a { margin-inline-start: 0.9rem; }
+.foot__label { display: block; font-size: 0.8125rem; color: #8d8a85; margin-block-end: 0.15rem; }
+.foot a { color: #ece9e3; text-decoration: none; }
+.foot a:hover { color: #fff; text-decoration: underline; }
+.foot .credit { margin-block-start: 2.5rem; font-size: 0.8125rem; }
+.foot .credit a { color: #8d8a85; }
 
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation: none !important; transition: none !important; }

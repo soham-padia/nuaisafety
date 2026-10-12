@@ -1,6 +1,8 @@
 ---
+import '@fontsource-variable/bricolage-grotesque/opsz.css';
+import 'lenis/dist/lenis.css';
 import '../styles/global.css';
-import { SITE, NAV, SOCIAL, EMAIL, signupHref } from '../config';
+import { SITE, NAV, NAV_CTA, SOCIAL, EMAIL, KHOURY_CLUB_URL } from '../config';
 
 interface Props {
   title?: string;
@@ -9,8 +11,10 @@ interface Props {
 
 const { title, description = SITE.description } = Astro.props;
 const pageTitle = title ? `${title} | ${SITE.name}` : `${SITE.name} | ${SITE.tagline}`;
-const path = Astro.url.pathname.replace(/\.html$/, '').replace(/\/$/, '') || '/';
 const canonical = new URL(Astro.url.pathname, Astro.site);
+// Pages of their own (Events) are marked current here; the home page's
+// sections are marked on scroll by the script in index.astro.
+const path = Astro.url.pathname.replace(/\.html$/, '').replace(/\/$/, '') || '/';
 // Social scrapers need an absolute URL; a root-relative path is silently ignored.
 const ogImage = new URL('/og.png', Astro.site);
 ---
@@ -23,6 +27,7 @@ const ogImage = new URL('/og.png', Astro.site);
     <meta name="description" content={description} />
     <link rel="canonical" href={canonical} />
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <script is:inline>document.documentElement.classList.add('js');</script>
 
     <meta property="og:type" content="website" />
     <meta property="og:site_name" content={SITE.name} />
@@ -41,17 +46,41 @@ const ogImage = new URL('/og.png', Astro.site);
     <a class="skip" href="#main">Skip to content</a>
 
     <header class="masthead">
-      <div class="wrap">
-        <a class="wordmark" href="/">NU AI Safety</a>
-        <nav class="nav" aria-label="Primary">
+      <div class="wrap masthead__row">
+        <a class="wordmark" href="/#top">NU AI Safety</a>
+        <button class="menu-toggle" type="button" aria-expanded="false" aria-controls="site-nav">
+          <span class="sr-only">Menu</span>
+          <svg width="24" height="24" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+            <path class="menu-toggle__bars" d="M3 6h18M3 12h18M3 18h18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+          </svg>
+        </button>
+        <nav class="nav" id="site-nav" aria-label="Primary">
           {NAV.map((item) => (
-            <a href={item.href} aria-current={path === item.href ? 'page' : undefined}>
+            <a href={item.href} aria-current={item.href === path ? 'page' : undefined}>
               {item.label}
             </a>
           ))}
+          <a class="btn btn--nav" href={NAV_CTA.href}>{NAV_CTA.label}</a>
         </nav>
       </div>
     </header>
+
+    <script>
+      /* Phone menu. Without JavaScript the toggle stays hidden and the links
+         show in a wrapped row instead, so nothing is out of reach. */
+      const head = document.querySelector('.masthead');
+      const toggle = head?.querySelector<HTMLButtonElement>('.menu-toggle');
+      if (head && toggle) {
+        head.classList.add('has-menu');
+        const set = (open: boolean) => {
+          head.classList.toggle('is-open', open);
+          toggle.setAttribute('aria-expanded', String(open));
+        };
+        toggle.addEventListener('click', () => set(!head.classList.contains('is-open')));
+        head.querySelectorAll('.nav a').forEach((a) => a.addEventListener('click', () => set(false)));
+        addEventListener('keydown', (e) => { if (e.key === 'Escape') set(false); });
+      }
+    </script>
 
     <main id="main">
       <slot />
@@ -69,7 +98,7 @@ const ogImage = new URL('/og.png', Astro.site);
           <div class="foot__contact">
             {EMAIL && (
               <p>
-                <span class="foot__label">Contact</span>
+                <span class="foot__label">General inquiries</span>
                 <a href={`mailto:${EMAIL}`}>{EMAIL}</a>
               </p>
             )}
@@ -79,6 +108,10 @@ const ogImage = new URL('/og.png', Astro.site);
                 {SOCIAL.map((s) => <a href={s.href}>{s.label}</a>)}
               </p>
             )}
+            <p>
+              <span class="foot__label">Club</span>
+              <a href={KHOURY_CLUB_URL}>Khoury clubs directory</a>
+            </p>
           </div>
         </div>
         <p class="credit">
@@ -88,57 +121,45 @@ const ogImage = new URL('/og.png', Astro.site);
     </footer>
 
     <script>
-      import { animate, inView, stagger } from 'motion';
-
       /**
-       * Rules this follows, in order of importance:
+       * Smooth scrolling (Lenis) and gentle reveals (GSAP), site-wide.
        *
-       * 1. Never strand content invisible. Only elements below the fold at script
-       *    time are hidden, so anything the visitor can already see can never be
-       *    hidden by us. A timeout un-hides anything the observer never reached.
-       * 2. No flash. Hero text animates position only, never opacity, so there is
-       *    no visible-then-hidden snap when the deferred module runs.
-       * 3. The hero image is never animated. It is the LCP element and fading it
-       *    would push the measurement out.
+       * Lenis drives the scroll and GSAP's ticker drives Lenis, so the 3D city's
+       * ScrollTrigger and the smooth scroll stay in step. Rules for the reveals:
+       * never hide anything already on screen when the script runs, and with
+       * reduced motion do none of this at all: native scroll, everything shown.
        */
-      const reduce = matchMedia('(prefers-reduced-motion: reduce)');
-      const spring = { type: 'spring', stiffness: 200, damping: 26 };
+      import Lenis from 'lenis';
+      import { gsap } from 'gsap';
+      import { ScrollTrigger } from 'gsap/ScrollTrigger';
 
-      function clear(el) {
-        el.style.opacity = '';
-        el.style.transform = '';
-      }
+      gsap.registerPlugin(ScrollTrigger);
+      const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-      if (!reduce.matches) {
-        const heroText = document.querySelectorAll('.hero__text > *');
-        if (heroText.length) {
-          animate(heroText, { y: [14, 0] }, { ...spring, delay: stagger(0.07) });
-        }
+      if (!reduce) {
+        const head = document.querySelector<HTMLElement>('.masthead');
+        const lenis = new Lenis({
+          lerp: 0.11,
+          anchors: { offset: -(head?.offsetHeight ?? 64) },
+        });
+        lenis.on('scroll', ScrollTrigger.update);
+        // for page scripts that scroll on their own (the home page's Home link)
+        (window as unknown as { lenis?: Lenis }).lenis = lenis;
+        gsap.ticker.add((t) => lenis.raf(t * 1000));
+        gsap.ticker.lagSmoothing(0);
 
-        const reveals = Array.from(
-          document.querySelectorAll('.block, .person, .callout, .prose > h2')
-        );
-        const hidden = new Set();
-
-        for (const el of reveals) {
-          if (el.getBoundingClientRect().top > innerHeight * 0.9) {
-            el.style.opacity = '0';
-            hidden.add(el);
-          }
-        }
-
-        inView(
-          reveals,
-          (el) => {
-            const wasHidden = hidden.delete(el);
-            animate(el, wasHidden ? { opacity: [0, 1], y: [18, 0] } : { y: [18, 0] }, spring)
-              .finished.then(() => clear(el), () => clear(el));
-          },
-          { amount: 0.15 }
-        );
-
-        // Failsafe: if the observer never fires for something, show it anyway.
-        setTimeout(() => { hidden.forEach(clear); hidden.clear(); }, 4000);
+        const items = gsap.utils.toArray<HTMLElement>(
+          '.section-title, .section-lede, .way, .track, .flow li, .areas li, .person, .faq__item, .paper'
+        ).filter((el) => el.getBoundingClientRect().top > innerHeight * 0.92);
+        gsap.set(items, { opacity: 0, y: 28 });
+        ScrollTrigger.batch(items, {
+          start: 'top 90%',
+          once: true,
+          onEnter: (batch) =>
+            gsap.to(batch, { opacity: 1, y: 0, duration: 0.8, ease: 'power3.out', stagger: 0.07, overwrite: true, clearProps: 'transform' }),
+        });
+        // fonts and the city change the page height after load
+        document.fonts?.ready.then(() => ScrollTrigger.refresh());
       }
     </script>
   </body>

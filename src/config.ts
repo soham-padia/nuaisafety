@@ -36,9 +36,9 @@ export const SLACK_URL: string | null =
   'https://join.slack.com/t/nuaisafety/shared_invite/zt-4bwdf0z1w-DnPKeS6kprWA~7e1_BPCQw';
 
 /**
- * EMAIL - the address published in the footer, or null while there is none to
- *   publish. Setting it to null drops the footer's Contact line and routes every
- *   email fallback elsewhere, so nothing ever renders a dead mailto.
+ * EMAIL - the group's address for general inquiries, shown in the footer and
+ *   under the FAQ. Set it to null to take it down: the footer drops its line
+ *   and every email fallback routes elsewhere, so nothing renders a dead mailto.
  */
 export const EMAIL: string | null = 'aisafety@northeastern.edu';
 
@@ -75,12 +75,33 @@ export const SOCIAL = [
   { href: 'https://www.linkedin.com/company/nu-ai-safety/', label: 'LinkedIn' },
 ];
 
+/* Sections of the one long home page. The header highlights whichever one is
+   on screen. On a phone these fold into a menu button. */
 export const NAV = [
-  { href: '/join', label: 'Join' },
+  { href: '/#top', label: 'Home' },
   { href: '/events', label: 'Events' },
-  { href: '/team', label: 'Team' },
-  { href: '/resources', label: 'Resources' },
+  { href: '/#fellowships', label: 'Fellowships' },
+  { href: '/#team', label: 'Team' },
+  { href: '/#resources', label: 'Resources' },
+  { href: '/#faq', label: 'FAQ' },
 ];
+
+/** The one call to action in the header, set apart as a button. */
+export const NAV_CTA = { href: '/#join', label: 'Join' };
+
+/** The group's page in Khoury's clubs directory, linked in the footer. */
+export const KHOURY_CLUB_URL = 'https://www.khoury.northeastern.edu/clubs_and_orgs/nu-ai-safety/';
+
+/* -------------------------------------------------------------------------
+   Research by members, shown on the home page as a list: title, authors, and
+   an optional one or two line summary. The section stays hidden while this is
+   empty. Add only published or posted work by members, with a real link.
+
+   { title: '...', authors: 'A. Person, B. Person', url: 'https://...',
+     venue: 'NeurIPS 2026', summary: 'One or two plain sentences.' }
+   ------------------------------------------------------------------------- */
+export type Paper = { title: string; authors: string; url: string; venue?: string; summary?: string };
+export const RESEARCH: Paper[] = [];
 
 /* -------------------------------------------------------------------------
    Events, rendered by /events.
@@ -139,7 +160,7 @@ export const EVENTS: GroupEvent[] = [
    The exec board, rendered by /team.
 
    People appear on /team in the order listed. Anyone without a `title` is
-   shown as an Exec Board Member.
+   shown as a Board Member.
 
    Only `name` is required. Every other field renders only when it is filled
    in, so the page never shows an empty label or a half-finished card.
@@ -168,7 +189,7 @@ export type Person = {
 };
 
 /** The default title, for anyone on the board without their own `title`. */
-export const BOARD_TITLE = 'Exec Board Member';
+export const BOARD_TITLE = 'Board Member';
 
 /** Intrinsic size of a headshot file, used for the img width/height so the
     tile reserves its space before the image loads and CLS stays at zero. */

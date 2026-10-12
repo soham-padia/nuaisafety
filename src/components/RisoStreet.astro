@@ -1,0 +1,111 @@
+---
+/**
+ * The home page print (scripts/street.ts): one Boston street, printed six
+ * times as you scroll through the home section, each with a one-line caption
+ * from data/story.ts.
+ *
+ * The page opens on the print at full screen, under the headline. The first
+ * stretch of scrolling (the spacer in index.astro) shrinks it into its
+ * column; after that, scrolling moves through the plates. GSAP's
+ * ScrollTrigger turns both into numbers, with a short smoothing lag.
+ *
+ * Screen readers get all six captions as a list; the moving caption and the
+ * canvas are hidden from them.
+ */
+import { STORY } from '../data/story';
+---
+<figure class="riso" data-riso>
+  <div class="riso__plate"><div class="riso__stage"><canvas aria-hidden="true"></canvas><canvas class="riso__next" aria-hidden="true"></canvas></div></div>
+  <figcaption class="riso__caption" aria-hidden="true">
+    <span class="riso__term" data-riso-term>{STORY[0].term}</span>
+    <span class="riso__line" data-riso-line>{STORY[0].line}</span>
+  </figcaption>
+  <div class="sr-only">
+    <p>An illustration of a street in Boston, shown six ways:</p>
+    <ol>{STORY.map((s) => <li>{s.term}: {s.line}</li>)}</ol>
+  </div>
+</figure>
+
+<script>
+  import { gsap } from 'gsap';
+  import { ScrollTrigger } from 'gsap/ScrollTrigger';
+  import { mountStreet } from '../scripts/street-view';
+  import { STORY } from '../data/story';
+
+  gsap.registerPlugin(ScrollTrigger);
+
+  const fig = document.querySelector<HTMLElement>('[data-riso]');
+  const trigger = fig?.closest<HTMLElement>('[data-story]');
+
+  if (fig && trigger) {
+    const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+    // how far the opening runs: the spacer under the headline
+    const opening = () => trigger.querySelector<HTMLElement>('.home__intro-space')?.offsetHeight ?? 0;
+
+    // The headline's label (see global.css) hugs its longest line. CSS cannot
+    // shrink a block to wrapped text, so measure the words. The width goes on
+    // the parent as a variable: React owns the heading's own style.
+    // React swaps the heading element when SplitText loads, so look it up each time
+    const holder = trigger.querySelector<HTMLElement>('.hero-title')?.parentElement;
+    const hug = () => {
+      const title = holder?.querySelector<HTMLElement>('.hero-title');
+      if (!holder || !title) return;
+      holder.style.removeProperty('--title-w');
+      const words = title.querySelectorAll('.split-word');
+      if (!words.length) return;
+      const left = title.getBoundingClientRect().left;
+      let right = left;
+      for (const w of words) right = Math.max(right, w.getBoundingClientRect().right);
+      holder.style.setProperty('--title-w', `${Math.ceil(right - left) + 2}px`);
+    };
+    if (holder) {
+      new MutationObserver(hug).observe(holder, { childList: true, subtree: true });
+      addEventListener('resize', hug);
+      document.fonts?.ready.then(hug);
+      hug();
+    }
+
+    const view = mountStreet(fig, reduce, STORY.length);
+
+    // Both numbers follow the scroll position directly, eased by gsap's
+    // quickTo, so a re-measure of the page can never leave them stale.
+    // --q goes only on the elements that use it, not the root: changing a
+    // variable on the root restyles the whole page every frame.
+    const head = document.querySelector<HTMLElement>('.masthead');
+    const root = document.documentElement;
+    const intro = { q: reduce || opening() === 0 ? 1 : 0 };
+    let opened: boolean | null = null;
+    const setOpen = () => {
+      view.open(intro.q);
+      const v = intro.q.toFixed(3);
+      trigger.style.setProperty('--q', v);
+      head?.style.setProperty('--q', v);
+      if (opened !== intro.q >= 0.999) root.classList.toggle('opened', (opened = intro.q >= 0.999));
+    };
+    setOpen();
+    if (intro.q < 1) {
+      const toQ = gsap.quickTo(intro, 'q', { duration: 0.5, ease: 'power2.out', onUpdate: setOpen });
+      const follow = (self: ScrollTrigger) => toQ(self.progress);
+      ScrollTrigger.create({ trigger, start: 'top top', end: () => `+=${opening()}`, onUpdate: follow, onRefresh: follow });
+    }
+
+    const state = { pos: 0 };
+    const last = STORY.length - 0.6; // a little past the last plate, so it holds before the section ends
+    const show = () => view.show(state.pos);
+    const toPos = gsap.quickTo(state, 'pos', { duration: 0.6, ease: 'power2.out', onUpdate: show });
+    // on a phone the picture is a still: it stays on the first plate
+    const wide = matchMedia('(min-width: 900px)');
+    const follow = (self: ScrollTrigger) => {
+      const to = wide.matches ? self.progress * last : 0;
+      if (reduce) (state.pos = to), show();
+      else toPos(to);
+    };
+    ScrollTrigger.create({
+      trigger,
+      start: () => `top+=${opening()} top`,
+      end: 'bottom bottom',
+      onUpdate: follow,
+      onRefresh: follow,
+    });
+  }
+</script>

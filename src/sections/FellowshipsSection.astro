@@ -1,0 +1,110 @@
+---
+/**
+ * Fellowships: the two tracks side by side, then how a fellowship runs, as
+ * numbered steps because it is a sequence.
+ *
+ * Copy follows Rohan's description of the plan (10 October 2026). Anything
+ * not yet set up is written as a plan ("we plan to"), never as done.
+ */
+import Icon from '../components/Icon.astro';
+import Signup from '../components/Signup.astro';
+---
+<section class="band band--river section" id="fellowships" aria-labelledby="fellowships-title">
+  <div class="wrap">
+    <h2 id="fellowships-title" class="section-title dot">Fellowships</h2>
+    <p class="lede section-lede">
+      An eight-week introduction to AI safety, taught by people who work in the field. Most
+      Northeastern students have no AI safety course available to them, so we created one. The
+      first fellowships begin in January 2027.
+    </p>
+
+    <h3 class="sub">Two tracks, one fellowship</h3>
+    <div class="tracks">
+      <article class="track">
+        <Icon name="chip" tone="river" />
+        <h4>Technical track</h4>
+        <p class="track__for">For students who want to make AI safer by working on the technology itself.</p>
+        <ul class="ticks">
+          <li>How modern AI systems are trained</li>
+          <li>Why aligning them is hard</li>
+          <li>Mechanistic interpretability: looking inside a model</li>
+          <li>Technical governance</li>
+        </ul>
+        <p class="track__need">Starts from the fundamentals.</p>
+      </article>
+      <article class="track">
+        <Icon name="policy" tone="sun" />
+        <h4>Policy track</h4>
+        <p class="track__for">For students who want to shape how AI is governed.</p>
+        <ul class="ticks">
+          <li>The risks posed by advanced AI</li>
+          <li>How governments and companies are responding</li>
+          <li>What good standards, safeguards and laws could look like</li>
+        </ul>
+        <p class="track__need">No technical background required.</p>
+      </article>
+    </div>
+    <div class="tracks__dots" data-track-dots></div>
+    <p class="note note--plain">
+      Both tracks lead to the same place: complete either one and you become a fellow.
+    </p>
+
+    <h3 class="sub">How it works</h3>
+    <ol class="flow">
+      <li>
+        <h4>Sign up</h4>
+        <p>Join the mailing list and we will email you before the fellowships begin.</p>
+      </li>
+      <li>
+        <h4>8 weekly sessions</h4>
+        <p>
+          Small groups meet for 90 minutes each week. Each session is led by a graduate student,
+          PhD student or invited researcher, and ends with a discussion.
+        </p>
+      </li>
+      <li>
+        <h4>Become a fellow</h4>
+        <p>Complete all eight weeks to become a fellow, on either track.</p>
+      </li>
+      <li>
+        <h4>Get into research</h4>
+        <p>
+          Fellows are invited to research meetings and mixers with AI safety researchers at
+          Northeastern and across Boston. We also plan to work with Northeastern labs on projects
+          that fellows can join.
+        </p>
+      </li>
+    </ol>
+
+    <div class="actions section-actions">
+      <Signup />
+    </div>
+  </div>
+</section>
+
+<script>
+  /* On a phone the tracks are a row you swipe (global.css). These dots show
+     which card is in view, and jump to a card when tapped. */
+  const row = document.querySelector<HTMLElement>('.tracks');
+  const dots = document.querySelector<HTMLElement>('[data-track-dots]');
+  if (row && dots) {
+    const cards = [...row.querySelectorAll<HTMLElement>('.track')];
+    const buttons = cards.map((card, i) => {
+      const b = document.createElement('button');
+      b.type = 'button';
+      b.setAttribute('aria-label', `Show ${card.querySelector('h4')?.textContent ?? `card ${i + 1}`}`);
+      b.addEventListener('click', () => row.scrollTo({ left: card.offsetLeft - row.offsetLeft - parseFloat(getComputedStyle(row).paddingLeft), behavior: 'smooth' }));
+      dots.append(b);
+      return b;
+    });
+    const mark = (i: number) => buttons.forEach((b, j) => b.setAttribute('aria-current', String(i === j)));
+    mark(0);
+    const io = new IntersectionObserver(
+      (entries) => {
+        for (const e of entries) if (e.isIntersecting) mark(cards.indexOf(e.target as HTMLElement));
+      },
+      { root: row, threshold: 0.6 },
+    );
+    cards.forEach((c) => io.observe(c));
+  }
+</script>
