@@ -14,7 +14,12 @@ import ResourcesSection from '../sections/ResourcesSection.astro';
 import { LUMA_CALENDAR_ID, LUMA_CALENDAR_URL } from '../config';
 ---
 <Base>
-  <section class="home" id="top" data-story>
+  <!-- before anything renders: this page decides where a load starts (below) -->
+  <script is:inline>if ('scrollRestoration' in history) history.scrollRestoration = 'manual';</script>
+  <section class="home" data-story>
+    <!-- Where "Home" goes: the end of the opening, with the page settled
+         (see .home__mark in global.css). Scrolling up still reaches the start. -->
+    <span class="home__mark" id="top" aria-hidden="true"></span>
     <div class="home__art">
       <RisoStreet />
     </div>
@@ -132,8 +137,10 @@ import { LUMA_CALENDAR_ID, LUMA_CALENDAR_URL } from '../config';
     const root = document.documentElement;
     const head = document.querySelector('.masthead');
     const links = [...document.querySelectorAll('.nav a[href^="/#"]:not(.btn)')];
+    // a link may point at a marker inside a section (Home does): track the section
     const sections = links
       .map((a) => document.getElementById(a.getAttribute('href').slice(2)))
+      .map((el) => el && (el.closest('section') ?? el))
       .filter(Boolean);
 
     function measure() {
@@ -160,12 +167,56 @@ import { LUMA_CALENDAR_ID, LUMA_CALENDAR_URL } from '../config';
 
     measure();
 
-    /* Arriving with a section in the address (an old /team link redirects to
-       /#team, for example): go straight there. The browser does not always do
-       it on its own after a redirect, and a smooth scroll the length of the
-       story would be a slow way to arrive. */
-    const target = location.hash && document.getElementById(location.hash.slice(1));
-    if (target) target.scrollIntoView({ behavior: 'instant' });
+    /* Home, and where a page load starts.
+
+       Home (#top) goes to the end of the opening, where the page is settled
+       (.home__mark). That spot is only for the menu: a load or a refresh
+       starts at the very top, on the full-screen opening. So on this page the
+       Home links scroll there without putting #top in the address, the
+       browser does not restore an old scroll position, and arriving from
+       another page at /#top lands settled and then drops the #top.
+
+       With any other section in the address (an old /team link redirects to
+       /#team, for example), go straight there, a header's height above it as
+       the smooth scroll does for a click. The browser does not always do it on
+       its own after a redirect, and a smooth scroll the length of the story
+       would be a slow way to arrive. */
+    const mark = document.getElementById('top');
+    const headHeight = () => (head ? head.offsetHeight : 0);
+    const below = (el) => el.getBoundingClientRect().top + scrollY - headHeight();
+
+    for (const a of document.querySelectorAll('a[href="/#top"], a[href="#top"]')) {
+      a.addEventListener('click', (e) => {
+        if (!mark || e.metaKey || e.ctrlKey || e.shiftKey || e.button !== 0) return;
+        e.preventDefault();
+        e.stopPropagation(); // the smooth scroll would otherwise follow the link itself
+        const lenis = window.lenis;
+        if (lenis) lenis.scrollTo(below(mark));
+        else window.scrollTo({ top: below(mark), behavior: 'smooth' });
+      });
+    }
+
+    const id = location.hash.slice(1);
+    const target = id ? document.getElementById(id) : null;
+    if (id === 'top') history.replaceState(null, '', location.pathname + location.search);
+    // the browser's own scroll: the smooth scroll follows it
+    const start = () => window.scrollTo({ top: target ? below(target) : 0, behavior: 'instant' });
+    start();
+    // the browser and the scroll libraries can still move the page while it
+    // loads, so put it back once everything has, unless the reader has
+    // already started scrolling
+    let moved = false;
+    for (const type of ['wheel', 'touchstart', 'keydown', 'pointerdown']) {
+      addEventListener(type, () => (moved = true), { once: true, passive: true });
+    }
+    addEventListener('load', () => requestAnimationFrame(() => moved || start()), { once: true });
+
+    // #top typed into the address on this page: go to Home, and drop it again
+    addEventListener('hashchange', () => {
+      if (location.hash !== '#top' || !mark) return;
+      history.replaceState(null, '', location.pathname + location.search);
+      window.scrollTo({ top: below(mark), behavior: 'instant' });
+    });
 
     update();
     addEventListener('scroll', onScroll, { passive: true });

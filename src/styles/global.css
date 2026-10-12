@@ -604,6 +604,17 @@ strong { font-weight: 660; }
    first screen, and scrolls away with the page. */
 
 :root { --q: 1; }
+/* "Home" lands here: at the top of the section, or, where there is an
+   opening, just after it, so the page arrives settled. Arriving at an anchor
+   stops a header's height above it, so it sits one header height further
+   down. Its offset matches .home__intro-space. */
+.home__mark {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 1px;
+  height: 1px;
+}
 /* the opening's full-screen print is wider than the page box; keep it from
    widening the page (clip, unlike hidden, leaves sticky alone) */
 main { overflow-x: clip; }
@@ -670,6 +681,7 @@ main { overflow-x: clip; }
 @media (prefers-reduced-motion: no-preference) and (min-width: 900px) {
   .js { --q: 0; }
   .js .home__intro-space { height: 75svh; }
+  .js .home__mark { top: calc(75svh + var(--head)); }
   .js .home__step--intro { position: sticky; top: var(--head); }
   .js:not(.opened) .home__step--intro { z-index: 6; }
   .js:not(.opened) .nav a:not(.btn) { color: var(--ink); font-weight: 560; }

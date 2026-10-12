@@ -136,6 +136,8 @@ const ogImage = new URL('/og.png', Astro.site);
           anchors: { offset: -(head?.offsetHeight ?? 64) },
         });
         lenis.on('scroll', ScrollTrigger.update);
+        // for page scripts that scroll on their own (the home page's Home link)
+        (window as unknown as { lenis?: Lenis }).lenis = lenis;
         gsap.ticker.add((t) => lenis.raf(t * 1000));
         gsap.ticker.lagSmoothing(0);
 
