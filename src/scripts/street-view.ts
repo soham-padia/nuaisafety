@@ -128,21 +128,40 @@ export function mountStreet(fig: HTMLElement, reduce: boolean, count: number): S
     for (const i of new Set(order.filter((k) => k < N))) print.plate(gen, i);
   }
 
-  /** Geometry that changes only with the layout: the stage and canvas boxes. */
-  function frameStage() {
-    stage.style.left = `${-m.fx}px`;
-    stage.style.top = `${-m.fy}px`;
-    stage.style.width = `${m.SW}px`;
-    stage.style.height = `${m.SH}px`;
+  /** The canvases' CSS size: the whole world at full-screen scale. */
+  function sizeCanvases() {
     for (const c of [canvas, upper]) {
       c.style.width = `${WORLD.w * m.uF}px`;
       c.style.height = `${WORLD.h * m.uF}px`;
     }
   }
 
+  /** The stage's box: the whole screen during the opening, the frame after.
+   *  Set only when it changes, since it moves layout. */
+  let mode: 'screen' | 'frame' | '' = '';
+  function frameStage(next: 'screen' | 'frame') {
+    if (mode === next) return;
+    mode = next;
+    const full = next === 'screen';
+    stage.style.left = full ? `${-m.fx}px` : '0px';
+    stage.style.top = full ? `${-m.fy}px` : '0px';
+    stage.style.width = `${full ? m.SW : m.fw}px`;
+    stage.style.height = `${full ? m.SH : m.fh}px`;
+  }
+
   /** Per frame of the opening: only a transform and a clip. */
   function place() {
     const e = q * q * (3 - 2 * q);
+    if (e >= 1) {
+      // settled: everything relative to the frame, so it stays right however
+      // far the page has scrolled since the layout was read
+      frameStage('frame');
+      const t = `translate3d(${(m.fw - 1000 * m.uC) / 2 + WORLD.x0 * m.uC}px, ${(m.fh - WORLD.h * m.uC) * 0.6}px, 0) scale(${m.uC / m.uF})`;
+      canvas.style.transform = upper.style.transform = t;
+      stage.style.clipPath = `inset(0 round ${m.radius}px)`;
+      return;
+    }
+    frameStage('screen');
     const mix = (a: number, b: number) => a + (b - a) * e;
     // full screen: the world centred across, a little more street than sky
     const fxF = (m.SW - WORLD.w * m.uF) / 2;
@@ -198,7 +217,7 @@ export function mountStreet(fig: HTMLElement, reduce: boolean, count: number): S
   }
 
   setup();
-  frameStage();
+  sizeCanvases();
   place();
 
   let timer = 0;
@@ -207,7 +226,8 @@ export function mountStreet(fig: HTMLElement, reduce: boolean, count: number): S
     timer = window.setTimeout(() => {
       m = measure();
       setup();
-      frameStage();
+      sizeCanvases();
+      mode = '';
       place();
       render();
     }, 200);
@@ -227,7 +247,8 @@ export function mountStreet(fig: HTMLElement, reduce: boolean, count: number): S
       // while it runs), never per frame
       if (q < 1 && !measured) {
         m = measure();
-        frameStage();
+        sizeCanvases();
+        mode = '';
         measured = true;
       }
       if (q >= 1) measured = false;

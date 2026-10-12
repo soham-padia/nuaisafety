@@ -204,6 +204,36 @@ strong { font-weight: 660; }
 /* Fellowships: the two tracks, side by side. */
 .tracks { display: grid; gap: 1.25rem; }
 @media (min-width: 46rem) { .tracks { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+/* On a phone the two tracks sit side by side in a row you swipe, with the
+   second card peeking in from the right, and dots that show which is in view. */
+.tracks__dots { display: none; }
+@media (max-width: 45.99rem) {
+  .tracks {
+    display: flex;
+    gap: 0.9rem;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    overscroll-behavior-x: contain;
+    margin-inline: calc(-1 * var(--gutter));
+    padding-inline: var(--gutter);
+    scroll-padding-inline: var(--gutter);
+    scrollbar-width: none;
+  }
+  .tracks::-webkit-scrollbar { display: none; }
+  .track { flex: 0 0 84%; scroll-snap-align: start; }
+  .tracks__dots { display: flex; justify-content: center; gap: 0.5rem; margin-block-start: 1rem; }
+  .tracks__dots button {
+    width: 0.6rem;
+    height: 0.6rem;
+    padding: 0;
+    border: 0;
+    border-radius: 0.3rem;
+    background: rgb(23 24 29 / 0.2);
+    cursor: pointer;
+    transition: background-color 200ms ease, width 200ms ease;
+  }
+  .tracks__dots button[aria-current="true"] { width: 1.4rem; background: var(--accent); }
+}
 .track { background: #fff; border-radius: 1.25rem; padding: 1.75rem; }
 .track h4 { font-size: var(--step-2); margin: 0.75rem 0 0.4rem; letter-spacing: -0.02em; }
 .track__for { color: var(--ink); }
@@ -570,8 +600,8 @@ strong { font-weight: 660; }
    the left, one step at a time: the hook, what is already happening, what
    we do, who this is for.
 
-   On a phone the print shrinks into a small bar pinned to the bottom of the
-   screen instead, caption and print side by side. */
+   On a phone there is no opening: the print is a still picture under the
+   headline that scrolls away with the page. */
 
 :root { --q: 1; }
 /* the opening's full-screen print is wider than the page box; keep it from
@@ -580,18 +610,20 @@ main { overflow-x: clip; }
 .home { position: relative; display: grid; }
 .home__text { padding-inline: var(--gutter); }
 
+/* On a phone the print is an ordinary picture under the headline, still,
+   and it scrolls away with the page. */
 .home__art {
-  position: sticky;
-  /* a bar along the bottom of the screen, out of the way of the text */
-  top: calc(100svh - 7.75rem);
+  position: relative;
   z-index: 5;
-  justify-self: stretch;
-  height: 6.75rem;
-  margin-inline: 0.75rem;
-  margin-block-end: -6.75rem;
-  border-radius: 1rem;
-  background: rgb(245 239 227 / var(--q));
-  box-shadow: 0 6px 22px rgb(31 21 23 / calc(0.22 * var(--q))), 0 0 0 1px rgb(31 21 23 / calc(0.06 * var(--q)));
+  aspect-ratio: 1;
+  margin: 0 var(--gutter) 1rem;
+}
+@media (max-width: 899px) {
+  /* let the steps and the picture share one column, picture after the hook */
+  .home__text { display: contents; }
+  .home__intro { order: 1; padding-inline: var(--gutter); }
+  .home__art { order: 2; }
+  .home__text > .home__step { order: 3; padding-inline: var(--gutter); }
 }
 
 .home__step {
@@ -601,7 +633,7 @@ main { overflow-x: clip; }
   padding-block: 3rem;
   max-width: 34rem;
 }
-.home__step--intro { min-height: calc(88svh - var(--head)); padding-block-start: 2rem; }
+.home__step--intro { padding-block: 2.5rem 2rem; }
 .home__step > :first-child { margin-block-start: 0; }
 .home__step h1 { font-size: clamp(2.3rem, 1.6rem + 3.4vw, 3.9rem); letter-spacing: -0.035em; line-height: 1.16; }
 .home__step h2 { font-size: var(--step-3); margin-block-end: 1.25rem; }
@@ -623,7 +655,7 @@ main { overflow-x: clip; }
   background: rgb(255 252 245 / calc(1 - var(--q)));
   box-shadow: 0 0 0 0.22em rgb(255 252 245 / calc(1 - var(--q)));
 }
-@media (prefers-reduced-motion: no-preference) {
+@media (prefers-reduced-motion: no-preference) and (min-width: 900px) {
   .js { --q: 0; }
   .js .home__intro-space { height: 75svh; }
   .js .home__step--intro { position: sticky; top: var(--head); }
@@ -662,9 +694,11 @@ main { overflow-x: clip; }
   }
   .home__text { padding-inline: var(--gutter) 2.5rem; }
   .home__art {
+    position: sticky;
     grid-column: 2;
     grid-row: 1;
     align-self: start;
+    aspect-ratio: auto;
     top: calc(var(--head) + 1.25rem);
     height: calc(100svh - var(--head) - 1.25rem);
     margin: 0 var(--gutter) 0 0;
@@ -708,10 +742,10 @@ main { overflow-x: clip; }
    (.riso__plate) only marks where the print settles, with --radius for its
    corners; the stage inside it is sized to the screen by the script, and
    clipped down to the frame as the opening ends. The caption sits under the print, as plain text. On a phone
-   the frame is the right-hand end of the bar, the caption the rest. */
+   the print is a still picture with no caption. */
 
-.riso { margin: 0; height: 100%; display: grid; grid-template-columns: minmax(0, 1fr) 5.75rem; }
-.riso__plate { --radius: 16px; position: relative; grid-column: 2; grid-row: 1; }
+.riso { margin: 0; height: 100%; display: grid; grid-template-rows: minmax(0, 1fr) auto; }
+.riso__plate { --radius: 16px; position: relative; }
 .riso__stage { position: absolute; overflow: hidden; pointer-events: none; }
 .riso__stage canvas { position: absolute; left: 0; top: 0; display: block; transform-origin: 0 0; opacity: 0; transition: opacity 600ms ease; }
 .riso.is-ready canvas { opacity: 1; }
@@ -727,9 +761,7 @@ main { overflow-x: clip; }
   mask-size: var(--grid) var(--grid);
 }
 .riso__caption {
-  grid-column: 1;
-  grid-row: 1;
-  display: flex;
+  display: none;
   flex-direction: column;
   justify-content: center;
   gap: 0.2rem;
@@ -746,9 +778,8 @@ main { overflow-x: clip; }
 .riso__line { font-size: 0.82rem; line-height: 1.3; font-weight: 560; color: var(--ink); text-wrap: balance; }
 
 @media (min-width: 900px) {
-  .riso { grid-template-columns: 1fr; grid-template-rows: minmax(0, 1fr) auto; }
-  .riso__plate { --radius: 20px; grid-column: 1; grid-row: 1; }
-  .riso__caption { grid-column: 1; grid-row: 2; padding: 0.9rem 0.25rem 1.1rem; min-height: 5.2rem; justify-content: start; gap: 0.3rem; }
+  .riso__plate { --radius: 20px; }
+  .riso__caption { display: flex; flex-direction: column; padding: 0.9rem 0.25rem 1.1rem; min-height: 5.2rem; gap: 0.3rem; }
   .riso__term { font-size: 0.75rem; }
   .riso__line { font-size: 1.08rem; }
 }

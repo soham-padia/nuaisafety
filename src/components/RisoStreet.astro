@@ -93,8 +93,13 @@ import { STORY } from '../data/story';
     const last = STORY.length - 0.6; // a little past the last plate, so it holds before the section ends
     const show = () => view.show(state.pos);
     const toPos = gsap.quickTo(state, 'pos', { duration: 0.6, ease: 'power2.out', onUpdate: show });
-    const follow = (self: ScrollTrigger) =>
-      reduce ? ((state.pos = self.progress * last), show()) : toPos(self.progress * last);
+    // on a phone the picture is a still: it stays on the first plate
+    const wide = matchMedia('(min-width: 900px)');
+    const follow = (self: ScrollTrigger) => {
+      const to = wide.matches ? self.progress * last : 0;
+      if (reduce) (state.pos = to), show();
+      else toPos(to);
+    };
     ScrollTrigger.create({
       trigger,
       start: () => `top+=${opening()} top`,
