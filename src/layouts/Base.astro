@@ -12,6 +12,9 @@ interface Props {
 const { title, description = SITE.description } = Astro.props;
 const pageTitle = title ? `${title} | ${SITE.name}` : `${SITE.name} | ${SITE.tagline}`;
 const canonical = new URL(Astro.url.pathname, Astro.site);
+// Pages of their own (Events) are marked current here; the home page's
+// sections are marked on scroll by the script in index.astro.
+const path = Astro.url.pathname.replace(/\.html$/, '').replace(/\/$/, '') || '/';
 // Social scrapers need an absolute URL; a root-relative path is silently ignored.
 const ogImage = new URL('/og.png', Astro.site);
 ---
@@ -52,7 +55,11 @@ const ogImage = new URL('/og.png', Astro.site);
           </svg>
         </button>
         <nav class="nav" id="site-nav" aria-label="Primary">
-          {NAV.map((item) => <a href={item.href}>{item.label}</a>)}
+          {NAV.map((item) => (
+            <a href={item.href} aria-current={item.href === path ? 'page' : undefined}>
+              {item.label}
+            </a>
+          ))}
           <a class="btn btn--nav" href={NAV_CTA.href}>{NAV_CTA.label}</a>
         </nav>
       </div>
