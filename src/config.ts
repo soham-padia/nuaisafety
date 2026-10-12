@@ -79,6 +79,7 @@ export const SOCIAL = [
    on screen. On a phone these fold into a menu button. */
 export const NAV = [
   { href: '/#top', label: 'Home' },
+  { href: '/events', label: 'Events' },
   { href: '/#fellowships', label: 'Fellowships' },
   { href: '/#team', label: 'Team' },
   { href: '/#resources', label: 'Resources' },
@@ -103,6 +104,59 @@ export type Paper = { title: string; authors: string; url: string; venue?: strin
 export const RESEARCH: Paper[] = [];
 
 /* -------------------------------------------------------------------------
+   Events, rendered by /events.
+
+   Add one entry per event. That is the whole job: the page, the RSVP button,
+   the "Add to calendar" file and the subscribable feed at /events.ics are all
+   built from this list. Order does not matter; the page sorts by date.
+
+   An event stays under "Upcoming" until it ends, then moves to "Past". The site
+   rebuilds itself every morning, so that happens without anyone editing it.
+
+   date    'YYYY-MM-DD'.
+   start   24-hour Boston time, e.g. '18:00'. Daylight saving is handled for you.
+   end     Same format.
+   place   As people should read it, e.g. 'Shillman Hall, Room 135'.
+   address What a maps app should search for. Defaults to the place plus
+           "Northeastern University, Boston, MA", so only set it off campus.
+   summary One or two sentences.
+   agenda  Optional. Each item is { time: '18:00', item: 'Talk' }.
+   rsvp    The RSVP link, usually the event's Luma page. Without one the event
+           shows no RSVP button.
+   ------------------------------------------------------------------------- */
+
+export type GroupEvent = {
+  title: string;
+  date: string;
+  start: string;
+  end: string;
+  place: string;
+  address?: string;
+  summary: string;
+  agenda?: { time: string; item: string }[];
+  rsvp?: string;
+};
+
+export const EVENTS: GroupEvent[] = [
+  {
+    title: 'Kickoff',
+    date: '2026-11-02',
+    start: '18:00',
+    end: '19:30',
+    place: 'Shillman Hall, Room 135',
+    summary:
+      'Our first event. We will cover our mission, what we plan to offer this year, ' +
+      'and how to get involved. Food and drink provided.',
+    agenda: [
+      { time: '18:00', item: 'Information session' },
+      { time: '18:30', item: 'Questions' },
+      { time: '18:40', item: 'Social hour: meet the team and other attendees' },
+    ],
+    rsvp: 'https://luma.com/qqepuujt',
+  },
+];
+
+/* -------------------------------------------------------------------------
    The exec board, rendered by /team.
 
    People appear on /team in the order listed. Anyone without a `title` is
@@ -116,8 +170,10 @@ export const RESEARCH: Paper[] = [];
           change, no code change, no image import. Without one the tile falls
           back to an initials plate, which reserves exactly the same space, so
           adding a photo shifts nothing on the page.
-   level  'Undergraduate', 'Master’s' or 'PhD'.
-   title  Overrides the default title, e.g. 'President'.
+   level    'Undergraduate', 'Master’s' or 'PhD'.
+   title    Overrides the default title, e.g. 'President'.
+   website  A personal site, with https://. Shown as a globe icon, next to
+            the email and LinkedIn icons.
    ------------------------------------------------------------------------- */
 
 export type Person = {
@@ -129,6 +185,7 @@ export type Person = {
   bio?: string;
   email?: string;
   linkedin?: string;
+  website?: string;
 };
 
 /** The default title, for anyone on the board without their own `title`. */
@@ -139,13 +196,32 @@ export const BOARD_TITLE = 'Board Member';
 export const PHOTO_PX = 960;
 
 export const TEAM: Person[] = [
-  { name: 'Elaine Ly', title: 'President' },
-  { name: 'Soham Padia', title: 'President' },
-  { name: 'Rohan Kathuria' },
+  {
+    name: 'Elaine Ly',
+    title: 'President',
+    email: 'ly.el@northeastern.edu',
+    website: 'https://thisiselaine.github.io',
+  },
+  {
+    name: 'Soham Padia',
+    title: 'President',
+    email: 'padia.so@northeastern.edu',
+    website: 'https://soham-padia.github.io',
+  },
+  {
+    name: 'Rohan Kathuria',
+    email: 'kathuria.r@northeastern.edu',
+    website: 'https://rkathuria.com',
+  },
   { name: 'Julia Rowniewski' },
   { name: 'Eric Shi' },
-  { name: 'Ryan Baylon' },
+  {
+    name: 'Ryan Baylon',
+    email: 'baylon.r@northeastern.edu',
+    website: 'https://ryanbaylon.com',
+  },
   { name: 'Max Eng' },
+  { name: 'Jacob Chen' },
 ];
 
 /** Title shown under each fellow's name on /team. */

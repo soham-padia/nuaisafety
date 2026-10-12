@@ -1,6 +1,5 @@
 ---
 import Base from '../layouts/Base.astro';
-import Signup from '../components/Signup.astro';
 import RisoStreet from '../components/RisoStreet.astro';
 import HeroTitle from '../components/HeroTitle';
 import Icon from '../components/Icon.astro';
@@ -11,7 +10,11 @@ import TeamSection from '../sections/TeamSection.astro';
 import ResearchSection from '../sections/ResearchSection.astro';
 import FaqSection from '../sections/FaqSection.astro';
 import ResourcesSection from '../sections/ResourcesSection.astro';
-import { LUMA_CALENDAR_ID, LUMA_CALENDAR_URL } from '../config';
+import { LUMA_CALENDAR_ID, LUMA_CALENDAR_URL, SLACK_URL, mailtoHref } from '../config';
+
+/* Joining the Slack is how someone becomes a member, so it is the red button.
+   Fallbacks: email, then the Get involved section. */
+const slackHref = SLACK_URL ?? mailtoHref('Joining the Slack') ?? '#join';
 ---
 <Base>
   <!-- before anything renders: this page decides where a load starts (below) -->
@@ -33,7 +36,7 @@ import { LUMA_CALENDAR_ID, LUMA_CALENDAR_URL } from '../config';
             advanced AI safe, through research and through policy.
           </p>
           <div class="actions">
-            <Signup />
+            <a class="btn" href={slackHref}>Join our Slack →</a>
             <a class="btn btn--ghost" href="#join">Ways to get involved</a>
           </div>
         </div>
