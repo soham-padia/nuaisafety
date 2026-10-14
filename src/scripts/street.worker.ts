@@ -17,6 +17,7 @@ let size = { gen: -1, pw: 0, ph: 0 };
 self.onmessage = async (e: MessageEvent<Message>) => {
   const m = e.data;
   if (m.type === 'size') {
+    if (!(m.pw > 0 && m.ph > 0)) return; // not a real size: keep the last one
     size = { gen: m.gen, pw: m.pw, ph: m.ph };
     sc = screens(m.pw, m.ph, m.dot);
     return;

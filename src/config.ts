@@ -78,12 +78,13 @@ export const SOCIAL = [
 /* Sections of the one long home page. The header highlights whichever one is
    on screen. On a phone these fold into a menu button. */
 export const NAV = [
+  // the sections of the home page first, then the pages of their own
   { href: '/#top', label: 'Home' },
   { href: '/events', label: 'Events' },
   { href: '/#fellowships', label: 'Fellowships' },
+  { href: '/#faq', label: 'FAQ' },
   { href: '/team', label: 'Team' },
   { href: '/resources', label: 'Resources' },
-  { href: '/#faq', label: 'FAQ' },
 ];
 
 /** The one call to action in the header, set apart as a button. */

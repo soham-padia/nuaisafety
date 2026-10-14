@@ -85,6 +85,17 @@ export function mountStreet(fig: HTMLElement, reduce: boolean, count: number): S
 
   const print = printer((g, i, picture) => {
     if (g !== gen) return;
+    // the first plate at a new size: only now resize the canvases, so the old
+    // picture stays up (scaled) until there is a new one to replace it
+    if (canvas.width !== pw || canvas.height !== ph) {
+      for (const c of [canvas, upper]) {
+        c.width = pw;
+        c.height = ph;
+      }
+      for (const p of pictures) if (p instanceof ImageBitmap) p.close();
+      pictures = [];
+      shown[0] = shown[1] = -1;
+    }
     pictures[i] = picture;
     if (!fig.classList.contains('is-ready') && i === 0) fig.classList.add('is-ready');
     render(); // in case the plate on screen was waiting for this one
@@ -101,8 +112,13 @@ export function mountStreet(fig: HTMLElement, reduce: boolean, count: number): S
   }
   let m = measure();
 
+  /** Whether there is a real size to work with: a hidden tab, or a window
+   *  being switched, can briefly report zero, and the sums below go NaN. */
+  const sized = () => m.SW > 0 && m.SH > 0 && m.fw > 0 && m.fh > 0;
+
   /** Size the canvases: sharp enough in the column, and never too many pixels. */
   function setup() {
+    if (!sized()) return;
     const T = Math.min(window.devicePixelRatio || 1, 1.5);
     let D = T * Math.min(1, Math.max(m.uC / m.uF, 0.75)); // canvas px per CSS px, full screen
     const max = 1.5e6;
@@ -113,13 +129,6 @@ export function mountStreet(fig: HTMLElement, reduce: boolean, count: number): S
     if (pw && Math.abs(w - pw) / pw < 0.15) return;
     pw = w;
     ph = Math.round((w * WORLD.h) / WORLD.w);
-    for (const c of [canvas, upper]) {
-      c.width = pw;
-      c.height = ph;
-    }
-    for (const p of pictures) if (p instanceof ImageBitmap) p.close();
-    pictures = [];
-    shown[0] = shown[1] = -1;
     gen++;
     print.size(gen, pw, ph, Math.max(3, 3.2 * Math.min(1.5, pw / WORLD.w / m.uC)));
     // the plate in view first, then the one after it, then the rest
@@ -130,6 +139,7 @@ export function mountStreet(fig: HTMLElement, reduce: boolean, count: number): S
 
   /** The canvases' CSS size: the whole world at full-screen scale. */
   function sizeCanvases() {
+    if (!sized()) return;
     for (const c of [canvas, upper]) {
       c.style.width = `${WORLD.w * m.uF}px`;
       c.style.height = `${WORLD.h * m.uF}px`;
@@ -151,6 +161,7 @@ export function mountStreet(fig: HTMLElement, reduce: boolean, count: number): S
 
   /** Per frame of the opening: only a transform and a clip. */
   function place() {
+    if (!sized()) return;
     const e = q * q * (3 - 2 * q);
     if (e >= 1) {
       // settled: everything relative to the frame, so it stays right however
@@ -220,17 +231,26 @@ export function mountStreet(fig: HTMLElement, reduce: boolean, count: number): S
   sizeCanvases();
   place();
 
-  let timer = 0;
+  // On a resize, keep the picture in line with its frame every frame (cheap:
+  // one layout read and a transform), and reprint the plates at the new size
+  // only once the resizing stops.
+  let frameReq = 0, timer = 0;
   const resized = () => {
+    if (!frameReq) {
+      frameReq = requestAnimationFrame(() => {
+        frameReq = 0;
+        m = measure();
+        if (!sized()) return;
+        sizeCanvases();
+        mode = '';
+        place();
+      });
+    }
     clearTimeout(timer);
     timer = window.setTimeout(() => {
-      m = measure();
       setup();
-      sizeCanvases();
-      mode = '';
-      place();
       render();
-    }, 200);
+    }, 250);
   };
   new ResizeObserver(resized).observe(frame);
   window.addEventListener('resize', resized);

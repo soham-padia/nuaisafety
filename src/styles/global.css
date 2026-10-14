@@ -55,13 +55,6 @@ html {
   scroll-behavior: smooth;
 }
 
-/* Native cross-document view transitions. Page navigation cross-fades with no
-   client JavaScript at all; browsers without support just navigate normally. */
-@media (prefers-reduced-motion: no-preference) {
-  @view-transition { navigation: auto; }
-}
-::view-transition-old(root),
-::view-transition-new(root) { animation-duration: 240ms; }
 
 body {
   margin: 0;
@@ -696,6 +689,10 @@ main { overflow-x: clip; }
    is a shadow, not padding, so the headline does not move when it fades. */
 .home__step--intro .home__lede,
 .home__step--intro .actions { opacity: clamp(0, calc(var(--q) * 2 - 1), 1); }
+/* Hidden until it is split into words to come in (index.astro), and shown
+   anyway after a moment if that never happens. */
+.js .hero-title:not(.is-split) { opacity: 0; animation: title-fallback 0s 2.5s forwards; }
+@keyframes title-fallback { to { opacity: 1; } }
 .home__step--intro .hero-title {
   width: var(--title-w, fit-content);
   color: #0c0d11;
@@ -1266,4 +1263,19 @@ main { overflow-x: clip; }
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation: none !important; transition: none !important; }
   html { scroll-behavior: auto; }
+}
+
+/* --- moving between pages ------------------------------------------------------
+   Going from one page to another (Events, Team, Resources, back home), the old
+   page lifts away and the new one rises in, while the header stays still. A
+   cross-document view transition: no script, and browsers without it just
+   load the page as before. The opt-in itself is inline in the head
+   (layouts/Base.astro), so it is in place before the page is first shown. */
+.masthead { view-transition-name: masthead; }
+::view-transition-old(root) { animation: page-out 200ms cubic-bezier(.4, 0, 1, 1) both; }
+::view-transition-new(root) { animation: page-in 420ms cubic-bezier(.2, .7, .2, 1) both; }
+@keyframes page-out { to { opacity: 0; transform: translateY(-10px); } }
+@keyframes page-in { from { opacity: 0; transform: translateY(18px); } }
+@media (prefers-reduced-motion: reduce) {
+  ::view-transition-old(root), ::view-transition-new(root) { animation: none; }
 }
