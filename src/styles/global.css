@@ -180,6 +180,27 @@ strong { font-weight: 660; }
 /* Get involved: four ways in. */
 .ways { list-style: none; padding: 0; margin: 0; display: grid; gap: 1.25rem; }
 @media (min-width: 40rem) { .ways { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+/* On a phone the four ways in are a row, the next card peeking in from the
+   right. scripts/sideways.ts moves it with the page scroll; without it you
+   swipe it. */
+@media (max-width: 39.99rem) {
+  .ways {
+    display: flex;
+    gap: 0.9rem;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    overscroll-behavior-x: contain;
+    margin-inline: calc(-1 * var(--gutter));
+    padding-inline: var(--gutter);
+    scroll-padding-inline: var(--gutter);
+    scrollbar-width: none;
+  }
+  .ways::-webkit-scrollbar { display: none; }
+  .ways > li { flex: 0 0 84%; scroll-snap-align: start; }
+}
+/* Moved by the page scroll: no scrolling of its own. */
+.is-sideways > .ways,
+.is-sideways > .tracks { overflow: visible; scroll-snap-type: none; will-change: transform; }
 @media (min-width: 64rem) { .ways { grid-template-columns: repeat(4, minmax(0, 1fr)); } }
 .way {
   display: flex;
@@ -633,21 +654,25 @@ main { overflow-x: clip; }
 }
 @media (max-width: 899px) {
   .home__text { position: relative; z-index: 1; }
-  .home__step--intro { min-height: calc(100svh - var(--head)); padding-block: 2rem; }
-  /* the hook, on cream labels so it reads over the picture (.home for
+  .home__step--intro { display: block; padding-block: 0 1rem; }
+  /* the hook fills the first screen, on the picture; the lede comes after it,
+     under the picture, as the description of the group */
+  .home__hook {
+    min-height: calc(100svh - var(--head));
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding-block: 2rem 5.5rem;
+  }
+  /* the headline on a cream label so it reads over the picture (.home for
      weight over the opening's fading label further down) */
   .home .home__step--intro .hero-title {
     background: rgb(255 252 245);
     box-shadow: 0 0 0 0.22em rgb(255 252 245);
   }
-  .home__step--intro .home__lede {
-    width: fit-content;
-    margin-block-start: 1.5rem;
-    background: rgb(255 252 245);
-    box-shadow: 0 0 0 0.55rem rgb(255 252 245);
-  }
-  .home__step--intro .actions { margin-block-start: 1.75rem; }
+  .home__step--intro .actions { margin-block-start: 2rem; }
   .home__step--intro .btn--ghost { background: #fff; }
+  .home__step--intro .home__lede { margin-block-start: 2.25rem; }
 }
 
 .home__step {
@@ -678,9 +703,45 @@ main { overflow-x: clip; }
   background: rgb(255 252 245 / calc(1 - var(--q)));
   box-shadow: 0 0 0 0.22em rgb(255 252 245 / calc(1 - var(--q)));
 }
+@media (min-width: 900px) {
+  .home__hook { display: contents; }
+  .home__step--intro .hero-title { order: 1; }
+  .home__step--intro .home__lede { order: 2; }
+  .home__step--intro .actions { order: 3; }
+}
+
+/* The arrow at the foot of the first screen, inviting a scroll. It scrolls
+   away with the page, and on a desktop fades as the opening starts. */
+.home__more {
+  position: absolute;
+  z-index: 7;
+  top: calc(100svh - var(--head) - 4.75rem);
+  left: 50%;
+  translate: -50% 0;
+  display: grid;
+  place-items: center;
+  width: 3rem;
+  height: 3rem;
+  border-radius: 50%;
+  background: rgb(255 252 245);
+  color: var(--ink);
+  box-shadow: 0 6px 18px rgb(23 24 29 / 0.22);
+}
+.home__more:hover { color: var(--accent); }
+@media (prefers-reduced-motion: no-preference) {
+  .home__more svg { animation: nudge 1.6s cubic-bezier(.45,0,.25,1) infinite; }
+}
+@keyframes nudge {
+  0%, 100% { transform: translateY(-3px); }
+  50% { transform: translateY(5px); }
+}
+
 @media (prefers-reduced-motion: no-preference) and (min-width: 900px) {
   .js { --q: 0; }
   .js .home__intro-space { height: 75svh; }
+  .js .home__intro-hold { height: 40svh; }
+  .home__more { opacity: clamp(0, calc(1 - var(--q) * 3), 1); }
+  .js.opened .home__more { visibility: hidden; }
   .js .home__mark { top: calc(75svh + var(--head)); }
   .js .home__step--intro { position: sticky; top: var(--head); }
   .js:not(.opened) .home__step--intro { z-index: 6; }

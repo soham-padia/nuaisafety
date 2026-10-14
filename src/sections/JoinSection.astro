@@ -22,6 +22,7 @@ const slackHref = SLACK_URL ?? mailtoHref('Joining the Slack');
       begin in January 2027.
     </p>
 
+    <div class="sideways">
     <ol class="ways">
       <li>
         <SpotlightCard client:visible className="way" theme="light" spotlightColor="#c8102e" intensity={0.5} spotlightSize={320}>
@@ -56,6 +57,7 @@ const slackHref = SLACK_URL ?? mailtoHref('Joining the Slack');
         </SpotlightCard>
       </li>
     </ol>
+    </div>
 
     <p class="note">
       <Icon name="cap" size={40} />
@@ -63,3 +65,11 @@ const slackHref = SLACK_URL ?? mailtoHref('Joining the Slack');
     </p>
   </div>
 </section>
+
+<script>
+  /* On a phone the four ways in are a row (global.css) that the page scroll
+     moves sideways, pinned in view until the last card is in. */
+  import { sideways } from '../scripts/sideways';
+  const row = document.querySelector<HTMLElement>('.ways');
+  if (row) sideways(row, '(max-width: 39.99rem)');
+</script>

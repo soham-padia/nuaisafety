@@ -19,6 +19,7 @@ import Signup from '../components/Signup.astro';
     </p>
 
     <h3 class="sub">Two tracks, one fellowship</h3>
+    <div class="sideways">
     <div class="tracks">
       <article class="track">
         <Icon name="chip" tone="river" />
@@ -43,6 +44,7 @@ import Signup from '../components/Signup.astro';
         </ul>
         <p class="track__need">No technical background required.</p>
       </article>
+    </div>
     </div>
     <div class="tracks__dots" data-track-dots></div>
     <p class="note note--plain">
@@ -83,22 +85,31 @@ import Signup from '../components/Signup.astro';
 </section>
 
 <script>
-  /* On a phone the tracks are a row you swipe (global.css). These dots show
-     which card is in view, and jump to a card when tapped. */
+  /* On a phone the two tracks are a row (global.css). With motion allowed the
+     page scroll moves it sideways (scripts/sideways.ts); otherwise you swipe
+     it. The dots show which card is in view, and go to a card when tapped. */
+  import { sideways } from '../scripts/sideways';
+
   const row = document.querySelector<HTMLElement>('.tracks');
   const dots = document.querySelector<HTMLElement>('[data-track-dots]');
   if (row && dots) {
     const cards = [...row.querySelectorAll<HTMLElement>('.track')];
+    let pinned: ReturnType<typeof sideways> | null = null;
     const buttons = cards.map((card, i) => {
       const b = document.createElement('button');
       b.type = 'button';
       b.setAttribute('aria-label', `Show ${card.querySelector('h4')?.textContent ?? `card ${i + 1}`}`);
-      b.addEventListener('click', () => row.scrollTo({ left: card.offsetLeft - row.offsetLeft - parseFloat(getComputedStyle(row).paddingLeft), behavior: 'smooth' }));
+      b.addEventListener('click', () => {
+        if (pinned?.go(i / Math.max(1, cards.length - 1))) return;
+        row.scrollTo({ left: card.offsetLeft - row.offsetLeft - parseFloat(getComputedStyle(row).paddingLeft), behavior: 'smooth' });
+      });
       dots.append(b);
       return b;
     });
     const mark = (i: number) => buttons.forEach((b, j) => b.setAttribute('aria-current', String(i === j)));
     mark(0);
+    pinned = sideways(row, '(max-width: 45.99rem)', (p) => mark(Math.round(p * (cards.length - 1))));
+    // when it is swiped by hand
     const io = new IntersectionObserver(
       (entries) => {
         for (const e of entries) if (e.isIntersecting) mark(cards.indexOf(e.target as HTMLElement));
