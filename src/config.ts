@@ -213,6 +213,7 @@ export const TEAM: Person[] = [
     name: 'Soham Padia',
     title: 'President',
     email: 'padia.so@northeastern.edu',
+    linkedin: 'https://www.linkedin.com/in/soham-padia/',
     website: 'https://soham-padia.github.io',
   },
   {
