@@ -1,7 +1,8 @@
 /**
  * The home page print: one corner of Boston's Back Bay, printed six times.
  * The same brownstones, office tower, café and crossing in every plate; what
- * changes is the light, the people, the windows and the screen on the tower.
+ * changes is the light, the people, the windows, the screen on the tower and
+ * whatever else each risk brings onto the street.
  * The order and the captions are in data/story.ts.
  *
  * Drawing goes through the riso press in scripts/riso.ts. Each plate is drawn
@@ -125,7 +126,6 @@ function line(pts: number[]) {
    Built once, from one seed, so the architecture is identical in every plate. */
 
 const GROUND = 900;
-const SEAT = 4; // the stoop someone sits on: the second house from the crossing
 const BILL = { x: 632, y: 262, w: 280, h: 186 };
 
 interface Win { path: Path2D; inner: Path2D; frame: Path2D; x: number; y: number; w: number; h: number }
@@ -317,12 +317,18 @@ interface Who {
   book?: boolean;
   reach?: boolean;
   bag?: boolean;
+  box?: boolean; // carrying a cardboard box of their things out of work
+  slump?: boolean; // head hung
+  lit?: boolean; // face lit by the phone they are staring into
+  uniform?: boolean; // a peaked cap and the emblem on the chest
+  hazmat?: boolean; // a protective suit, hood and visor
+  stoop?: number; // sitting on this house's stoop (x and y are then ignored)
 }
 interface Drawn { who: Who; hand: P; head: P; H: number; d: number }
 
 function person(pl: Plate, w: Who): Drawn {
   const H = 118 * (w.s ?? 1), d = w.dir ?? 1, x = w.x, pose = w.pose ?? 'walk';
-  const legs = w.legs ?? DARK;
+  const legs = w.legs ?? (w.hazmat ? w.coat : DARK);
   const sit = pose === 'sit';
   const hipY = sit ? w.y - 0.02 * H : w.y - 0.46 * H;
   const top = hipY - 0.33 * H;
@@ -352,13 +358,18 @@ function person(pl: Plate, w: Who): Drawn {
   // arms: the back one behind the coat, the front one over it
   const shF: P = [x + d * 0.1 * H, top + 0.05 * H];
   const shB: P = [x - d * 0.1 * H, top + 0.05 * H];
-  const handB: P = pose === 'walk' ? [x - d * 0.15 * H, hipY + 0.01 * H] : [x - d * 0.12 * H, hipY + 0.04 * H];
+  let handB: P = pose === 'walk' ? [x - d * 0.15 * H, hipY + 0.01 * H] : [x - d * 0.12 * H, hipY + 0.04 * H];
   let hand: P = pose === 'walk' ? [x + d * 0.17 * H, hipY + 0.02 * H] : [x + d * 0.12 * H, hipY + 0.05 * H];
   if (sit) hand = [x + d * 0.2 * H, hipY - 0.07 * H];
   if (w.phone || w.book) hand = [x + d * 0.13 * H, top + 0.13 * H];
   if (w.torch) hand = [x + d * 0.27 * H, hipY - 0.07 * H];
   if (w.reach) hand = [x + d * 0.2 * H, top - 0.3 * H];
-  const skin = SKIN[w.skin ?? 0];
+  if (w.box) {
+    hand = [x + d * 0.2 * H, top + 0.3 * H];
+    handB = [x + d * 0.06 * H, top + 0.32 * H];
+  }
+  // gloves on a protective suit
+  const skin = w.hazmat ? DARK : SKIN[w.skin ?? 0];
   pl.stroke(w.coat, line([shB[0], shB[1], handB[0], handB[1]]), 0.075 * H);
   pl.stroke({ b: 0.18 }, line([shB[0], shB[1], handB[0], handB[1]]), 0.075 * H, true);
   pl.fill(skin, circle(handB[0], handB[1], 0.035 * H));
@@ -379,13 +390,35 @@ function person(pl: Plate, w: Who): Drawn {
   if (w.phone) pl.fill(DARK, round(hand[0] - 0.025 * H, hand[1] - 0.07 * H, 0.05 * H, 0.08 * H, 0.01 * H));
   if (w.book) pl.fill({ r: 0.95 }, quad(still, hand[0] - 0.06 * H, hand[1] - 0.05 * H, 0.12 * H, 0.09 * H, 0.3));
   if (w.torch) pl.fill(DARK, round(hand[0] - 0.02 * H, hand[1] - 0.02 * H, 0.07 * H, 0.04 * H, 0.01 * H));
+  if (w.uniform) emblem(pl, x + d * 0.05 * H, top + 0.12 * H, 0.1 * H, DARK, WHITE);
+  if (w.box) {
+    // a desk plant, then the box it sits in
+    const bx = x + d * 0.17 * H;
+    pl.fill(LEAF, blob(still, bx - d * 0.05 * H, top + 0.05 * H, 0.07 * H, 0.1 * H, 8, 0));
+    pl.fill(LEAF_DARK, blob(still, bx + d * 0.05 * H, top + 0.08 * H, 0.05 * H, 0.07 * H, 8, 0));
+    pl.fill({ y: 0.62, r: 0.42, b: 0.14 }, quad(still, bx - 0.17 * H, top + 0.12 * H, 0.34 * H, 0.26 * H, 0));
+    pl.stroke({ y: 0.7, r: 0.55, b: 0.3 }, line([bx - 0.17 * H, top + 0.17 * H, bx + 0.17 * H, top + 0.17 * H]), 0.025 * H);
+  }
 
   // head: the hair is a circle behind the face, set back
-  const hx = x + d * 0.01 * H;
-  const hy = top - 0.12 * H + (w.phone || w.book ? 0.02 * H : 0);
+  const down = (w.phone || w.book ? 0.02 : 0) + (w.slump ? 0.04 : 0);
+  const hx = x + d * (0.01 + (w.slump ? 0.035 : 0)) * H;
+  const hy = top - 0.12 * H + down * H;
+  if (w.hazmat) {
+    // a hood, a dark visor and a filter
+    pl.fill(w.coat, circle(hx, hy, 0.11 * H));
+    pl.fill(GLASS_DARK, ellipse(hx + d * 0.035 * H, hy - 0.005 * H, 0.06 * H, 0.045 * H));
+    pl.fill(DARK, circle(hx + d * 0.07 * H, hy + 0.06 * H, 0.032 * H));
+    return { who: w, hand, head: [hx, hy], H, d };
+  }
   pl.fill(HAIR[w.hair ?? 0], circle(hx - d * 0.016 * H, hy - 0.014 * H, 0.1 * H));
   pl.fill(skin, circle(hx + d * 0.014 * H, hy + 0.012 * H, 0.084 * H));
   if (w.mask) pl.fill({ b: 0.06 }, round(hx + d * 0.03 * H - 0.055 * H, hy + 0.02 * H, 0.11 * H, 0.06 * H, 0.02 * H));
+  if (w.uniform) {
+    // a peaked cap
+    pl.fill(DARK, round(hx - 0.1 * H, hy - 0.11 * H, 0.2 * H, 0.08 * H, 0.02 * H));
+    pl.fill(DARK, poly([hx, hy - 0.04 * H, hx + d * 0.15 * H, hy - 0.035 * H, hx + d * 0.08 * H, hy - 0.06 * H]));
+  }
   return { who: w, hand, head: [hx, hy], H, d };
 }
 
@@ -394,6 +427,12 @@ function personGlow(pl: Plate, p: Drawn) {
   const [x, y] = p.hand, H = p.H, d = p.d;
   if (p.who.phone) {
     pl.fill({ b: 0.2 }, round(x - 0.018 * H, y - 0.062 * H, 0.036 * H, 0.06 * H, 0.006 * H));
+    if (p.who.lit) {
+      // the cold light of the screen on the face
+      const [hx, hy] = p.head;
+      pl.fill({ b: 0.3, y: 0.04 }, circle(hx + d * 0.014 * H, hy + 0.012 * H, 0.084 * H));
+      pl.fill({ b: 0.08 }, round(x - 0.03 * H, y - 0.08 * H, 0.06 * H, 0.09 * H, 0.01 * H));
+    }
   }
   if (p.who.torch) {
     const beam = poly([x + d * 0.05 * H, y - 0.01 * H, x + d * 0.75 * H, y - 0.2 * H, x + d * 0.8 * H, y + 0.32 * H]);
@@ -409,7 +448,40 @@ function rover(pl: Plate, x: number, y: number, s = 1) {
   pl.fill({ r: 0.95 }, poly([x + 18 * s, y - 84 * s, x + 38 * s, y - 78 * s, x + 18 * s, y - 72 * s]));
 }
 
-function drone(pl: Plate, x: number, y: number, s = 1) {
+/** A robot on two legs, walking to work: the one that took the job. */
+function bot(pl: Plate, x: number, y: number, s = 1, d: 1 | -1 = 1, briefcase = false) {
+  const H = 118 * s;
+  const METAL: Spec = { y: 0.9, r: 0.22 };
+  const hipY = y - 0.46 * H, top = hipY - 0.33 * H;
+  const lp = new Path2D();
+  for (const o of [0.12, -0.1]) { lp.moveTo(x + d * o * 0.25 * H, hipY); lp.lineTo(x + d * o * H, y); }
+  pl.stroke(DARK, lp, 0.07 * H);
+  for (const o of [0.12, -0.1]) pl.fill(DARK, round(x + d * o * H - 0.05 * H, y - 0.03 * H, 0.11 * H, 0.04 * H, 0.01 * H));
+  const shB: P = [x - d * 0.12 * H, top + 0.06 * H], shF: P = [x + d * 0.12 * H, top + 0.06 * H];
+  const handB: P = [x - d * 0.15 * H, hipY + 0.02 * H], hand: P = [x + d * 0.16 * H, hipY + 0.04 * H];
+  pl.stroke(DARK, line([shB[0], shB[1], handB[0], handB[1]]), 0.055 * H);
+  pl.fill(METAL, round(x - 0.15 * H, top, 0.3 * H, 0.4 * H, 0.05 * H));
+  pl.over({ r: 0.3 }, round(x - d * 0.15 * H - (d < 0 ? 0.06 * H : 0), top, 0.06 * H, 0.4 * H, 0.03 * H));
+  pl.fill(DARK, round(x - 0.07 * H, top + 0.1 * H, 0.14 * H, 0.08 * H, 0.015 * H));
+  pl.stroke(DARK, line([shF[0], shF[1], hand[0], hand[1]]), 0.055 * H);
+  if (briefcase) pl.fill(DARK, round(hand[0] - 0.08 * H, hand[1], 0.16 * H, 0.12 * H, 0.015 * H));
+  // the face from the screen on the tower: dark, two lit eyes, a mouth, an antenna
+  const hx = x + d * 0.01 * H, hy = top - 0.13 * H;
+  pl.stroke(DARK, line([hx, hy - 0.1 * H, hx, hy - 0.2 * H]), 0.025 * H);
+  pl.fill({ r: 0.95 }, circle(hx, hy - 0.21 * H, 0.035 * H));
+  pl.fill(DARK, round(hx - 0.11 * H, hy - 0.1 * H, 0.22 * H, 0.2 * H, 0.04 * H));
+  pl.glow(() => {
+    for (const o of [-0.045, 0.045]) pl.fill({ y: 0.95 }, circle(hx + d * 0.015 * H + o * H, hy - 0.025 * H, 0.025 * H));
+    pl.fill({ y: 0.95 }, round(hx + d * 0.015 * H - 0.04 * H, hy + 0.04 * H, 0.08 * H, 0.018 * H, 0.009 * H));
+  });
+}
+
+function drone(pl: Plate, x: number, y: number, s = 1, load = false) {
+  if (load) {
+    // a parcel on a line
+    pl.stroke(DARK, line([x, y, x, y + 14 * s]), 1.5 * s);
+    pl.fill({ y: 0.62, r: 0.42, b: 0.14 }, quad(still, x - 10 * s, y + 14 * s, 20 * s, 16 * s, 0));
+  }
   const arms = new Path2D();
   arms.moveTo(x - 30 * s, y - 6 * s); arms.lineTo(x + 30 * s, y - 6 * s);
   pl.stroke(DARK, arms, 4 * s);
@@ -423,7 +495,93 @@ function camera(pl: Plate, x: number, y: number, d: 1 | -1) {
   pl.fill(DARK, poly([x + d * 6, y + 2, x + d * 34, y + 10, x + d * 32, y + 24, x + d * 4, y + 16]));
 }
 
-function ambulance(pl: Plate, x: number, y: number) {
+/** A beam of attention: from a camera or a drone down to whoever it is on. */
+function watch(pl: Plate, from: P, to: P, spread: number) {
+  const [x0, y0] = from, [x1, y1] = to;
+  const a = Math.atan2(y1 - y0, x1 - x0) + Math.PI / 2;
+  const dx = Math.cos(a) * spread, dy = Math.sin(a) * spread;
+  pl.over({ y: 0.7 }, poly([x0, y0, x1 + dx, y1 + dy, x1 - dx, y1 - dy]));
+}
+
+/** The one emblem: an eye, on everything. */
+function emblem(pl: Plate, x: number, y: number, w: number, ink: Spec, ground: Spec) {
+  const p = new Path2D();
+  p.moveTo(x - w / 2, y);
+  p.quadraticCurveTo(x, y - w * 0.62, x + w / 2, y);
+  p.quadraticCurveTo(x, y + w * 0.62, x - w / 2, y);
+  p.closePath();
+  pl.fill(ground, p);
+  pl.stroke(ink, p, Math.max(1.5, w * 0.07));
+  pl.fill(ink, circle(x, y, w * 0.19));
+  pl.fill(ground, circle(x + w * 0.05, y - w * 0.05, w * 0.06));
+}
+
+/** The biohazard sign, roughly: three hooked crescents round a ring. */
+function biohazard(pl: Plate, x: number, y: number, R: number, ink: Spec, ground: Spec) {
+  const at = (k: number, dist: number): P => {
+    const a = -Math.PI / 2 + (k * Math.PI * 2) / 3;
+    return [x + Math.cos(a) * dist, y + Math.sin(a) * dist];
+  };
+  for (let k = 0; k < 3; k++) pl.fill(ink, circle(...at(k, R * 0.45), R * 0.55));
+  for (let k = 0; k < 3; k++) pl.fill(ground, circle(...at(k, R * 0.62), R * 0.4));
+  pl.stroke(ink, circle(x, y, R * 0.36), R * 0.12);
+  pl.fill(ground, circle(x, y, R * 0.16));
+  for (let k = 0; k < 3; k++) {
+    const [ex, ey] = at(k + 0.5, R * 0.5);
+    pl.stroke(ground, line([x, y, ex, ey]), R * 0.07);
+  }
+}
+
+/** A car; `a` tilts it, for one that has been knocked sideways. */
+function car(pl: Plate, x: number, y: number, d: 1 | -1, paint: Spec, a = 0, lights = false) {
+  const c = Math.cos(a), sn = Math.sin(a);
+  const at = (px: number, py: number): P => [x + d * px * c - py * sn, y + d * px * sn + py * c];
+  const shape = (pts: number[]) => poly(pts.flatMap((v, k) => (k % 2 ? [] : at(v, pts[k + 1]))));
+  pl.fill(paint, shape([0, -16, 2, -50, 40, -58, 196, -58, 228, -46, 230, -16]));
+  pl.fill(paint, shape([52, -56, 78, -94, 156, -94, 182, -56]));
+  pl.fill(GLASS_DARK, shape([62, -58, 82, -88, 114, -88, 114, -58]));
+  pl.fill(GLASS_DARK, shape([122, -58, 122, -88, 152, -88, 172, -58]));
+  pl.fill(DARK, shape([0, -26, 230, -26, 230, -16, 0, -16]));
+  for (const wx of [48, 182]) {
+    pl.fill(DARK, circle(...at(wx, -12), 21));
+    pl.fill({ b: 0.2, r: 0.1 }, circle(...at(wx, -12), 8));
+  }
+  pl.glow(() => {
+    // hazard lights, and headlights still on
+    for (const hx of [4, 226]) pl.fill({ y: 0.95, r: 0.55 }, circle(...at(hx, -42), 7));
+    if (lights) {
+      const [lx, ly] = at(228, -40);
+      const [fx, fy] = at(420, 10), [gx, gy] = at(420, -90);
+      pl.over({ y: { x: lx, y: ly, r: 200, from: 0.55, to: 0 } }, poly([lx, ly, fx, fy, gx, gy]));
+      pl.fill({ y: 0.6 }, circle(lx, ly, 8));
+    }
+  });
+}
+
+/** A striped barrier on two legs, with a lamp on top. */
+function barrier(pl: Plate, x: number, y: number, w: number) {
+  pl.stroke(DARK, line([x + 10, y, x + 22, y - 62, x + 34, y]), 5);
+  pl.stroke(DARK, line([x + w - 34, y, x + w - 22, y - 62, x + w - 10, y]), 5);
+  const board = quad(still, x, y - 70, w, 24, 0.6);
+  pl.fill(WHITE, board);
+  pl.clip(board, () => {
+    for (let sx = x - 30; sx < x + w; sx += 36) pl.fill({ r: 0.95 }, poly([sx, y - 46, sx + 18, y - 46, sx + 42, y - 70, sx + 24, y - 70]));
+  });
+  pl.stroke(DARK, board, 2.5);
+  pl.glow(() => pl.fill({ y: 0.95, r: 0.45 }, circle(x + 22, y - 78, 7)));
+}
+
+function ambulance(pl: Plate, x: number, y: number, flashing = false) {
+  if (flashing) {
+    // the lights on the roof, flashing red and blue
+    pl.fill(DARK, quad(still, x + 120, y - 162, 60, 12, 0));
+    pl.glow(() => {
+      pl.over({ r: { x: x + 130, y: y - 166, r: 90, from: 0.75, to: 0 } }, circle(x + 130, y - 166, 90));
+      pl.over({ b: { x: x + 172, y: y - 166, r: 90, from: 0.75, to: 0 } }, circle(x + 172, y - 166, 90));
+      pl.fill({ r: 0.95 }, round(x + 120, y - 174, 20, 14, 4));
+      pl.fill({ b: 0.95 }, round(x + 160, y - 174, 20, 14, 4));
+    });
+  }
   pl.fill({ b: 0.05 }, round(x, y - 150, 190, 124, 10));
   pl.fill({ b: 0.05 }, poly([x + 190, y - 108, x + 236, y - 108, x + 262, y - 66, x + 262, y - 26, x + 190, y - 26]));
   pl.fill({ b: 0.55, r: 0.06 }, poly([x + 198, y - 100, x + 232, y - 100, x + 252, y - 68, x + 198, y - 68]));
@@ -461,44 +619,53 @@ const BILLS: Record<string, Bill> = {
     for (const dx of [-32, 32]) pl.fill({ y: 0.95 }, circle(cx + dx, B.y + 96, 15));
     pl.fill({ y: 0.95 }, round(cx - 34, B.y + 132, 68, 12, 6));
   },
-  // waiting, forever
-  waiting: (pl) => {
+  // a ballot going into a box, struck through: no say
+  noSay: (pl) => {
     screen(pl, { b: 0.85, r: 0.2 });
-    for (let k = 0; k < 12; k++) {
-      const a = -Math.PI / 2 + (k / 12) * Math.PI * 2, f = k / 12;
-      pl.fill({ b: 0.85 * f, r: 0.2 * f }, circle(cx + Math.cos(a) * 54, cy + Math.sin(a) * 54, 10));
-    }
+    pl.fill(WHITE, quad(still, cx - 30, B.y + 26, 60, 64, 0));
+    pl.stroke(DARK, line([cx - 16, B.y + 56, cx - 4, B.y + 70, cx + 18, B.y + 40]), 7);
+    pl.fill(WHITE, quad(still, cx - 70, B.y + 80, 140, 84, 0));
+    pl.fill(DARK, quad(still, cx - 42, B.y + 80, 84, 9, 0));
+    pl.stroke({ r: 0.95, y: 0.2 }, circle(cx, cy + 4, 82), 14);
+    pl.stroke({ r: 0.95, y: 0.2 }, line([cx - 58, cy + 62, cx + 58, cy - 54]), 14);
   },
-  // one logo
-  oneAnswer: (pl) => {
+  // the emblem, watching
+  eye: (pl) => {
     screen(pl, { y: 0.06 });
-    for (const [rad, w] of [[66, 16], [36, 14]] as const) pl.stroke({ b: 0.95 }, circle(cx, cy, rad), w);
-    pl.fill({ b: 0.95 }, circle(cx, cy, 11));
+    emblem(pl, cx, cy, 210, { b: 0.95 }, { y: 0.06 });
   },
-  // static
-  noSignal: (pl, r) => {
+  // garbled, and the lock open
+  breach: (pl, r) => {
     screen(pl, { b: 0.7, r: 0.6 });
     const tones: Spec[] = [{ b: 0.5 }, { r: 0.6 }, { y: 0.9 }, WHITE, { b: 0.95, r: 0.2 }];
     for (let i = 0; i < 60; i++) {
       const y = B.y + r() * B.h, h = 2 + r() * 9;
       pl.fill(tones[(r() * tones.length) | 0], quad(r, B.x + r() * B.w * 0.5, y, 30 + r() * B.w * 0.5, h, 0.5));
     }
+    // a padlock, its shackle sprung loose
+    const sh = new Path2D();
+    sh.moveTo(cx - 30, cy - 10);
+    sh.lineTo(cx - 30, cy - 50);
+    sh.arc(cx + 2, cy - 50, 32, Math.PI, 0);
+    sh.lineTo(cx + 34, cy - 36);
+    pl.stroke(DARK, sh, 18);
+    pl.stroke(WHITE, sh, 9);
+    pl.fill(DARK, round(cx - 52, cy - 16, 104, 84, 12));
+    pl.fill({ r: 0.95 }, round(cx - 44, cy - 8, 88, 68, 9));
+    pl.fill(DARK, circle(cx, cy + 18, 10));
+    pl.fill(DARK, poly([cx - 5, cy + 20, cx + 5, cy + 20, cx + 8, cy + 44, cx - 8, cy + 44]));
   },
-  // a medical cross and a house
-  stayHome: (pl) => {
-    screen(pl, { b: 0.04 });
-    const x = B.x + 80, y = cy;
-    pl.fill({ r: 0.95 }, poly([x - 14, y - 46, x + 14, y - 46, x + 14, y - 14, x + 46, y - 14, x + 46, y + 14, x + 14, y + 14, x + 14, y + 46, x - 14, y + 46, x - 14, y + 14, x - 46, y + 14, x - 46, y - 14, x - 14, y - 14]));
-    const hx = B.x + 196;
-    pl.stroke(DARK, poly([hx - 46, cy - 6, hx, cy - 50, hx + 46, cy - 6, hx + 34, cy - 6, hx + 34, cy + 46, hx - 34, cy + 46, hx - 34, cy - 6]), 10);
-    pl.fill(DARK, round(hx - 10, cy + 14, 20, 32, 3));
+  // the biohazard sign
+  biohazard: (pl) => {
+    screen(pl, { y: 0.92 });
+    biohazard(pl, cx, cy + 8, 78, DARK, { y: 0.92 });
   },
 };
 
 /* --- the plates -------------------------------------------------------------- */
 
-type Mood = 'day' | 'dusk' | 'night' | 'grey';
-type WinState = 'day' | 'dark' | 'warm' | 'screen' | 'logo' | 'candle';
+type Mood = 'day' | 'dusk' | 'night' | 'gloom' | 'sick';
+type WinState = 'day' | 'dark' | 'warm' | 'screen' | 'logo' | 'candle' | 'robot' | 'glitch';
 
 interface Scene {
   mood: Mood;
@@ -512,6 +679,10 @@ interface Scene {
   people: Who[];
   /** things over the far city, behind the street */
   behind?: (pl: Plate, r: R) => void;
+  /** things on the buildings, behind the trees: banners, boarded windows */
+  facade?: (pl: Plate, r: R) => void;
+  /** things on the street behind the people: benches, barriers */
+  ground?: (pl: Plate, r: R) => void;
   /** things in front: robots, drones, cars, cameras */
   front?: (pl: Plate, r: R, drawn: Drawn[]) => void;
 }
@@ -538,68 +709,185 @@ const SCENES: Scene[] = [
       { x: 1250, y: 1060, coat: COAT.plum, dir: -1, s: 1.25, skin: 1 },
     ],
   },
-  // Automation
+  // Automation: robots cross to work where the commuters crossed; a robot at
+  // every desk in the tower; the people leave with their things in a box
   {
     mood: 'day', bill: 'robot', cafe: 'auto', lamp: 'off', trees: 'summer', clouds: true,
-    windows: (r, k) => (k === 'tower' ? pick(r, 0.7, 'screen', 'day') : pick(r, 0.3, 'screen', 'day')),
+    windows: (r, k) => (k === 'tower' ? pick(r, 0.8, 'robot', 'day') : 'day'),
     people: [
-      { x: 150, y: 942, coat: COAT.sky, pose: 'stand', dir: 1, phone: true, skin: 1 },
-      { x: 880, y: 948, coat: COAT.grey, dir: -1, s: 1.02, hair: 2 },
+      { x: 900, y: 948, coat: COAT.grey, dir: -1, box: true, slump: true, hair: 2 },
+      { x: 380, y: 942, coat: COAT.orange, dir: -1, box: true, slump: true, skin: 2 },
+      { x: 200, y: 944, coat: COAT.pink, dir: -1, s: 0.96, box: true, slump: true, hair: 1 },
+      { x: 0, y: 0, stoop: 3, coat: COAT.sky, dir: -1, slump: true, skin: 1, hair: 3 },
+      { x: -380, y: 942, coat: COAT.green, dir: -1, box: true, slump: true, skin: 3 },
+      { x: 1250, y: 946, coat: COAT.red, dir: -1, box: true, slump: true, hair: 2 },
     ],
     front: (pl) => {
-      rover(pl, 330, 946);
-      rover(pl, 650, 1090, 1.3);
-      drone(pl, 240, 312, 1.1);
-      drone(pl, 560, 236, 0.9);
-      drone(pl, 420, 372, 0.7);
+      bot(pl, 600, 1058, 1.25, 1, true);
+      bot(pl, 700, 1094, 1.34, -1, true);
+      bot(pl, 1110, 946, 1, 1, true);
+      rover(pl, 290, 948, 0.9);
+      drone(pl, 240, 312, 1.1, true);
+      drone(pl, 560, 236, 0.9, true);
+      drone(pl, 420, 372, 0.7, true);
     },
   },
-  // Gradual disempowerment
+  // Gradual disempowerment: dusk, a screen in every window, everyone sitting
+  // still in the blue light of a phone, while machines do the moving
   {
-    mood: 'dusk', bill: 'waiting', cafe: 'auto', lamp: 'on', trees: 'summer', farLights: true,
-    windows: (r) => pick(r, 0.82, 'screen', 'dark'),
+    mood: 'dusk', bill: 'noSay', cafe: 'auto', lamp: 'on', trees: 'summer', farLights: true,
+    windows: (r) => pick(r, 0.86, 'screen', 'dark'),
     people: [
-      { x: 0, y: 0, coat: COAT.plum, pose: 'sit', dir: -1, phone: true, skin: 2 },
-      { x: 470, y: 944, coat: COAT.grey, pose: 'stand', dir: 1, phone: true, hair: 3 },
+      ...[3, 4, 5].map((k, i) => ({ x: 0, y: 0, stoop: k, coat: [COAT.grey, COAT.plum, COAT.sky][i], dir: -1 as const, s: 0.9, phone: true, lit: true, skin: i, hair: i + 1 })),
+      // on the bench outside the café
+      ...[676, 750, 824].map((x, i) => ({ x, y: 916, pose: 'sit' as const, coat: [COAT.green, COAT.grey, COAT.pink][i], dir: 1 as const, s: 0.84, phone: true, lit: true, skin: 3 - i, hair: i })),
     ],
+    ground: (pl) => {
+      pl.fill({ r: 0.55, y: 0.45, b: 0.55 }, quad(still, 640, 910, 230, 10, 0.5));
+      for (const x of [652, 852]) pl.stroke(DARK, line([x, 918, x, 948]), 5);
+    },
     front: (pl) => {
-      rover(pl, 760, 946);
-      rover(pl, 120, 948, 0.9);
-      drone(pl, 300, 300, 1);
+      bot(pl, 660, 1124, 1.75, 1, true);
+      bot(pl, 960, 948, 0.95, -1);
+      bot(pl, -150, 948, 0.95, 1, true);
+      rover(pl, 420, 948, 0.9);
+      drone(pl, 300, 300, 1, true);
+      drone(pl, 520, 222, 0.8, true);
     },
   },
-  // Concentration of power
+  // Concentration of power: one emblem on every window, banner and chest;
+  // ranks in step, searchlights, and a camera on the one who is not marching
   {
-    mood: 'grey', bill: 'oneAnswer', cafe: 'open', lamp: 'off', trees: 'summer',
-    windows: () => 'logo',
-    // everyone dressed the same, walking the same way
-    people: [[110, 942, 1], [250, 942, 1], [390, 942, 1], [560, 1010, 1.14], [650, 1050, 1.24], [740, 1090, 1.33]]
-      .map(([x, y, s]) => ({ x, y, s, coat: COAT.blue, dir: 1 as const })),
+    mood: 'gloom', bill: 'eye', cafe: 'dark', lamp: 'on', trees: 'summer',
+    windows: (r, k) => (k === 'tower' ? 'logo' : pick(r, 0.25, 'logo', 'dark')),
+    people: [
+      ...[[60, 942, 1], [170, 942, 1], [280, 942, 1], [560, 1010, 1.14], [650, 1050, 1.24], [740, 1090, 1.33]]
+        .map(([x, y, s]) => ({ x, y, s, coat: COAT.blue, legs: { b: 0.95, r: 0.5 }, dir: 1 as const, uniform: true })),
+      { x: 474, y: 944, coat: COAT.red, pose: 'stand', dir: -1, slump: true, skin: 2, hair: 1 },
+    ],
+    behind: (pl) => {
+      // searchlights sweeping over the roofs
+      pl.glow(() => {
+        for (const [x0, x1] of [[60, -240], [300, 470]]) pl.fill({ y: 0.12, b: 0.34, r: 0.1 }, poly([x0 - 4, 900, x0 + 4, 900, x1 + 60, 0, x1 - 60, 0]));
+      });
+    },
+    ground: (pl) => {
+      // a drone's spotlight on the one who is not marching
+      pl.glow(() => pl.fill({ y: 0.42 }, poly([462, 352, 478, 352, 530, 952, 414, 952])));
+      // and the cameras' gaze
+      watch(pl, [490, 656], [462, 950], 40);
+      watch(pl, [572, 252], [490, 950], 34);
+    },
+    facade: (pl) => {
+      for (const h of street!.houses.slice(3)) {
+        const x = (h.x0 + h.x1) / 2, t = h.top + 18;
+        pl.fill({ b: 0.95, r: 0.12 }, poly([x - 24, t, x + 24, t, x + 24, t + 230, x, t + 212, x - 24, t + 230]));
+        emblem(pl, x, t + 40, 38, { b: 0.95 }, { y: 0.06 });
+      }
+    },
     front: (pl) => {
-      camera(pl, 520, 640, 1);
-      camera(pl, 160, 470, -1);
-      camera(pl, 470, 450, -1);
+      camera(pl, 520, 640, -1);
       camera(pl, 602, 236, -1);
+      drone(pl, 470, 346, 1.1);
+      drone(pl, 150, 250, 0.8);
     },
   },
-  // Cyber attacks
+  // Cyber attacks: the power is out, every signal at once, cars meet in the
+  // dark crossing, a fire in the city; people get about by torchlight
   {
-    mood: 'night', bill: 'noSignal', cafe: 'dark', lamp: 'spark', trees: 'summer',
-    windows: (r, k) => (k === 'house' ? pick(r, 0.14, 'candle', 'dark') : 'dark'),
+    mood: 'night', bill: 'breach', cafe: 'dark', lamp: 'spark', trees: 'summer',
+    windows: (r, k) => (k === 'house' ? pick(r, 0.14, 'candle', 'dark') : pick(r, 0.14, 'glitch', 'dark')),
     people: [
-      { x: 280, y: 942, coat: COAT.yellow, dir: 1, torch: true, skin: 1 },
-      { x: 720, y: 1090, coat: COAT.red, dir: -1, s: 1.3, torch: true, hair: 2 },
+      { x: 430, y: 942, coat: COAT.yellow, dir: -1, torch: true, skin: 1 },
+      { x: 930, y: 1110, coat: COAT.red, dir: -1, s: 1.3, torch: true, hair: 2 },
     ],
+    behind: (pl, r) => {
+      // a fire beyond the roofs: its light, its smoke, its flames
+      // the smoke, dark against the sky, lit from below near the flames
+      for (let k = 11; k >= 0; k--) {
+        const t = k / 11;
+        const puff = blob(r, 84 - t * 130 - t * t * 40, 350 - t * 250, 36 + t * 56, 30 + t * 34, 10, 0.16);
+        if (t < 0.3) pl.glow(() => pl.fill({ r: 0.5, b: 0.42, y: 0.5 }, puff));
+        else pl.fill({ r: 0.55, b: 0.6, y: 0.22 }, puff);
+      }
+      pl.glow(() => {
+        pl.over({ r: { x: 90, y: 420, r: 280, from: 0.7, to: 0 }, y: { x: 90, y: 420, r: 280, from: 0.95, to: 0 } }, circle(90, 420, 280));
+        for (const [x, h, w] of [[30, 90, 30], [70, 130, 36], [112, 100, 30], [150, 70, 24]]) {
+          pl.fill({ r: 0.75, y: 0.95 }, poly([x - w, 410, x - w * 0.3, 410 - h * 0.55, x, 410 - h, x + w * 0.4, 410 - h * 0.5, x + w, 410]));
+          pl.fill({ y: 0.95, r: 0.2 }, poly([x - w * 0.5, 410, x, 410 - h * 0.55, x + w * 0.5, 410]));
+        }
+      });
+    },
+    front: (pl) => {
+      // two cars meet in the crossing, where the signals went wrong
+      car(pl, 300, 1134, 1, COAT.orange, 0, true);
+      car(pl, 770, 1128, -1, COAT.sky, 0.16, true);
+      pl.glow(() => {
+        const [x, y] = [548, 1062];
+        const star: number[] = [];
+        for (let k = 0; k < 16; k++) {
+          const a = (k / 16) * Math.PI * 2, rad = k % 2 ? 22 : 50;
+          star.push(x + Math.cos(a) * rad, y + Math.sin(a) * rad * 0.8);
+        }
+        pl.fill({ y: 0.95, r: 0.5 }, poly(star));
+        pl.fill({ y: 0.9 }, circle(x, y, 14));
+        // smoke from the bonnets
+        for (const [sx, sy, rad] of [[540, 1000, 26], [556, 962, 34], [536, 918, 40]]) pl.fill({ r: 0.32, b: 0.45, y: 0.12 }, blob(still, sx, sy, rad, rad * 0.8, 9, 0));
+      });
+      // the signal on the lamp, every light on at once
+      pl.stroke(DARK, line([520, 690, 538, 690]), 5);
+      pl.fill(DARK, round(534, 650, 30, 82, 6));
+      pl.glow(() => {
+        for (const [k, c] of [[0, { r: 0.95, y: 0.3 }], [1, { y: 0.95, r: 0.4 }], [2, { b: 0.6, y: 0.95 }]] as const) {
+          pl.over({ y: { x: 549, y: 666 + k * 25, r: 30, from: 0.5, to: 0 } }, circle(549, 666 + k * 25, 30));
+          pl.fill(c, circle(549, 666 + k * 25, 9));
+        }
+      });
+    },
   },
-  // Biological risk
+  // Biological risk: a sickly sky, the crossing barred, an ambulance, boarded
+  // windows, and the only people out are in protective suits
   {
-    mood: 'grey', bill: 'stayHome', cafe: 'closed', lamp: 'off', trees: 'bare',
-    windows: (r, k) => (k === 'house' ? pick(r, 0.3, 'warm', 'day') : pick(r, 0.6, 'dark', 'day')),
+    mood: 'sick', bill: 'biohazard', cafe: 'closed', lamp: 'off', trees: 'bare',
+    windows: (r, k) => (k === 'house' ? pick(r, 0.25, 'warm', 'dark') : pick(r, 0.6, 'dark', 'day')),
     people: [
-      { x: 200, y: 942, coat: COAT.sky, dir: 1, mask: true, bag: true, skin: 2 },
-      { x: 450, y: 938, coat: COAT.plum, dir: -1, mask: true, s: 0.96, hair: 1 },
+      { x: 330, y: 944, coat: { y: 0.95 }, dir: -1, hazmat: true, bag: true, pose: 'stand' },
+      { x: 600, y: 1112, coat: { y: 0.95 }, dir: 1, s: 1.3, hazmat: true },
+      { x: 150, y: 942, coat: COAT.sky, dir: -1, mask: true, bag: true, skin: 2, s: 0.94 },
     ],
-    front: (pl) => ambulance(pl, 600, 1092),
+    facade: (pl, r) => {
+      const WOOD: Spec = { y: 0.5, r: 0.2, b: 0.04 };
+      const planks = (x: number, y: number, w: number, h: number) => {
+        for (const p of [line([x - 4, y + 8, x + w + 4, y + h - 8]), line([x - 4, y + h - 8, x + w + 4, y + 8])]) {
+          pl.stroke(DARK, p, 13);
+          pl.stroke(WOOD, p, 8);
+        }
+      };
+      for (const h of street!.houses) for (const w of h.wins) if (r() < 0.22) planks(w.x, w.y, w.w, w.h);
+      planks(620, 806, 236, 90);
+      // a warning on the doors
+      for (const h of street!.houses.slice(3)) {
+        const x = h.x0 + (h.x1 - h.x0) * 0.6 + 19;
+        pl.fill({ y: 0.95 }, quad(still, x - 14, 788, 28, 28, 0));
+        biohazard(pl, x, 802, 11, DARK, { y: 0.95 });
+      }
+    },
+    ground: (pl) => {
+      // tape along the sidewalk, then barriers across the road
+      const tape: P[] = [[-460, 884], [-200, 896], [96, 880], [418, 892], [520, 880], [1170, 888], [1460, 880]];
+      const tp = line(tape.flat());
+      pl.stroke({ y: 0.95 }, tp, 9);
+      for (let k = 0; k < tape.length - 1; k++) {
+        const [x0, y0] = tape[k], [x1, y1] = tape[k + 1];
+        for (let t = 0; t < 1; t += 26 / Math.hypot(x1 - x0, y1 - y0)) {
+          const x = x0 + (x1 - x0) * t, y = y0 + (y1 - y0) * t;
+          pl.fill(DARK, poly([x, y - 4.5, x + 9, y - 4.5, x + 4, y + 4.5, x - 5, y + 4.5]));
+        }
+      }
+      barrier(pl, 90, 1150, 190);
+      barrier(pl, 330, 1150, 190);
+    },
+    front: (pl) => ambulance(pl, 700, 1086, true),
   },
 ];
 
@@ -607,14 +895,16 @@ const SKY: Record<Mood, Spec> = {
   day: { b: lin(0.44, 0.1) },
   dusk: { b: lin(0.6, 0.06), r: lin(0.16, 0.5), y: lin(0, 0.7) },
   night: { b: lin(0.58, 0.32), r: lin(0.22, 0.14) },
-  grey: { b: 0.17, r: 0.09, y: 0.05 },
+  gloom: { b: lin(0.66, 0.4), r: lin(0.5, 0.26), y: 0.08 },
+  sick: { y: lin(0.62, 0.3), b: lin(0.3, 0.12), r: 0.08 },
 };
 // the light of each plate, added to everything that does not give off its own
 const WASH: Record<Mood, Partial<Record<Ink, number>>> = {
   day: {},
   dusk: { r: 0.18, b: 0.26, y: 0.06 },
   night: { b: 0.64, r: 0.32 },
-  grey: { b: 0.1, r: 0.06 },
+  gloom: { b: 0.3, r: 0.2 },
+  sick: { y: 0.14, b: 0.06 },
 };
 
 export const PLATE_COUNT = SCENES.length;
@@ -739,6 +1029,7 @@ export function drawPlate(i: number, pw: number, ph: number): Plate {
     pl.stroke(DARK, h.rail, 3);
     pl.fill(GLASS_DARK, h.garden);
   }
+  sc.facade?.(pl, r);
 
   // the street
   pl.fill(SIDEWALK, S.sidewalk);
@@ -782,8 +1073,10 @@ export function drawPlate(i: number, pw: number, ph: number): Plate {
   }
 
   // people, each with whatever light they carry, then whatever else is in front
+  sc.ground?.(pl, r);
   const drawn = sc.people.map((w) => {
-    const d = person(pl, w.pose === 'sit' && w.x === 0 ? { ...w, x: S.houses[SEAT].seat[0], y: S.houses[SEAT].seat[1] } : w);
+    const seat = w.stoop === undefined ? null : S.houses[w.stoop].seat;
+    const d = person(pl, seat ? { ...w, pose: 'sit', x: seat[0], y: seat[1] } : w);
     pl.glow(() => personGlow(pl, d));
     return d;
   });
@@ -804,10 +1097,24 @@ function glowWindow(pl: Plate, r: R, w: Win, s: WinState, house: boolean) {
     if (house) silhouette(pl, w);
   }
   if (s === 'logo') {
-    pl.fill({ b: 0.1 }, at);
-    const rad = Math.min(w.w, w.h) * 0.28;
-    pl.stroke({ b: 0.95 }, circle(w.x + w.w / 2, w.y + w.h / 2, rad), Math.max(3, rad * 0.32));
-    pl.fill({ b: 0.95 }, circle(w.x + w.w / 2, w.y + w.h / 2, rad * 0.28));
+    pl.fill({ y: 0.06 }, at);
+    emblem(pl, w.x + w.w / 2, w.y + w.h / 2, w.w * 0.8, { b: 0.95 }, { y: 0.06 });
+  }
+  if (s === 'robot') {
+    // a robot at the desk: a square head, an antenna, two lit eyes
+    pl.fill({ y: 0.55, r: 0.1 }, at);
+    const x = w.x + w.w / 2, y = w.y + w.h, hw = w.w * 0.42;
+    pl.fill(DARK, round(x - w.w * 0.3, y - 8, w.w * 0.6, 8, 2));
+    pl.fill(DARK, round(x - hw / 2, y - 30, hw, 20, 4));
+    pl.stroke(DARK, line([x, y - 30, x, y - 36]), 2);
+    for (const o of [-0.22, 0.22]) pl.fill({ y: 0.95 }, circle(x + o * hw, y - 21, 2.6));
+  }
+  if (s === 'glitch') {
+    pl.fill({ b: 0.8, r: 0.5 }, at);
+    const tones: Spec[] = [{ r: 0.9 }, { b: 0.6 }, WHITE, { y: 0.9 }];
+    pl.clip(at, () => {
+      for (let k = 0; k < 4; k++) pl.fill(tones[(r() * 4) | 0], quad(r, w.x + r() * w.w * 0.5, w.y + 3 + r() * (w.h - 10), 8 + r() * w.w * 0.6, 2 + r() * 5, 0.3));
+    });
   }
   if (s === 'candle') {
     const x = w.x + w.w / 2, y = w.y + w.h - 14;
