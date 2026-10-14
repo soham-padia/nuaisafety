@@ -26,6 +26,8 @@ const ogImage = new URL('/og.jpg', Astro.site);
 <html lang="en">
   <head>
     <meta charset="utf-8" />
+    <!-- page-to-page transitions (global.css), opted into before anything else loads -->
+    <style is:inline>@view-transition { navigation: auto; }</style>
     <link rel="preload" href={fontLatin} as="font" type="font/woff2" crossorigin />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>{pageTitle}</title>
@@ -145,7 +147,9 @@ const ogImage = new URL('/og.jpg', Astro.site);
         const head = document.querySelector<HTMLElement>('.masthead');
         const lenis = new Lenis({
           lerp: 0.15, // how quickly the page catches up with the wheel: higher is snappier
-          anchors: { offset: -(head?.offsetHeight ?? 64) },
+          // a section's own scroll-margin-top (global.css) keeps it clear of
+          // the header; an offset here as well would count the header twice
+          anchors: true,
         });
         lenis.on('scroll', ScrollTrigger.update);
         // for page scripts that scroll on their own (the home page's Home link)
@@ -156,13 +160,16 @@ const ogImage = new URL('/og.jpg', Astro.site);
         const items = gsap.utils.toArray<HTMLElement>(
           '.section-title, .section-lede, .way, .track, .flow li, .areas li, .person, .faq__item, .paper'
         ).filter((el) => el.getBoundingClientRect().top > innerHeight * 0.92);
-        gsap.set(items, { opacity: 0, y: 28 });
-        ScrollTrigger.batch(items, {
-          start: 'top 90%',
-          once: true,
-          onEnter: (batch) =>
-            gsap.to(batch, { opacity: 1, y: 0, duration: 0.8, ease: 'power3.out', stagger: 0.07, overwrite: true, clearProps: 'transform' }),
-        });
+        // nothing below the fold yet (a short page, or one opened partway down)
+        if (items.length) {
+          gsap.set(items, { opacity: 0, y: 28 });
+          ScrollTrigger.batch(items, {
+            start: 'top 90%',
+            once: true,
+            onEnter: (batch) =>
+              gsap.to(batch, { opacity: 1, y: 0, duration: 0.8, ease: 'power3.out', stagger: 0.07, overwrite: true, clearProps: 'transform' }),
+          });
+        }
         // fonts and the city change the page height after load
         document.fonts?.ready.then(() => ScrollTrigger.refresh());
       }
