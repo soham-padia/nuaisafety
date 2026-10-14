@@ -39,8 +39,10 @@ import { STORY } from '../data/story';
 
   if (fig && trigger) {
     const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
-    // how far the opening runs: the spacer under the headline
+    // how far the opening runs (the spacer under the headline), and the pause
+    // after it on the lede and buttons, before the plates start to change
     const opening = () => trigger.querySelector<HTMLElement>('.home__intro-space')?.offsetHeight ?? 0;
+    const pause = () => trigger.querySelector<HTMLElement>('.home__intro-hold')?.offsetHeight ?? 0;
 
     // The headline's label (see global.css) hugs its longest line. CSS cannot
     // shrink a block to wrapped text, so measure the words. The width goes on
@@ -102,7 +104,7 @@ import { STORY } from '../data/story';
     };
     ScrollTrigger.create({
       trigger,
-      start: () => `top+=${opening()} top`,
+      start: () => `top+=${opening() + pause()} top`,
       end: 'bottom bottom',
       onUpdate: follow,
       onRefresh: follow,

@@ -8,7 +8,11 @@ import FellowshipsSection from '../sections/FellowshipsSection.astro';
 import ExecSection from '../sections/ExecSection.astro';
 import ResearchSection from '../sections/ResearchSection.astro';
 import FaqSection from '../sections/FaqSection.astro';
-import { LUMA_CALENDAR_ID, LUMA_CALENDAR_URL, SLACK_URL, mailtoHref } from '../config';
+import { SLACK_URL, mailtoHref } from '../config';
+import { split, dateParts, timeRange } from '../lib/events';
+
+// The next few events, from the same list as /events. Built every morning.
+const upcoming = split().upcoming.slice(0, 3);
 
 /* Joining the Slack is how someone becomes a member, so it is the red button.
    Fallbacks: email, then the Get involved section. */
@@ -21,6 +25,11 @@ const slackHref = SLACK_URL ?? mailtoHref('Joining the Slack') ?? '#join';
     <!-- Where "Home" goes: the end of the opening, with the page settled
          (see .home__mark in global.css). Scrolling up still reaches the start. -->
     <span class="home__mark" id="top" aria-hidden="true"></span>
+    <a class="home__more" href="#what" aria-label="Scroll down" data-more>
+      <svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true" focusable="false">
+        <path d="M12 5v14M6 13l6 6 6-6" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+    </a>
     <div class="home__art">
       <RisoStreet />
     </div>
@@ -28,17 +37,23 @@ const slackHref = SLACK_URL ?? mailtoHref('Joining the Slack') ?? '#join';
     <div class="home__text">
       <div class="home__intro">
         <div class="home__step home__step--intro">
-          <HeroTitle client:load text="AI is becoming more capable faster than we can control it." />
+          {/* The hook is what sits on the picture on a phone; on a desktop it
+              dissolves (display: contents) and the lede slots in between. */}
+          <div class="home__hook">
+            <HeroTitle client:load text="AI is becoming more capable faster than we can control it." />
+            <div class="actions">
+              <a class="btn" href={slackHref}>Join our Slack →</a>
+              <a class="btn btn--ghost" href="#join">Ways to get involved</a>
+            </div>
+          </div>
           <p class="home__lede">
             NU AI Safety is a student-led group at Northeastern. We prepare students to help make
             advanced AI safe, through research and through policy.
           </p>
-          <div class="actions">
-            <a class="btn" href={slackHref}>Join our Slack →</a>
-            <a class="btn btn--ghost" href="#join">Ways to get involved</a>
-          </div>
         </div>
+        {/* how far the opening runs, then a pause on the lede and buttons */}
         <div class="home__intro-space" aria-hidden="true"></div>
+        <div class="home__intro-hold" aria-hidden="true"></div>
       </div>
 
       <div class="home__step">
@@ -106,23 +121,39 @@ const slackHref = SLACK_URL ?? mailtoHref('Joining the Slack') ?? '#join';
     </div>
   </section>
 
-  {LUMA_CALENDAR_ID && (
-    <section class="band band--sand section" id="events" aria-labelledby="events-title">
-      <div class="wrap">
-        <h2 id="events-title" class="section-title dot">Events</h2>
-        <iframe
-          class="events"
-          src={`https://luma.com/embed/calendar/${LUMA_CALENDAR_ID}/events?lt=light`}
-          title="Upcoming events"
-          loading="lazy"
-          allowfullscreen
-        ></iframe>
-        <p class="events__sub">
-          <a class="link-more" href={LUMA_CALENDAR_URL}>Subscribe on Luma</a>
-        </p>
-      </div>
-    </section>
-  )}
+  <section class="band band--sand section" id="events" aria-labelledby="events-title">
+    <div class="wrap">
+      <h2 id="events-title" class="section-title dot">Events</h2>
+      {upcoming.length > 0 ? (
+        <ol class="home-events">
+          {upcoming.map((e) => {
+            const d = dateParts(e.begins);
+            return (
+              <li class="home-event">
+                {/* Visual only: the line under the title says the same thing in words. */}
+                <p class="home-event__date" aria-hidden="true">
+                  <span>{d.month}</span>
+                  <strong>{d.day}</strong>
+                  <span>{d.weekday}</span>
+                </p>
+                <div>
+                  <h3>{e.title}</h3>
+                  <p class="home-event__when">{d.weekday}, {d.month} {d.day} · {timeRange(e)} · {e.place}</p>
+                  <p class="home-event__links">
+                    {e.rsvp && <a class="btn btn--small" href={e.rsvp}>RSVP →</a>}
+                    <a class="link-more" href={`/events#${e.slug}`}>Details and calendar</a>
+                  </p>
+                </div>
+              </li>
+            );
+          })}
+        </ol>
+      ) : (
+        <p class="home-events__none">Nothing is scheduled right now.</p>
+      )}
+      <p class="events__sub"><a class="link-more" href="/events">All events, and how to subscribe</a></p>
+    </div>
+  </section>
 
   <JoinSection />
   <FellowshipsSection />
@@ -184,6 +215,19 @@ const slackHref = SLACK_URL ?? mailtoHref('Joining the Slack') ?? '#join';
     const headHeight = () => (head ? head.offsetHeight : 0);
     const below = (el) => el.getBoundingClientRect().top + scrollY - headHeight();
 
+    // the arrow on the first screen: on to the settled page on a desktop, or
+    // to the lede under the picture on a phone
+    const more = document.querySelector('[data-more]');
+    const lede = document.querySelector('.home__lede');
+    more?.addEventListener('click', (e) => {
+      const to = matchMedia('(min-width: 900px)').matches ? mark : lede;
+      if (!to) return;
+      e.preventDefault();
+      const lenis = window.lenis;
+      if (lenis) lenis.scrollTo(below(to));
+      else window.scrollTo({ top: below(to), behavior: 'smooth' });
+    });
+
     for (const a of document.querySelectorAll('a[href="/#top"], a[href="#top"]')) {
       a.addEventListener('click', (e) => {
         if (!mark || e.metaKey || e.ctrlKey || e.shiftKey || e.button !== 0) return;
@@ -237,16 +281,42 @@ const slackHref = SLACK_URL ?? mailtoHref('Joining the Slack') ?? '#join';
     white-space: nowrap;
   }
 
-  /* Luma's list sizes itself to the frame, so the frame sets the height.
-     Lazy, because it is well below the fold and would otherwise load with the page. */
-  .events {
-    display: block;
-    width: 100%;
-    height: 600px;
-    margin-block-start: 1.5rem;
-    border: 1px solid var(--rule);
-    border-radius: 8px;
-    background: var(--paper);
+  /* The next events as cards, as many as there are, so the section is only as
+     tall as its events. */
+  .home-events {
+    list-style: none;
+    padding: 0;
+    margin: 1.5rem 0 0;
+    display: grid;
+    gap: 1rem;
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, 22rem), 1fr));
   }
-  .events__sub { margin-block: 1rem 0; font-size: 0.9375rem; }
+  .home-event {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr);
+    gap: 1.1rem;
+    align-items: start;
+    padding: 1.25rem 1.4rem;
+    border-radius: 1.25rem;
+    background: #fff;
+  }
+  .home-event__date {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin: 0;
+    min-width: 3.2rem;
+    line-height: 1.1;
+    font-size: 0.75rem;
+    font-weight: 650;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+  .home-event__date strong { font-size: 2rem; letter-spacing: -0.03em; color: var(--accent); margin-block: 0.05em; }
+  .home-event h3 { margin: 0; font-size: var(--step-1); }
+  .home-event__when { margin: 0.3rem 0 0; color: var(--muted); font-size: 0.9375rem; }
+  .home-event__links { display: flex; flex-wrap: wrap; align-items: center; gap: 0.6rem 1.1rem; margin: 0.9rem 0 0; }
+  .home-events__none { margin: 1rem 0 0; color: var(--muted); }
+  .events__sub { margin-block: 1.25rem 0; font-size: 0.9375rem; }
 </style>
