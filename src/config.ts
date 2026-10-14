@@ -81,8 +81,8 @@ export const NAV = [
   { href: '/#top', label: 'Home' },
   { href: '/events', label: 'Events' },
   { href: '/#fellowships', label: 'Fellowships' },
-  { href: '/#team', label: 'Team' },
-  { href: '/#resources', label: 'Resources' },
+  { href: '/team', label: 'Team' },
+  { href: '/resources', label: 'Resources' },
   { href: '/#faq', label: 'FAQ' },
 ];
 
@@ -165,11 +165,13 @@ export const EVENTS: GroupEvent[] = [
    Only `name` is required. Every other field renders only when it is filled
    in, so the page never shows an empty label or a half-finished card.
 
-   photo  A file you drop into `public/team/`, written as `/team/name.jpg`.
-          Square, around 960x960, compressed. That is the whole job: no layout
-          change, no code change, no image import. Without one the tile falls
-          back to an initials plate, which reserves exactly the same space, so
-          adding a photo shifts nothing on the page.
+   linkedin  Their LinkedIn profile URL. Shown as an icon, and the source of
+          their photo: `npm run photos` fetches the LinkedIn photo of anyone
+          who has a `linkedin` and no photo yet, into `public/team/`.
+   photo  Picked up automatically from `public/team/<first-last>.jpg` (the
+          file `npm run photos` writes). Set it only to use some other file.
+          Without a photo the tile falls back to an initials plate, which
+          reserves exactly the same space, so adding one shifts nothing.
    level    'Undergraduate', 'Master’s' or 'PhD'.
    title    Overrides the default title, e.g. 'President'.
    website  A personal site, with https://. Shown as a globe icon, next to
@@ -188,6 +190,10 @@ export type Person = {
   website?: string;
 };
 
+/** The file name a person's photo is saved under: "Max Eng" -> "max-eng". */
+export const photoSlug = (name: string) =>
+  name.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+
 /** The default title, for anyone on the board without their own `title`. */
 export const BOARD_TITLE = 'Board Member';
 
@@ -200,28 +206,32 @@ export const TEAM: Person[] = [
     name: 'Elaine Ly',
     title: 'President',
     email: 'ly.el@northeastern.edu',
+    linkedin: 'https://www.linkedin.com/in/thisiselaine/',
     website: 'https://thisiselaine.github.io',
   },
   {
     name: 'Soham Padia',
     title: 'President',
     email: 'padia.so@northeastern.edu',
+    linkedin: 'https://www.linkedin.com/in/soham-padia/',
     website: 'https://soham-padia.github.io',
   },
   {
     name: 'Rohan Kathuria',
     email: 'kathuria.r@northeastern.edu',
+    linkedin: 'https://www.linkedin.com/in/rohanekathuria/',
     website: 'https://rkathuria.com',
   },
-  { name: 'Julia Rowniewski' },
-  { name: 'Eric Shi' },
+  { name: 'Julia Rowniewski', linkedin: 'https://www.linkedin.com/in/julia-rowniewski-b54a8b240/' },
+  { name: 'Eric Shi', linkedin: 'https://www.linkedin.com/in/ericshi2/' },
   {
     name: 'Ryan Baylon',
     email: 'baylon.r@northeastern.edu',
+    linkedin: 'https://www.linkedin.com/in/ryan-f-baylon/',
     website: 'https://ryanbaylon.com',
   },
-  { name: 'Max Eng' },
-  { name: 'Jacob Chen' },
+  { name: 'Max Eng', linkedin: 'https://www.linkedin.com/in/maxethaneng/' },
+  { name: 'Jacob Chen', linkedin: 'https://www.linkedin.com/in/jjacobchen/' },
 ];
 
 /** Title shown under each fellow's name on /team. */

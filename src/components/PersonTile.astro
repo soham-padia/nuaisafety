@@ -1,5 +1,7 @@
 ---
-import { PHOTO_PX, type Person } from '../config';
+import { existsSync } from 'node:fs';
+import { join } from 'node:path';
+import { PHOTO_PX, photoSlug, type Person } from '../config';
 
 /** One tile on /team: photo or initials plate, name, title, then whatever
     optional details the person has filled in. */
@@ -9,6 +11,11 @@ interface Props {
 }
 
 const { person, role } = Astro.props;
+
+/* The photo: the one set in config, or else the file `npm run photos` saved
+   for this person, if there is one. Checked at build time. */
+const saved = `/team/${photoSlug(person.name)}.jpg`;
+const photo = person.photo ?? (existsSync(join(process.cwd(), 'public', saved)) ? saved : undefined);
 
 /** Initials for the fallback plate. Two letters at most, so a long name does
     not produce a row of letters that reads as a word. */
@@ -22,10 +29,10 @@ const initials = (name: string) =>
 ---
 <li class="person">
   <div class="portrait">
-    {person.photo ? (
+    {photo ? (
       /* Alt is empty on purpose. The name is the next line of text,
          so a filled alt would read the person out twice. */
-      <img src={person.photo} alt="" width={PHOTO_PX} height={PHOTO_PX} />
+      <img src={photo} alt="" width={PHOTO_PX} height={PHOTO_PX} loading="lazy" decoding="async" />
     ) : (
       <span class="portrait__initials" aria-hidden="true">{initials(person.name)}</span>
     )}

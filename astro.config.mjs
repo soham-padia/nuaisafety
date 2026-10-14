@@ -9,12 +9,10 @@ export default defineConfig({
   trailingSlash: 'never',
   // React islands: the React Bits components and the Remotion player.
   integrations: [react()],
-  // Join, Team and Resources are now sections of the home page, and About became
-  // Resources before that. Keep old links and shares working.
+  // Join is a section of the home page, and About became Resources. Keep old
+  // links and shares working.
   redirects: {
     '/join': '/#join',
-    '/team': '/#team',
-    '/resources': '/#resources',
-    '/about': '/#resources',
+    '/about': '/resources',
   },
 });
