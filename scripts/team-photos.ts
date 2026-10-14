@@ -32,7 +32,8 @@ for (const person of [...TEAM, ...FELLOWS]) {
   try {
     const res = await fetch(`https://unavatar.io/linkedin/${encodeURIComponent(id)}?fallback=false`);
     const type = res.headers.get('content-type') ?? '';
-    if (!res.ok || !type.startsWith('image/')) { failed.push(`${person.name}: no photo found (${res.status})`); continue; }
+    // LinkedIn's grey silhouette comes back as an SVG: that means no public photo
+    if (!res.ok || !/^image\/(jpeg|png|webp)/.test(type)) { failed.push(`${person.name}: no public LinkedIn photo`); continue; }
     writeFileSync(file, Buffer.from(await res.arrayBuffer()));
     saved.push(person.name);
   } catch (e) {

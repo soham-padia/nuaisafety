@@ -206,6 +206,7 @@ export const TEAM: Person[] = [
     name: 'Elaine Ly',
     title: 'President',
     email: 'ly.el@northeastern.edu',
+    linkedin: 'https://www.linkedin.com/in/thisiselaine/',
     website: 'https://thisiselaine.github.io',
   },
   {
@@ -217,17 +218,19 @@ export const TEAM: Person[] = [
   {
     name: 'Rohan Kathuria',
     email: 'kathuria.r@northeastern.edu',
+    linkedin: 'https://www.linkedin.com/in/rohanekathuria/',
     website: 'https://rkathuria.com',
   },
-  { name: 'Julia Rowniewski' },
-  { name: 'Eric Shi' },
+  { name: 'Julia Rowniewski', linkedin: 'https://www.linkedin.com/in/julia-rowniewski-b54a8b240/' },
+  { name: 'Eric Shi', linkedin: 'https://www.linkedin.com/in/ericshi2/' },
   {
     name: 'Ryan Baylon',
     email: 'baylon.r@northeastern.edu',
+    linkedin: 'https://www.linkedin.com/in/ryan-f-baylon/',
     website: 'https://ryanbaylon.com',
   },
-  { name: 'Max Eng' },
-  { name: 'Jacob Chen' },
+  { name: 'Max Eng', linkedin: 'https://www.linkedin.com/in/maxethaneng/' },
+  { name: 'Jacob Chen', linkedin: 'https://www.linkedin.com/in/jjacobchen/' },
 ];
 
 /** Title shown under each fellow's name on /team. */
