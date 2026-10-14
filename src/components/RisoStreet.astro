@@ -47,7 +47,7 @@ import { STORY } from '../data/story';
     // The headline's label (see global.css) hugs its longest line. CSS cannot
     // shrink a block to wrapped text, so measure the words. The width goes on
     // the parent as a variable: React owns the heading's own style.
-    // React swaps the heading element when SplitText loads, so look it up each time
+    // the words appear when the headline is split, so look them up each time
     const holder = trigger.querySelector<HTMLElement>('.hero-title')?.parentElement;
     const hug = () => {
       const title = holder?.querySelector<HTMLElement>('.hero-title');
@@ -62,45 +62,51 @@ import { STORY } from '../data/story';
     };
     if (holder) {
       new MutationObserver(hug).observe(holder, { childList: true, subtree: true });
-      addEventListener('resize', hug);
+      let hugReq = 0; // once a frame at most while the window is resized
+      addEventListener('resize', () => (hugReq ||= requestAnimationFrame(() => ((hugReq = 0), hug()))));
       document.fonts?.ready.then(hug);
       hug();
     }
 
     const view = mountStreet(fig, reduce, STORY.length);
 
-    // Both numbers follow the scroll position directly, eased by gsap's
-    // quickTo, so a re-measure of the page can never leave them stale.
-    // --q goes only on the elements that use it, not the root: changing a
-    // variable on the root restyles the whole page every frame.
-    const head = document.querySelector<HTMLElement>('.masthead');
+    // Both numbers follow the scroll position directly. The smooth scroll
+    // already eases the scroll itself, so easing them again only makes them
+    // trail behind it. --q goes only on the elements that use it, not the
+    // root: changing a variable on the root restyles the whole page.
     const root = document.documentElement;
+    // everything that reads --q: the header, the hook and lede, the arrow and
+    // the caption. Setting it on these alone, not the whole section, keeps the
+    // restyling each frame small.
+    const readers = ['.masthead', '.home__step--intro', '.home__more', '.riso__caption']
+      .map((sel) => document.querySelector<HTMLElement>(sel))
+      .filter((el): el is HTMLElement => !!el);
     const intro = { q: reduce || opening() === 0 ? 1 : 0 };
     let opened: boolean | null = null;
     const setOpen = () => {
       view.open(intro.q);
       const v = intro.q.toFixed(3);
-      trigger.style.setProperty('--q', v);
-      head?.style.setProperty('--q', v);
+      for (const el of readers) el.style.setProperty('--q', v);
       if (opened !== intro.q >= 0.999) root.classList.toggle('opened', (opened = intro.q >= 0.999));
     };
     setOpen();
     if (intro.q < 1) {
-      const toQ = gsap.quickTo(intro, 'q', { duration: 0.5, ease: 'power2.out', onUpdate: setOpen });
-      const follow = (self: ScrollTrigger) => toQ(self.progress);
+      const follow = (self: ScrollTrigger) => {
+        // no opening at this size (a desktop window narrowed to a phone's):
+        // count it as done, or the buttons it fades in stay hidden
+        intro.q = opening() > 0 ? self.progress : 1;
+        setOpen();
+      };
       ScrollTrigger.create({ trigger, start: 'top top', end: () => `+=${opening()}`, onUpdate: follow, onRefresh: follow });
     }
 
     const state = { pos: 0 };
     const last = STORY.length - 0.6; // a little past the last plate, so it holds before the section ends
-    const show = () => view.show(state.pos);
-    const toPos = gsap.quickTo(state, 'pos', { duration: 0.6, ease: 'power2.out', onUpdate: show });
     // on a phone the picture is a still: it stays on the first plate
     const wide = matchMedia('(min-width: 900px)');
     const follow = (self: ScrollTrigger) => {
-      const to = wide.matches ? self.progress * last : 0;
-      if (reduce) (state.pos = to), show();
-      else toPos(to);
+      state.pos = wide.matches ? self.progress * last : 0;
+      view.show(state.pos);
     };
     ScrollTrigger.create({
       trigger,

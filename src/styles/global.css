@@ -696,6 +696,10 @@ main { overflow-x: clip; }
    is a shadow, not padding, so the headline does not move when it fades. */
 .home__step--intro .home__lede,
 .home__step--intro .actions { opacity: clamp(0, calc(var(--q) * 2 - 1), 1); }
+/* Hidden until it is split into words to come in (index.astro), and shown
+   anyway after a moment if that never happens. */
+.js .hero-title:not(.is-split) { opacity: 0; animation: title-fallback 0s 2.5s forwards; }
+@keyframes title-fallback { to { opacity: 1; } }
 .home__step--intro .hero-title {
   width: var(--title-w, fit-content);
   color: #0c0d11;

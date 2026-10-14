@@ -1,7 +1,6 @@
 ---
 import Base from '../layouts/Base.astro';
 import RisoStreet from '../components/RisoStreet.astro';
-import HeroTitle from '../components/HeroTitle';
 import Icon from '../components/Icon.astro';
 import JoinSection from '../sections/JoinSection.astro';
 import FellowshipsSection from '../sections/FellowshipsSection.astro';
@@ -40,7 +39,7 @@ const slackHref = SLACK_URL ?? mailtoHref('Joining the Slack') ?? '#join';
           {/* The hook is what sits on the picture on a phone; on a desktop it
               dissolves (display: contents) and the lede slots in between. */}
           <div class="home__hook">
-            <HeroTitle client:load text="AI is becoming more capable faster than we can control it." />
+            <h1 class="hero-title">AI is becoming more capable faster than we can control it.</h1>
             <div class="actions">
               <a class="btn" href={slackHref}>Join our Slack →</a>
               <a class="btn btn--ghost" href="#join">Ways to get involved</a>
@@ -162,8 +161,33 @@ const slackHref = SLACK_URL ?? mailtoHref('Joining the Slack') ?? '#join';
   <FaqSection />
 
   <script>
-    /* The menu: mark whichever section is on screen as the current one, on
-       scroll. Without this script the menu still jumps to each section. */
+    /* The headline comes in word by word, with GSAP's SplitText. Plain GSAP
+       rather than a React component, so the home page does not load React
+       just for this. It splits once the font is in, so the lines break where
+       they will stay. CSS hides the headline until then, and shows it anyway
+       after a moment if this never runs. */
+    import { gsap } from 'gsap';
+    import { SplitText } from 'gsap/SplitText';
+
+    gsap.registerPlugin(SplitText);
+    const title = document.querySelector<HTMLElement>('.hero-title');
+    if (title) {
+      if (matchMedia('(prefers-reduced-motion: reduce)').matches) title.classList.add('is-split');
+      else {
+        document.fonts.ready.then(() => {
+          const split = SplitText.create(title, { type: 'words', wordsClass: 'split-word' });
+          title.classList.add('is-split');
+          gsap.from(split.words, { opacity: 0, y: 46, rotate: 2, duration: 1.1, ease: 'power4.out', stagger: 0.07 });
+        });
+      }
+    }
+  </script>
+
+  <script>
+    /* The menu: mark whichever section is on screen as the current one. An
+       IntersectionObserver watches a band just under the header, so nothing
+       is measured on scroll. Without this script the menu still jumps to each
+       section. */
     const root = document.documentElement;
     const head = document.querySelector('.masthead');
     const links = [...document.querySelectorAll('.nav a[href^="/#"]:not(.btn)')];
@@ -177,22 +201,28 @@ const slackHref = SLACK_URL ?? mailtoHref('Joining the Slack') ?? '#join';
       if (head) root.style.setProperty('--head', head.offsetHeight + 'px');
     }
 
+    const inBand = new Set();
     function update() {
-      const line = (head ? head.offsetHeight : 0) + innerHeight * 0.25;
       let current = null;
-      for (const sec of sections) if (sec.getBoundingClientRect().top <= line) current = sec;
+      for (const sec of sections) if (inBand.has(sec)) current = sec;
       for (const a of links) {
-        const on = current && a.getAttribute('href') === '/#' + current.id;
+        const id = a.getAttribute('href').slice(2);
+        const on = current && (current.id === id || current.contains(document.getElementById(id)));
         if (on) a.setAttribute('aria-current', 'location');
         else a.removeAttribute('aria-current');
       }
     }
 
-    let queued = false;
-    function onScroll() {
-      if (queued) return;
-      queued = true;
-      requestAnimationFrame(() => { queued = false; update(); });
+    // the band: from under the header to a quarter of the way down the screen
+    let spy = null;
+    function watch() {
+      spy?.disconnect();
+      inBand.clear();
+      spy = new IntersectionObserver((entries) => {
+        for (const e of entries) e.isIntersecting ? inBand.add(e.target) : inBand.delete(e.target);
+        update();
+      }, { rootMargin: `-${head ? head.offsetHeight : 0}px 0px -75% 0px` });
+      for (const sec of sections) spy.observe(sec);
     }
 
     measure();
@@ -264,9 +294,8 @@ const slackHref = SLACK_URL ?? mailtoHref('Joining the Slack') ?? '#join';
       window.scrollTo({ top: below(mark), behavior: 'instant' });
     });
 
-    update();
-    addEventListener('scroll', onScroll, { passive: true });
-    addEventListener('resize', () => { measure(); update(); });
+    watch();
+    addEventListener('resize', () => { measure(); watch(); });
   </script>
 </Base>
 

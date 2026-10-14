@@ -1,5 +1,8 @@
 ---
 import '@fontsource-variable/bricolage-grotesque/opsz.css';
+// The Latin file of the type, preloaded so the headline is not first drawn in
+// a fallback face. The other subsets load only if a page needs them.
+import fontLatin from '@fontsource-variable/bricolage-grotesque/files/bricolage-grotesque-latin-opsz-normal.woff2?url';
 import 'lenis/dist/lenis.css';
 import '../styles/global.css';
 import { SITE, NAV, NAV_CTA, SOCIAL, EMAIL, KHOURY_CLUB_URL } from '../config';
@@ -23,6 +26,7 @@ const ogImage = new URL('/og.jpg', Astro.site);
 <html lang="en">
   <head>
     <meta charset="utf-8" />
+    <link rel="preload" href={fontLatin} as="font" type="font/woff2" crossorigin />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>{pageTitle}</title>
     <meta name="description" content={description} />
@@ -140,7 +144,7 @@ const ogImage = new URL('/og.jpg', Astro.site);
       if (!reduce) {
         const head = document.querySelector<HTMLElement>('.masthead');
         const lenis = new Lenis({
-          lerp: 0.11,
+          lerp: 0.15, // how quickly the page catches up with the wheel: higher is snappier
           anchors: { offset: -(head?.offsetHeight ?? 64) },
         });
         lenis.on('scroll', ScrollTrigger.update);

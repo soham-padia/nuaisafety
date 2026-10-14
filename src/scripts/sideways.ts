@@ -33,7 +33,7 @@ export function sideways(row: HTMLElement, media: string, onProgress?: (p: numbe
         start: 'center 55%',
         end: () => `+=${distance()}`,
         pin: true,
-        scrub: 0.4,
+        scrub: true, // the smooth scroll already eases it
         invalidateOnRefresh: true,
         onUpdate: (self) => onProgress?.(self.progress),
       },
