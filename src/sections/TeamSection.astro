@@ -27,10 +27,10 @@ const hasBio = [...TEAM, ...FELLOWS].some((person) => person.bio);
 ---
   <section class="band section" id="team" aria-labelledby="team-title">
     <div class="wrap team">
-      <h2 id="team-title" class="section-title dot">Team</h2>
+      <h1 id="team-title" class="section-title dot">Team</h1>
 
       <section class="team__group" aria-labelledby="exec-board">
-        <h3 id="exec-board">Executive board</h3>
+        <h2 id="exec-board">Executive board</h2>
         <ul class:list={['people', 'team__grid', hasBio && 'team__grid--roomy']}>
           {TEAM.map((person) => (
             <PersonTile person={person} role={person.title ?? BOARD_TITLE} />
@@ -40,7 +40,7 @@ const hasBio = [...TEAM, ...FELLOWS].some((person) => person.bio);
 
       {FELLOWS.length > 0 && (
         <section class="team__group" aria-labelledby="fellows">
-          <h3 id="fellows">Fellows</h3>
+          <h2 id="fellows">Fellows</h2>
           <ul class:list={['people', 'team__grid', hasBio && 'team__grid--roomy']}>
             {FELLOWS.map((person) => (
               <PersonTile person={person} role={person.title ?? FELLOW_TITLE} />
@@ -55,7 +55,7 @@ const hasBio = [...TEAM, ...FELLOWS].some((person) => person.bio);
   .team .section-title { margin-block-end: clamp(2rem, 1.5rem + 2vw, 3rem); }
 
   .team__group + .team__group { margin-block-start: clamp(3.5rem, 2.5rem + 4vw, 5.5rem); }
-  .team__group h3 { font-size: var(--step-2); margin-block-end: 1.75rem; }
+  .team__group h2 { font-size: var(--step-2); margin-block-end: 1.75rem; }
 
   /* The block of tiles is centred on the page, and the tiles fill it from the
      left, so a short last row lines up under the first column. Two across on

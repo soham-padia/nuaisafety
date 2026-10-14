@@ -162,5 +162,16 @@ const ogImage = new URL('/og.png', Astro.site);
         document.fonts?.ready.then(() => ScrollTrigger.refresh());
       }
     </script>
+
+    <script>
+      /* Links to other sites open in a new tab, so the site stays open behind
+         them. Links within the site, and email links, open as usual. */
+      for (const a of document.querySelectorAll<HTMLAnchorElement>('a[href]')) {
+        const url = new URL(a.href, location.href);
+        if (!url.protocol.startsWith('http') || url.origin === location.origin) continue;
+        a.target = '_blank';
+        a.rel = 'noopener';
+      }
+    </script>
   </body>
 </html>

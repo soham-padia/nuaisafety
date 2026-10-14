@@ -6,10 +6,8 @@ import Icon from '../components/Icon.astro';
 import JoinSection from '../sections/JoinSection.astro';
 import FellowshipsSection from '../sections/FellowshipsSection.astro';
 import ExecSection from '../sections/ExecSection.astro';
-import TeamSection from '../sections/TeamSection.astro';
 import ResearchSection from '../sections/ResearchSection.astro';
 import FaqSection from '../sections/FaqSection.astro';
-import ResourcesSection from '../sections/ResourcesSection.astro';
 import { LUMA_CALENDAR_ID, LUMA_CALENDAR_URL, SLACK_URL, mailtoHref } from '../config';
 
 /* Joining the Slack is how someone becomes a member, so it is the red button.
@@ -129,9 +127,7 @@ const slackHref = SLACK_URL ?? mailtoHref('Joining the Slack') ?? '#join';
   <JoinSection />
   <FellowshipsSection />
   <ExecSection />
-  <TeamSection />
   <ResearchSection />
-  <ResourcesSection />
   <FaqSection />
 
   <script>
@@ -179,8 +175,8 @@ const slackHref = SLACK_URL ?? mailtoHref('Joining the Slack') ?? '#join';
        browser does not restore an old scroll position, and arriving from
        another page at /#top lands settled and then drops the #top.
 
-       With any other section in the address (an old /team link redirects to
-       /#team, for example), go straight there, a header's height above it as
+       With any other section in the address (an old /join link redirects to
+       /#join, for example), go straight there, a header's height above it as
        the smooth scroll does for a click. The browser does not always do it on
        its own after a redirect, and a smooth scroll the length of the story
        would be a slow way to arrive. */
@@ -200,6 +196,9 @@ const slackHref = SLACK_URL ?? mailtoHref('Joining the Slack') ?? '#join';
     }
 
     const id = location.hash.slice(1);
+    // Team and Resources used to be sections here; they are pages now
+    const pages = { team: '/team', resources: '/resources' };
+    if (pages[id]) location.replace(pages[id]);
     const target = id ? document.getElementById(id) : null;
     if (id === 'top') history.replaceState(null, '', location.pathname + location.search);
     // the browser's own scroll: the smooth scroll follows it
