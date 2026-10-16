@@ -40,6 +40,7 @@
   --page:    78rem;   /* outer container */
   --gutter:  1.5rem;
   --head:    3.75rem;   /* sticky header height; the page script measures the real one */
+  --bar:     2.5rem;    /* the next-event strip at the top of the header, when there is one */
 
   --step-0: 1.0625rem;
   --step-1: 1.25rem;
@@ -405,14 +406,88 @@ strong { font-weight: 660; }
   -webkit-backdrop-filter: blur(14px) saturate(1.4);
   backdrop-filter: blur(14px) saturate(1.4);
   border-block-end: 1px solid var(--rule);
-  padding-block: 1.05rem;
 }
 .masthead__row {
+  padding-block: 1.05rem;
   display: flex;
   flex-wrap: wrap;
   gap: 0.6rem 1.5rem;
   align-items: center;
   justify-content: space-between;
+}
+
+/* The next event (components/EventBar), a strip at the top of the header.
+   It is one line at a fixed height, so the header's height is known before
+   any script runs, and the layout does not jump. Narrower screens drop the
+   label, then the place, rather than wrap. */
+:root:has(.eventbar) { --head: calc(3.75rem + var(--bar)); }
+.eventbar {
+  background: var(--accent);
+  color: #fff;
+  font-size: 0.875rem;
+}
+.eventbar__row {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  height: var(--bar);
+}
+.eventbar__link {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  justify-content: center;
+  align-items: baseline;
+  gap: 0.45em;
+  white-space: nowrap;
+  color: #fff;
+  text-decoration: none;
+}
+.eventbar__link:hover { color: #fff; }
+.eventbar__link::before {
+  content: "";
+  flex: none;
+  align-self: center;
+  width: 0.42rem; height: 0.42rem;
+  border-radius: 50%;
+  background: #fff;
+}
+/* 0.9 white on the red is 4.8:1, still AA for text this size */
+.eventbar__label { color: rgb(255 255 255 / 0.9); }
+.eventbar__label::after { content: ":"; }
+.eventbar__place { min-width: 0; overflow: hidden; text-overflow: ellipsis; }
+.eventbar__sep { margin-inline-end: 0.45em; }
+.eventbar__cta {
+  flex: none;
+  margin-inline-start: 0.5em;
+  font-weight: 640;
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 0.2em;
+}
+.eventbar__link:hover .eventbar__cta { text-decoration-thickness: 2px; }
+.eventbar :focus-visible { outline-color: #fff; }
+/* shown once the script has wired it */
+.eventbar__close {
+  display: none;
+  flex: none;
+  appearance: none;
+  background: none;
+  border: 0;
+  padding: 0.4rem;
+  margin: -0.4rem;
+  color: rgb(255 255 255 / 0.9);
+  cursor: pointer;
+  border-radius: 4px;
+}
+.js .eventbar__close { display: inline-flex; }
+.eventbar__close:hover { color: #fff; }
+@media (max-width: 759px) {
+  .eventbar__label { display: none; }
+  .eventbar__link { justify-content: flex-start; }
+}
+@media (max-width: 479px) {
+  .eventbar__place { display: none; }
 }
 
 /* Text-only wordmark. The group has no licence to any Northeastern mark. */

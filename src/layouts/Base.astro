@@ -5,6 +5,7 @@ import '@fontsource-variable/bricolage-grotesque/opsz.css';
 import fontLatin from '@fontsource-variable/bricolage-grotesque/files/bricolage-grotesque-latin-opsz-normal.woff2?url';
 import 'lenis/dist/lenis.css';
 import '../styles/global.css';
+import EventBar from '../components/EventBar.astro';
 import { SITE, NAV, NAV_CTA, SOCIAL, EMAIL, KHOURY_CLUB_URL } from '../config';
 
 interface Props {
@@ -53,6 +54,8 @@ const ogImage = new URL('/og.jpg', Astro.site);
     <a class="skip" href="#main">Skip to content</a>
 
     <header class="masthead">
+      {/* the next event, everywhere but /events, where it is already the first thing on the page */}
+      {path !== '/events' && <EventBar />}
       <div class="wrap masthead__row">
         <a class="wordmark" href="/#top">NU AI Safety</a>
         <button class="menu-toggle" type="button" aria-expanded="false" aria-controls="site-nav">
