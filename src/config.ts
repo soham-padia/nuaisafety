@@ -235,6 +235,16 @@ export const TEAM: Person[] = [
   { name: 'Jacob Chen', linkedin: 'https://www.linkedin.com/in/jjacobchen/' },
 ];
 
+/* The group's faculty advisor, shown on /team under the exec board. Same
+   fields as the board; the section is hidden while this is empty. */
+export const ADVISORS: Person[] = [
+  {
+    name: 'Chenyan Jia',
+    title: 'Faculty Advisor',
+    website: 'https://camd.northeastern.edu/people/chenyan-jia/',
+  },
+];
+
 /** Title shown under each fellow's name on /team. */
 export const FELLOW_TITLE = 'Fellow';
 

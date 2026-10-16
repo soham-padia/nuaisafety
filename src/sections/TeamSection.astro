@@ -1,6 +1,6 @@
 ---
 import PersonTile from '../components/PersonTile.astro';
-import { TEAM, FELLOWS, BOARD_TITLE, FELLOW_TITLE } from '../config';
+import { TEAM, ADVISORS, FELLOWS, BOARD_TITLE, FELLOW_TITLE } from '../config';
 
 /**
  * A headshot grid built to be good before the headshots exist.
@@ -23,7 +23,7 @@ import { TEAM, FELLOWS, BOARD_TITLE, FELLOW_TITLE } from '../config';
 
 /* Tiles are sized for a name and a title. A paragraph needs more room, so
    the tiles widen the moment anyone has a bio. */
-const hasBio = [...TEAM, ...FELLOWS].some((person) => person.bio);
+const hasBio = [...TEAM, ...ADVISORS, ...FELLOWS].some((person) => person.bio);
 ---
   <section class="band section" id="team" aria-labelledby="team-title">
     <div class="wrap team">
@@ -37,6 +37,17 @@ const hasBio = [...TEAM, ...FELLOWS].some((person) => person.bio);
           ))}
         </ul>
       </section>
+
+      {ADVISORS.length > 0 && (
+        <section class="team__group" aria-labelledby="advisors">
+          <h2 id="advisors">{ADVISORS.length > 1 ? 'Faculty advisors' : 'Faculty advisor'}</h2>
+          <ul class:list={['people', 'team__grid', 'team__grid--row', hasBio && 'team__grid--roomy']}>
+            {ADVISORS.map((person) => (
+              <PersonTile person={person} role={person.title ?? 'Faculty Advisor'} />
+            ))}
+          </ul>
+        </section>
+      )}
 
       {FELLOWS.length > 0 && (
         <section class="team__group" aria-labelledby="fellows">
@@ -70,6 +81,8 @@ const hasBio = [...TEAM, ...FELLOWS].some((person) => person.bio);
     margin-inline: auto;
   }
   .team__grid--roomy { --tile: 14rem; }
+  /* a group that fits on one row, like the faculty advisor, is centred as a row */
+  .team__grid--row { justify-content: center; }
   .team__grid > :global(li) { width: calc(50% - var(--gap) / 2); }
   @media (min-width: 46rem) {
     .team__grid { max-width: calc(4 * var(--tile) + 3 * var(--gap)); }
