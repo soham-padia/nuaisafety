@@ -23,6 +23,7 @@ const d = next && dateParts(next.begins);
   <aside class="eventbar" aria-label="Next event" data-ends={next.ends.getTime()}>
     <div class="wrap eventbar__row">
       <a class="eventbar__link" href={next.rsvp ?? href(`/events#${next.slug}`)}>
+        <span class="eventbar__dot" aria-hidden="true"></span>
         <span class="eventbar__label">Next event</span>
         <strong>{next.title}</strong>
         <span aria-hidden="true">·</span>

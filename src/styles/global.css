@@ -444,13 +444,29 @@ strong { font-weight: 660; }
   text-decoration: none;
 }
 .eventbar__link:hover { color: #fff; }
-.eventbar__link::before {
-  content: "";
+/* The dot, with a ring that grows out of it and fades, every two seconds.
+   Only transform and opacity change, so it runs off the main thread. */
+.eventbar__dot {
+  position: relative;
   flex: none;
   align-self: center;
   width: 0.42rem; height: 0.42rem;
   border-radius: 50%;
   background: #fff;
+}
+@media (prefers-reduced-motion: no-preference) {
+  .eventbar__dot::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: 50%;
+    background: #fff;
+    animation: beacon 2s cubic-bezier(0, 0, 0.2, 1) infinite;
+  }
+}
+@keyframes beacon {
+  from { transform: scale(1); opacity: 0.8; }
+  70%, to { transform: scale(3.2); opacity: 0; }
 }
 /* 0.9 white on the red is 4.8:1, still AA for text this size */
 .eventbar__label { color: rgb(255 255 255 / 0.9); }
