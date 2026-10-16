@@ -1,0 +1,54 @@
+---
+/**
+ * The next event, in a strip across the top of every page, inside the sticky
+ * header. Built from EVENTS in config.ts, so there is nothing to edit here:
+ * it shows whichever event is next, and with nothing scheduled it renders
+ * nothing at all.
+ *
+ * The daily rebuild takes an event off the morning after it ends. Between
+ * its end and that rebuild, the script below hides it, so the bar never
+ * advertises something that is over.
+ *
+ * It can be closed, for the page in front of you only: nothing is saved, so
+ * a refresh or the next page brings it back. The script runs as soon as the
+ * bar is parsed, before the first paint, so a bar for an event that is over
+ * never flashes up.
+ */
+import { split, dateParts, agendaTime, href } from '../lib/events';
+
+const next = split().upcoming[0];
+const d = next && dateParts(next.begins);
+---
+{next && (
+  <aside class="eventbar" aria-label="Next event" data-ends={next.ends.getTime()}>
+    <div class="wrap eventbar__row">
+      <a class="eventbar__link" href={next.rsvp ?? href(`/events#${next.slug}`)}>
+        <span class="eventbar__dot" aria-hidden="true"></span>
+        <span class="eventbar__label">Next event</span>
+        <strong>{next.title}</strong>
+        <span aria-hidden="true">·</span>
+        <time datetime={next.begins.toISOString()}>{`${d.weekday}, ${d.month} ${d.day}, ${agendaTime(next.start)}`}</time>
+        <span class="eventbar__place"><span class="eventbar__sep" aria-hidden="true">·</span>{next.place}</span>
+        <span class="eventbar__cta">{next.rsvp ? 'RSVP' : 'Details'} →</span>
+      </a>
+      <button class="eventbar__close" type="button" aria-label="Close the event notice">
+        <svg width="14" height="14" viewBox="0 0 14 14" aria-hidden="true" focusable="false">
+          <path d="M2 2l10 10M12 2L2 12" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" />
+        </svg>
+      </button>
+    </div>
+  </aside>
+)}
+{next && (
+  <script is:inline>
+    (function () {
+      var bar = document.currentScript.previousElementSibling;
+      if (Date.now() > Number(bar.dataset.ends)) { bar.remove(); return; }
+      bar.querySelector('.eventbar__close').addEventListener('click', function () {
+        bar.remove();
+        // the header is shorter now: the home page re-measures it on resize
+        dispatchEvent(new Event('resize'));
+      });
+    })();
+  </script>
+)}
