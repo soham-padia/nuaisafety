@@ -31,6 +31,9 @@ export const LUMA_CALENDAR_URL = 'https://luma.com/nuaisafety';
  *   someone becomes a member. Same pattern as SIGNUP_URL: while it is null, the
  *   "Join our Slack" button falls back to emailing the group, so it is never
  *   broken. Paste the invite link to switch it on.
+ *
+ *   Printed flyers link to nuaisafety.com/slack, which redirects here, so a
+ *   new invite link reaches every flyer already up. Set it to never expire.
  */
 export const SLACK_URL: string | null =
   'https://join.slack.com/t/nuaisafety/shared_invite/zt-4bwdf0z1w-DnPKeS6kprWA~7e1_BPCQw';
