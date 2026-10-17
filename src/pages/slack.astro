@@ -1,0 +1,29 @@
+---
+/**
+ * nuaisafety.com/slack: straight to the Slack invite.
+ *
+ * Printed flyers point here rather than at the invite itself, because a
+ * Slack invite link can expire or be reset and a flyer on a wall cannot be
+ * changed. When the invite changes, update SLACK_URL in config.ts and every
+ * flyer already printed keeps working.
+ *
+ * The same kind of page Astro builds for its own redirects (/join, /about),
+ * but reading the invite from config, so there is still one place to edit.
+ * With no invite set, it goes to the ways to get involved on the home page.
+ */
+import { SLACK_URL } from '../config';
+
+const to = SLACK_URL ?? '/#join';
+---
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>Join our Slack | NU AI Safety</title>
+    <meta http-equiv="refresh" content={`0;url=${to}`} />
+    <meta name="robots" content="noindex" />
+  </head>
+  <body>
+    <a href={to}>Join the NU AI Safety Slack</a>
+  </body>
+</html>
