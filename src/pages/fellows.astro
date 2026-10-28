@@ -1,0 +1,24 @@
+---
+/**
+ * nuaisafety.com/fellows: straight to the fellowship application form.
+ *
+ * The same kind of page as /slack: a short link for flyers and messages that
+ * keeps working when the form changes. Update FELLOWSHIP_URL in config.ts.
+ * With no form set, it goes to the Fellowships section on the home page.
+ */
+import { FELLOWSHIP_URL } from '../config';
+
+const to = FELLOWSHIP_URL ?? '/#fellowships';
+---
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>Apply for a fellowship | NU AI Safety</title>
+    <meta http-equiv="refresh" content={`0;url=${to}`} />
+    <meta name="robots" content="noindex" />
+  </head>
+  <body>
+    <a href={to}>Apply for an NU AI Safety fellowship</a>
+  </body>
+</html>
