@@ -17,6 +17,15 @@ export const EXEC_URL: string | null =
   'https://airtable.com/appTpg6JO93Aqr1xs/pagJpuw954bZSuywr/form';
 
 /**
+ * FELLOWSHIP_URL - the fellowship application form.
+ *   nuaisafety.com/fellows redirects here, the same way /slack does, so the
+ *   short link can go on flyers and stay the same if the form changes. With
+ *   no form set, it goes to the Fellowships section of the home page.
+ */
+export const FELLOWSHIP_URL: string | null =
+  'https://airtable.com/appTpg6JO93Aqr1xs/pagUYAXCfKq81aZik/form';
+
+/**
  * LUMA_CALENDAR_ID - the Luma calendar shown in the Events section on the home page.
  *   It starts with "cal-". Find it in Luma under the calendar's Settings → Embed.
  *   Set it to null to hide the Events section entirely.
