@@ -1,0 +1,24 @@
+---
+/**
+ * nuaisafety.com/linktree: straight to the group's Linktree.
+ *
+ * The same kind of page as /slack and /fellows: a short link for bios, flyers
+ * and messages that keeps working if the Linktree moves. Update LINKTREE_URL
+ * in config.ts. With none set, it goes to the home page.
+ */
+import { LINKTREE_URL } from '../config';
+
+const to = LINKTREE_URL ?? '/';
+---
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>All our links | NU AI Safety</title>
+    <meta http-equiv="refresh" content={`0;url=${to}`} />
+    <meta name="robots" content="noindex" />
+  </head>
+  <body>
+    <a href={to}>All of NU AI Safety’s links</a>
+  </body>
+</html>
