@@ -26,6 +26,14 @@ export const FELLOWSHIP_URL: string | null =
   'https://airtable.com/appTpg6JO93Aqr1xs/pagUYAXCfKq81aZik/form';
 
 /**
+ * LINKTREE_URL - the group's Linktree, every link in one place.
+ *   nuaisafety.com/linktree redirects here, the same way /slack and /fellows
+ *   do, so the short link can go in bios and on flyers and stay the same if
+ *   the Linktree moves. With none set, it goes to the home page.
+ */
+export const LINKTREE_URL: string | null = 'https://linktr.ee/nuaisafety';
+
+/**
  * LUMA_CALENDAR_ID - the Luma calendar shown in the Events section on the home page.
  *   It starts with "cal-". Find it in Luma under the calendar's Settings → Embed.
  *   Set it to null to hide the Events section entirely.
