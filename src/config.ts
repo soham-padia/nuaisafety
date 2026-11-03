@@ -144,6 +144,8 @@ export const RESEARCH: Paper[] = [];
    agenda  Optional. Each item is { time: '18:00', item: 'Talk' }.
    rsvp    The RSVP link, usually the event's Luma page. Without one the event
            shows no RSVP button.
+   slides  Optional. A PDF of the slides, saved in public/events/ and written
+           here as '/events/<file>.pdf'. Linked next to the event under "Past".
    ------------------------------------------------------------------------- */
 
 export type GroupEvent = {
@@ -156,6 +158,7 @@ export type GroupEvent = {
   summary: string;
   agenda?: { time: string; item: string }[];
   rsvp?: string;
+  slides?: string;
 };
 
 export const EVENTS: GroupEvent[] = [
@@ -174,6 +177,7 @@ export const EVENTS: GroupEvent[] = [
       { time: '18:40', item: 'Social hour: meet the team and other attendees' },
     ],
     rsvp: 'https://luma.com/qqepuujt',
+    slides: '/events/2026-11-02-kickoff-slides.pdf',
   },
 ];
 

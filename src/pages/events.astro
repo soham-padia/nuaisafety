@@ -2,7 +2,7 @@
 import Base from '../layouts/Base.astro';
 import {
   split, longDate, pastDate, dateParts, timeRange, agendaTime,
-  googleUrl, outlookUrl, icsPath, feedPath, pageUrl,
+  googleUrl, outlookUrl, icsPath, feedPath, pageUrl, href,
 } from '../lib/events';
 
 const { upcoming, past } = split();
@@ -93,6 +93,7 @@ const googleSubscribe = `https://calendar.google.com/calendar/r?cid=${encodeURIC
               <li>
                 <time datetime={e.begins.toISOString()}>{pastDate(e.begins)}</time>
                 <span>{e.title}</span>
+                {e.slides && <a href={href(e.slides)}>Slides (PDF)</a>}
               </li>
             ))}
           </ul>
@@ -186,7 +187,7 @@ const googleSubscribe = `https://calendar.google.com/calendar/r?cid=${encodeURIC
   .past ul { list-style: none; padding: 0; margin: 0; max-width: 46rem; }
   .past li {
     display: grid;
-    grid-template-columns: 13rem minmax(0, 1fr);
+    grid-template-columns: 13rem minmax(0, 1fr) auto;
     gap: 0.25rem 1rem;
     padding-block: 0.6rem;
     border-block-start: 1px solid var(--rule);
