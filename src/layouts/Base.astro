@@ -181,8 +181,9 @@ const ogImage = new URL('/og.jpg', Astro.site);
 
     <script>
       /* Links to other sites open in a new tab, so the site stays open behind
-         them. Links within the site, and email links, open as usual. */
-      for (const a of document.querySelectorAll<HTMLAnchorElement>('a[href]')) {
+         them. Links within the site, and email links, open as usual, and so
+         does a link marked data-same-tab (the hand-off on /slack). */
+      for (const a of document.querySelectorAll<HTMLAnchorElement>('a[href]:not([data-same-tab])')) {
         const url = new URL(a.href, location.href);
         if (!url.protocol.startsWith('http') || url.origin === location.origin) continue;
         a.target = '_blank';

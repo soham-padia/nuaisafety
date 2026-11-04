@@ -10,9 +10,7 @@
  */
 import Icon from '../components/Icon.astro';
 import SpotlightCard from '../components/reactbits/SpotlightCard';
-import { SLACK_URL, mailtoHref } from '../config';
-
-const slackHref = SLACK_URL ?? mailtoHref('Joining the Slack');
+import { slackHref } from '../config';
 ---
 <section class="band section" id="join" aria-labelledby="join-title">
   <div class="wrap">

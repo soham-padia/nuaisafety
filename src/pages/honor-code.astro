@@ -2,11 +2,12 @@
 /**
  * nuaisafety.com/honor-code: what every member agrees to by joining the Slack.
  *
- * The same four principles as the Kickoff slides, in the group's own words.
- * Linked from the Get involved section, next to the Slack button, and from
- * the footer.
+ * The page to point people at once they are in. Anyone joining sees the same
+ * code on /slack first, with the button that takes them to the invite.
+ * Linked from the Get involved section and from the footer.
  */
 import Base from '../layouts/Base.astro';
+import HonorCode from '../components/HonorCode.astro';
 ---
 <Base title="Honor Code" description="The honor code every NU AI Safety member agrees to by joining.">
   <section class="band section" aria-labelledby="honor-title">
@@ -15,31 +16,7 @@ import Base from '../layouts/Base.astro';
 
       <p>By joining our Slack and becoming a member, you agree to abide by our Honor Code.</p>
 
-      <ul class="honor">
-        <li>
-          <strong>Radical Inclusivity.</strong> AI safety is an intimidating field, especially for
-          people who don’t have the background or resources to break in. We believe in inviting
-          everyone to attend our events.
-        </li>
-        <li>
-          <strong>Community-First Collaboration.</strong> We all succeed by lifting each other up,
-          sharing our resources, and creating a strong, welcoming network of peers and mentors.
-        </li>
-        <li>
-          <strong>Rigorous Open-mindedness.</strong> Because the field is so new, common notions of
-          AI safety in theory and practice may clash across different people. We believe in
-          keeping an open mind to strange ideas that may surprise us.
-        </li>
-        <li>
-          <strong>Proactive Responsibility.</strong> We honor what we say we will do. Lastly, we
-          take reports of harassment, discrimination, and dishonesty seriously and have a
-          zero-tolerance policy for it.
-        </li>
-      </ul>
+      <HonorCode />
     </div>
   </section>
 </Base>
-
-<style>
-  .honor li + li { margin-block-start: 1rem; }
-</style>
