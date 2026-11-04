@@ -49,8 +49,9 @@ export const LUMA_CALENDAR_URL = 'https://luma.com/nuaisafety';
  *   "Join our Slack" button falls back to emailing the group, so it is never
  *   broken. Paste the invite link to switch it on.
  *
- *   Printed flyers link to nuaisafety.com/slack, which redirects here, so a
- *   new invite link reaches every flyer already up. Set it to never expire.
+ *   Printed flyers link to nuaisafety.com/slack, which shows the Honor Code and
+ *   then links here, so a new invite link reaches every flyer already up. Set
+ *   it to never expire.
  */
 export const SLACK_URL: string | null =
   'https://join.slack.com/t/nuaisafety/shared_invite/zt-4bwdf0z1w-DnPKeS6kprWA~7e1_BPCQw';
@@ -85,6 +86,9 @@ export const SITE = {
 
 /** Where a signup CTA should point right now. */
 export const signupHref = SIGNUP_URL ?? '/join';
+/** Where a "Join the Slack" link goes: /slack, which shows the Honor Code
+    before the invite, or an email to the group while there is no invite. */
+export const slackHref = SLACK_URL ? '/slack' : mailtoHref('Joining the Slack');
 export const execHref = EXEC_URL ?? '/join';
 
 /**

@@ -7,15 +7,16 @@ import FellowshipsSection from '../sections/FellowshipsSection.astro';
 import ExecSection from '../sections/ExecSection.astro';
 import ResearchSection from '../sections/ResearchSection.astro';
 import FaqSection from '../sections/FaqSection.astro';
-import { SLACK_URL, mailtoHref } from '../config';
+import { slackHref as joinSlack } from '../config';
 import { split, dateParts, timeRange } from '../lib/events';
 
 // The next few events, from the same list as /events. Built every morning.
 const upcoming = split().upcoming.slice(0, 3);
 
 /* Joining the Slack is how someone becomes a member, so it is the red button.
-   Fallbacks: email, then the Get involved section. */
-const slackHref = SLACK_URL ?? mailtoHref('Joining the Slack') ?? '#join';
+   It goes through /slack, which shows the Honor Code first. Fallbacks: email,
+   then the Get involved section. */
+const slackHref = joinSlack ?? '#join';
 ---
 <Base>
   <!-- before anything renders: this page decides where a load starts (below) -->

@@ -1,29 +1,44 @@
 ---
 /**
- * nuaisafety.com/slack: straight to the Slack invite.
+ * nuaisafety.com/slack: the Honor Code, then the Slack invite.
+ *
+ * Joining the Slack is how someone becomes a member, and members agree to the
+ * Honor Code, so this page shows it first and the invite sits behind a
+ * "Yes, I agree" button. Every Slack link on the site comes here (slackHref
+ * in config.ts), and so do the QR codes on the flyers and slides.
  *
  * Printed flyers point here rather than at the invite itself, because a
  * Slack invite link can expire or be reset and a flyer on a wall cannot be
  * changed. When the invite changes, update SLACK_URL in config.ts and every
- * flyer already printed keeps working.
- *
- * The same kind of page Astro builds for its own redirects (/join, /about),
- * but reading the invite from config, so there is still one place to edit.
- * With no invite set, it goes to the ways to get involved on the home page.
+ * flyer already printed keeps working. With no invite set, the button emails
+ * the group instead.
  */
-import { SLACK_URL } from '../config';
+import Base from '../layouts/Base.astro';
+import HonorCode from '../components/HonorCode.astro';
+import { SLACK_URL, mailtoHref } from '../config';
 
-const to = SLACK_URL ?? '/#join';
+const to = SLACK_URL ?? mailtoHref('Joining the Slack') ?? '/#join';
 ---
-<!doctype html>
-<html lang="en">
-  <head>
-    <meta charset="utf-8" />
-    <title>Join our Slack | NU AI Safety</title>
-    <meta http-equiv="refresh" content={`0;url=${to}`} />
-    <meta name="robots" content="noindex" />
-  </head>
-  <body>
-    <a href={to}>Join the NU AI Safety Slack</a>
-  </body>
-</html>
+<Base title="Join our Slack" description="Join the NU AI Safety Slack. Members agree to our Honor Code.">
+  <section class="band section" aria-labelledby="slack-title">
+    <div class="wrap prose">
+      <h1 id="slack-title" class="section-title dot">Join our Slack</h1>
+
+      <p>
+        Joining our Slack is how you become a member. By joining, you agree to abide by our
+        Honor Code:
+      </p>
+
+      <HonorCode />
+
+      <div class="actions agree">
+        {/* Same tab: this page's whole job is to hand over to Slack. */}
+        <a class="btn" href={to} data-same-tab>Yes, I agree →</a>
+      </div>
+    </div>
+  </section>
+</Base>
+
+<style>
+  .agree { margin-block-start: 2rem; }
+</style>
