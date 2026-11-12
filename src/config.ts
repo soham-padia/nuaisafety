@@ -183,6 +183,18 @@ export const EVENTS: GroupEvent[] = [
     rsvp: 'https://luma.com/qqepuujt',
     slides: '/events/2026-11-02-kickoff-slides.pdf',
   },
+  {
+    title: 'Meet & Greet Open House',
+    date: '2026-11-23',
+    start: '18:00',
+    end: '20:00',
+    place: 'Shillman Hall, Room 135',
+    summary:
+      'A relaxed, drop-in open house: meet other students and the executive board, ask about ' +
+      'the fellowship, and find people to start projects with. Open to all years and majors, ' +
+      'and friends from neighboring universities are welcome.',
+    rsvp: 'https://luma.com/9u33jhyh',
+  },
 ];
 
 /* -------------------------------------------------------------------------
