@@ -27,7 +27,7 @@ const d = next && dateParts(next.begins);
         <span class="eventbar__label">Next event</span>
         <strong>{next.title}</strong>
         <span aria-hidden="true">·</span>
-        <time datetime={next.begins.toISOString()}>{`${d.weekday}, ${d.month} ${d.day}, ${agendaTime(next.start)}`}</time>
+        <time datetime={next.begins.toISOString()}><span class="eventbar__weekday">{d.weekday}, </span>{`${d.month} ${d.day}, ${agendaTime(next.start)}`}</time>
         <span class="eventbar__place"><span class="eventbar__sep" aria-hidden="true">·</span>{next.place}</span>
         <span class="eventbar__cta">{next.rsvp ? 'RSVP' : 'Details'} →</span>
       </a>

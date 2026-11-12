@@ -419,7 +419,9 @@ strong { font-weight: 660; }
 /* The next event (components/EventBar), a strip at the top of the header.
    It is one line at a fixed height, so the header's height is known before
    any script runs, and the layout does not jump. Narrower screens drop the
-   label, then the place, rather than wrap. */
+   label and the place, then the weekday, rather than wrap, and a title too
+   long for what is left ends in an ellipsis, so the date and the button
+   always show. */
 :root:has(.eventbar) { --head: calc(3.75rem + var(--bar)); }
 .eventbar {
   background: var(--accent);
@@ -479,7 +481,8 @@ strong { font-weight: 660; }
   text-transform: uppercase;
   color: rgb(255 255 255 / 0.9);
 }
-.eventbar strong { font-weight: 660; }
+.eventbar strong { font-weight: 660; min-width: 0; overflow: hidden; text-overflow: ellipsis; }
+.eventbar time { flex: none; }
 .eventbar__place { min-width: 0; overflow: hidden; text-overflow: ellipsis; }
 .eventbar__sep { margin-inline-end: 0.45em; }
 /* the same small button as on the red board band: white, red text */
@@ -513,11 +516,11 @@ strong { font-weight: 660; }
 .js .eventbar__close { display: inline-flex; }
 .eventbar__close:hover { color: #fff; }
 @media (max-width: 759px) {
-  .eventbar__label { display: none; }
+  .eventbar__label, .eventbar__place { display: none; }
   .eventbar__link { justify-content: flex-start; }
 }
-@media (max-width: 479px) {
-  .eventbar__place { display: none; }
+@media (max-width: 379px) {
+  .eventbar__weekday { display: none; }
 }
 
 /* Text-only wordmark. The group has no licence to any Northeastern mark. */
